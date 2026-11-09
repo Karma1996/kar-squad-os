@@ -1,5 +1,5 @@
 {
-  "version": "4.1.0",
+  "version": "4.2.0",
   "project_overlay_marker": "squad-overlay",
   "required_project_fields": ["repos"],
   "allowed_project_fields": [
@@ -69,6 +69,30 @@
     "H2": "方案确认",
     "H3": "验收与合并"
   },
+  "gate_checks": {
+    "H1": ["scope", "prototype", "evidence"],
+    "H2": ["design", "contract", "testability"],
+    "H3": ["candidate", "verdicts", "ci"]
+  },
+  "candidate": {
+    "tag_pattern": "candidate/{KEY}-{digest}",
+    "digest_length": 12,
+    "digest_inputs": ["change_set_id", "issue", "slug", "docs", "repos"],
+    "invalidate_on": ["doc_sha", "prototype_sha", "repo_head"]
+  },
+  "approval": {
+    "checks_per_gate": 3,
+    "require_rationale": true,
+    "require_conditions": true,
+    "approver_type": "human",
+    "r3_second_reviewer": true,
+    "h3_sample_rate": 0.1
+  },
+  "metrics": {
+    "per_issue": ["human_touches", "wait_human", "rework_rounds", "candidate_recuts", "escaped_defects"],
+    "weekly": ["human_touches", "wait_human", "rework_rounds", "candidate_recuts", "escaped_defects", "cycle_time_hours"],
+    "baseline_weeks": 2
+  },
   "docs": {
     "root": "multica/requirements",
     "template_skill": "kar-doc-template",
@@ -128,7 +152,10 @@
     "sla_hours": 24,
     "reminder_hours": 24,
     "decision_owner": "root_parent_creator",
-    "roster": "runtime"
+    "roster": "runtime",
+    "pending_gates_limit": 2,
+    "reminder_once": true,
+    "backup_escalation": "decision_owner"
   },
   "project_facts": {
     "required": ["repos"],

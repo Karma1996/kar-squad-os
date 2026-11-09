@@ -14,6 +14,7 @@
 | 分支落后 | 让 Dev 合并 origin/develop，重跑受影响检查；语义冲突需 Reviewer 复核 |
 | 合并失败 | 冻结合并列车；保留已合入仓；人类决定回滚/前向修复/拆分 |
 | 原型漂移 | 停止实现；提交 DECISION-REQUEST；重新批准或修代码 |
+| 候选失效（late push / 文档 SHA 变化） | 旧 A4/A5 结论作废；`manifest.py check` 报 LATE PUSH/STALE；重跑受影响测试并重新 `freeze --write` |
 | 安全问题 | 立即停止、保留证据、升级 Lead 与人类；不合并 |
 | 人类长期不响应 | 保持等待；24h 提醒一次；绝不代批 |
 
@@ -46,7 +47,7 @@ BLOCKED — {issue} {stage}
 
 - develop 前进：Dev 合并 origin/develop，重跑受影响检查；冲突需 Reviewer 复核。
 - 多仓合并中途失败：冻结合并列车；保留已合入仓；人类在回滚/前向修复/拆分之间逐次决定；不自动继续。
-- 重新验证，不以旧批准覆盖新 SHA。
+- 重新验证，不以旧批准覆盖新 SHA；先跑 `scripts/manifest.py check --profile freeze`，失败就不算候选。
 
 # 六、原型漂移
 
@@ -61,5 +62,6 @@ BLOCKED — {issue} {stage}
 
 # 八、人类不响应
 
-- 保持等待；24h 提醒一次；不代批、不自动通过。
+- 保持等待；24h 只提醒一次（写 `reminder_sent_at` / `reminder_count: 1`）；不代批、不自动通过。
+- 每个 Decision Owner 待决策 ≤2，超出由 Lead 排队；`scripts/human_wip.py check` 盘点。
 - 有备份人则通知备份人；没有则继续等待，记录 `waiting_human`。

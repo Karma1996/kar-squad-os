@@ -38,7 +38,7 @@ class ResolveConfigTest(unittest.TestCase):
         proc = run(desc)
         self.assertEqual(proc.returncode, 0, proc.stderr + proc.stdout)
         data = json.loads(proc.stdout)
-        self.assertEqual(data["effective_config"]["version"], "4.1.0")
+        self.assertEqual(data["effective_config"]["version"], "4.2.0")
         self.assertEqual(data["effective_config"]["project_overlay_version"], 1)
         self.assertEqual(len(data["effective_config"]["repos"]), 1)
         self.assertEqual(data["effective_config"]["docs_home"], "/tmp/docs")

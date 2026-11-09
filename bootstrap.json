@@ -1,7 +1,7 @@
 {
   "name": "KAR Delivery Squad",
-  "version": "4.1.0",
-  "profile": "KAR-Squad-Bootstrap-v4.1",
+  "version": "4.2.0",
+  "profile": "KAR-Squad-Bootstrap-v4.2",
   "requires": {
     "multica_cli": ">=0.8.1",
     "python": "3.9+",
@@ -10,13 +10,15 @@
   "skills": "skills.json",
   "agents": "agents.json",
   "squad": "squad/KAR-Delivery-Squad.json",
-  "config": "config/KAR-Squad-Config-v4.1.md",
+  "config": "config/KAR-Squad-Config-v4.2.md",
   "init_template": "skills/kar-squad-profile/templates/project-description.md",
   "notes": [
     "No workspace_id / runtime_id / repo URL / token / human name is included.",
     "bootstrap.py creates or updates Skills, Agents, Squad, and uploads Skill supporting files.",
     "Template source is the kar-doc-template skill; projects do not configure a template path.",
     "Project description is a thin squad-overlay; defaults come from kar-squad-profile.",
-    "Old workspace skills S01-S17 are not deleted; rebind agents to v4.1 skills and archive old ones manually after verification."
+    "v4.2: candidate freeze + manifest.py check, gate checks/rationale/conditions, metrics.py, human_wip.py, restore.py.",
+    "Backups include Skill supporting files and can be replayed with restore.py.",
+    "Old workspace skills S01-S17 are not deleted; rebind agents to v4.2 skills and archive old ones manually after verification."
   ]
 }

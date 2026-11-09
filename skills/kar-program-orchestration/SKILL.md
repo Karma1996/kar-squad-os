@@ -63,6 +63,7 @@ SPLIT PLAN v1 — {PARENT_KEY}
 - 父：`feat/{PARENT_KEY}-{SLUG}`；子：`feat/{PARENT_KEY}-{SLUG}/{FEATURE_SLUG}`。
 - 同一 workstream 跨仓同名；文档放 `{DOCS_HOME}/multica/requirements/{PARENT_KEY}-{SLUG}/workstreams/{slug}/`。
 - 一个父级 `delivery-manifest.json`；子级是条目。
+- 父级 candidate digest 覆盖全部仓 head 与父级文档；子级结论绑定各自 head。父级重切只改受影响条目，再重新 `freeze --write`。
 - commit trailer：`Change-Set`、`Workstream`、`Sub-Issue`。
 
 # 七、合入模型
@@ -74,7 +75,8 @@ SPLIT PLAN v1 — {PARENT_KEY}
 # 八、父级集成与 H3
 
 - 子级 A4/A5 通过不等于父级完成；父级必须做集成验证：跨工作流契约、组合 staging、端到端关键路径、manifest 一致性。
-- H3 看父级 candidate manifest + 各仓 SHA + 集成证据；不重复子级全部证据。
+- H3 看父级 candidate tag/digest + 各仓 SHA + 集成证据；不重复子级全部证据。
+- H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci`；任一仓 late push 则父级结论作废。
 - 原型：跨工作流 UI 用父级 `交互原型.html`；各工作流独立页面放子目录；H1 一次批准整套，模式 B。
 - 复盘按需；不作为合并前置。
 

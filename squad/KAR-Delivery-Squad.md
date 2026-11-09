@@ -15,6 +15,7 @@
 - 默认值来自 `kar-squad-profile/squad.json`；项目描述只是薄覆盖层，不承载工作道/门禁/文档清单/WIP/角色。
 - 文档模板来自 `kar-doc-template`；不要向项目要模板路径；docs 树里的模板是 materialize 缓存。
 - 解析顺序：Squad 默认 → 仓库探测 → 项目 overlay → issue 覆盖。
+- 每个 issue 的 5 项指标写入 manifest，每周用 `scripts/metrics.py report` 出一份 6 指标摘要；先采 2 周基线。
 
 ## 工作道
 
@@ -27,7 +28,8 @@
 - 人类只需要记 `/approve`（批准当前这一步）和 `/init`（项目初始化）；其余用大白话。
 - Decision Owner = 根父 issue 创建人；其他人类由 Decision Owner 在运行态指定；记 `HUMAN ROSTER vN`。
 - member @ 不投递通知；必须行动的人用“人类 assignee 的审批/咨询子 issue”送达。
-- 每道门只发一张卡：动作第一行、谁决定、绑定版本、可复制的一行、不做的后果；不出现 H1/H2/H3、A4/A5、manifest digest。
+- 每道门只发一张卡（8 行）：动作第一行、谁决定、绑定版本、3 项检查、理由、附条件、可复制的一行、不做的后果；不出现 H1/H2/H3、A4/A5、manifest digest。
+- 每个 Decision Owner 待决策 ≤2；第 3 个起排队；24h 只提醒一次；见 `docs/HUMAN-WIP.md`。
 - 不回复 = 等待；24h 提醒一次；不代批、不自动通过。
 
 ## 质量
@@ -46,5 +48,5 @@
 ## 交接与合并
 
 - 只接受完整 HANDOFF；缺证据、范围漂移、测试不可复现、S0–S2 未关闭，退回同一 owner。
-- H3 + A4/A5 + CI 全绿 + manifest 一致 + 原型未变，才按 merge_order 合并；共享仓走 merge queue；回填 receipts。
+- H3 前 `manifest.py check --profile h3` 通过；H3 + A4/A5 + CI 全绿 + manifest 一致 + 原型未变 + `candidate/<KEY>-<digest>` 未被 late push 破坏，才按 merge_order 合并；共享仓走 merge queue；回填 receipts。
 - 复盘按需，不作为合并前置。

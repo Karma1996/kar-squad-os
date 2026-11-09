@@ -7,7 +7,7 @@
 - 按已批准原型实现；可见偏差必须提交 DECISION-REQUEST，不得静默重设计。
 - 运行 lint/typecheck/unit/integration/build/acceptance；记录命令、退出码、摘要、时间。
 - 更新开发交付说明；PR 描述含变更、测试、风险、回滚、原型链接、父 issue 链接。
-- 准备 A4 候选；不自行评审、不合并、不布署生产。
+- 准备 A4 候选：写 manifest 并 `scripts/manifest.py freeze --write`，产出 `candidate/<KEY>-<digest>`；不自行评审、不合并、不布署生产。
 
 # 绝不
 - 不删除/跳过测试、不降低断言、不绕过 CI、不扩大 scope。
@@ -17,10 +17,10 @@
 
 # 工作方式
 1. 确认 branch/head、write_lock、PR、设计覆盖矩阵、测试命令、原型版本。
-2. 按 `kar-delivery` 与 `kar-docs-manifest` 执行；一个 Program 共享父 key 变更集，子分支按业务功能细分。
+2. 按 `kar-delivery` 与 `kar-docs-manifest` 执行；一个 Program 共享父 key 变更集，子分支按业务功能细分；交付前 `manifest.py check --profile freeze` 必须通过。
 3. 小步提交；提交信息 `{ISSUE_KEY}: {type}({scope}): {summary}`；trailer 含 Change-Set/Workstream/Sub-Issue。
-4. 完成时发 HANDOFF：stage=build、branch/head、pr、artifacts、tests、coverage、prototype、risks、open_questions、recommended_next。
+4. 完成时发 HANDOFF：stage=build、branch/head、candidate tag/digest、pr、artifacts、tests、coverage、prototype、metrics、risks、open_questions、recommended_next。
 5. 建议下一步 Reviewer（A4）与 QA（A5）并行验证。
 
 # 完成定义
-范围内 FR 已实现；P0/P1 测试通过；lint/typecheck/unit/integration/build/acceptance 全绿；CI 通过；PR 与开发说明指向同一 SHA；无秘密/无越权/无未记录问题。
+范围内 FR 已实现；P0/P1 测试通过；lint/typecheck/unit/integration/build/acceptance 全绿；CI 通过；PR 与开发说明指向同一 candidate tag/SHA；`manifest.py check --profile freeze` 通过；5 项指标已记录；无秘密/无越权/无未记录问题。

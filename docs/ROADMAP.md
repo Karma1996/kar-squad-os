@@ -2,15 +2,17 @@
 
 按“先可观测、再提效、后扩能力”的顺序推进。每项完成需更新配置手册、测试与 CHANGELOG。
 
-## v4.2（P0）
+## v4.2（P0，4.2.0 已交付）
+
+实现与验证命令见 `docs/MANIFEST.md`、`docs/GATES.md`、`docs/METRICS.md`、`docs/HUMAN-WIP.md`、`docs/BACKUP-RESTORE.md`。
 
 | 项 | 验收 |
 | --- | --- |
-| 候选冻结 tag + `manifest check` | A4/A5 绑定 `candidate/<KEY>-<digest>`；任何 late push 使结论失效；脚本校验 docs/repos/PR/原型 SHA |
-| 审批清单 + rationale/conditions | 每道门 3 项检查；manifest 记录一句话理由与附条件；R3 第二人复核；H3 抽样 10% |
-| 指标采集 | 每个 issue 记录 human_touches / wait_human / rework / recuts / escaped defects；每周摘要 |
-| 人类 WIP/SLA | 每个 Decision Owner 同时待决策 ≤2；24h 提醒 + 备份升级 |
-| 校验与恢复 | `verify.py` 覆盖 Squad 指令/模板/文件（已做）；补 `restore.py`、fake-CLI 单测、CI（本仓库已起步） |
+| 候选冻结 tag + `manifest check` | ✅ A4/A5 绑定 `candidate/<KEY>-<digest>`；late push/文档 SHA 变化使结论失效；`scripts/manifest.py` 校验 docs/repos/PR/CI/原型 SHA |
+| 审批清单 + rationale/conditions | ✅ 每道门 3 项检查；manifest 记录一句话理由与附条件；R3 第二人复核；H3 抽样 10% |
+| 指标采集 | ✅ 每个 issue 记录 human_touches / wait_human / rework_rounds / candidate_recuts / escaped_defects；每周 6 指标摘要 + 2 周基线 |
+| 人类 WIP/SLA | ✅ 每个 Decision Owner 同时待决策 ≤2；排队；24h 只提醒一次；备份升级 |
+| 校验与恢复 | ✅ `verify.py`；新增 `restore.py`、fake-CLI 单测、CI（manifest 示例 + 全套单测） |
 
 ## v4.3（P1）
 

@@ -39,6 +39,7 @@ M0 文档/测试/工具；M1 展示层；M2 普通业务；M3 核心域；M4 接
 # 三、WIP 与并发
 
 - Quick 3 个在飞小项；Standard 2 个活动需求；Program 1 个 Program，2–3 个工作流。
+- 人类 WIP：每个 Decision Owner 同时待决策 ≤2；第 3 个起排队，前一张解决后再发。用 `scripts/human_wip.py check --manifests <docs-home>` 盘点；24h 只提醒一次。
 - WIP 单位是“活动工作流”，不是需求数。
 - Dev 默认 2；Program 需要 3 工作流时，先测队列再决定是否调到 3。
 - 同一 Agent 并行不同 issue 必须独立 worktree；上下文串扰时降为串行。
@@ -60,16 +61,18 @@ write_lock: {agent-name}
 
 # 五、门禁
 
-| 内部 | 人类看到的 | 绑定 |
-| --- | --- | --- |
-| H1 | 需求确认 | 需求 v + 原型 v/SHA + 评审记录 |
-| H2 | 方案确认 | 设计 v + 原型覆盖矩阵 |
-| H3 | 验收与合并 | candidate manifest digest + 各仓 SHA |
-| 拆分方案 | 拆分方案确认 | SPLIT PLAN vN |
+| 内部 | 人类看到的 | 绑定 | 3 项检查 |
+| --- | --- | --- | --- |
+| H1 | 需求确认 | 需求 v + 原型 v/SHA + 评审记录 | `scope` / `prototype` / `evidence` |
+| H2 | 方案确认 | 设计 v + 原型覆盖矩阵 | `design` / `contract` / `testability` |
+| H3 | 验收与合并 | `candidate/<KEY>-<digest>` + 各仓 SHA | `candidate` / `verdicts` / `ci` |
+| 拆分方案 | 拆分方案确认 | SPLIT PLAN vN | 切片可独立验证 / 合并顺序 / owner |
 
-- 每道门只发一张卡；不出现 H1/H2/H3、A4/A5、manifest digest 等术语。
-- 人类 `/approve` 批准；明确自然语言批准也有效，但你必须复述并绑定版本/SHA。
-- 不回复 = 等待；24h 提醒一次；不代批、不自动通过。
+- 每道门固定 3 项检查，结果、理由、附条件写入 `manifest.gates.<gate>`：`checks`（3 条，pass/fail/n/a + evidence）、`rationale`（一句话）、`conditions`（列表，无则 `[]`）。检查清单见 `docs/GATES.md`。
+- H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci`；失败不发卡。R3 必须有 `second_reviewer` 记录；H3 记录 10% 抽样（`sampling`，至少 1 道门）。
+- 每道门只发一张卡；不出现 H1/H2/H3、A4/A5、manifest digest 等术语；3 项检查翻译成人类语言。
+- 人类 `/approve` 批准；明确自然语言批准也有效，但你必须复述并绑定版本/SHA。只有人类能批准，`approver_type` 必须是 `human`。
+- 不回复 = 等待；24h 只提醒一次；不代批、不自动通过。
 
 ## 卡片模板
 
@@ -77,8 +80,11 @@ write_lock: {agent-name}
 🟡 需要你：确认需求基线（v1.2 / a1b2c3）
 谁决定：你（Decision Owner）
 先看：3 分钟摘要 → <链接>；原型 → <链接>
+我检查了：① 范围与验收标准一致 ② 原型版本/SHA 一致 ③ 证据可复现
+理由：需求与原型覆盖全部 P0，范围未漂移
+附条件：无（有则逐条写，批准时一并记录）
 回复：/approve　要改：直接说“把 X 改成 Y”
-不做：停在这里，不会自动通过
+不做：停在这里，不会自动通过；24h 后只提醒一次
 ```
 
 四类卡：批准/退回、选择/补充信息（≤5 问，带推荐）、外部操作（5–7 步，成功信号）、阻塞/异常。
@@ -122,6 +128,7 @@ Intake 判道 → Dev 修复+回归 → Reviewer 一次独立 verify（A4+A5 合
 # 十、合并
 
 - 只有 H3、A4/A5、CI 全绿、无 S0–S2、manifest/文档版本一致、原型未变，才可合并。
+- H3 前确认 `manifest.py check --profile h3` 通过，合并授权绑定 `candidate/<KEY>-<digest>`；late push 后旧 H3 也作废。
 - Program 默认模型 B：子 PR → 父集成分支 → 集成验证 → 父 PR → develop。
 - 共享仓走 merge queue；一次一个 PR；Docs PR 最后。
 - 回填 receipts；删除 feature 分支；main 只由人类发布。
