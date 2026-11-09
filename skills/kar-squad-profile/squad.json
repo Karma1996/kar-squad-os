@@ -1,0 +1,138 @@
+{
+  "version": "4.1.0",
+  "project_overlay_marker": "squad-overlay",
+  "required_project_fields": ["repos"],
+  "allowed_project_fields": [
+    "version",
+    "repos",
+    "docs_home",
+    "ci",
+    "staging",
+    "human_defaults",
+    "constraints",
+    "overrides",
+    "goal",
+    "success_metrics",
+    "notes"
+  ],
+  "allowed_overrides": [
+    "merge_model",
+    "template",
+    "module_map",
+    "ui_profile",
+    "lane_defaults",
+    "wip",
+    "slas"
+  ],
+  "squad_invariants": [
+    "independent_verification",
+    "human_gates",
+    "main_human_only",
+    "single_writer_per_issue",
+    "evidence_first",
+    "no_secrets",
+    "fail_explicit"
+  ],
+  "lanes": {
+    "quick": {
+      "risk_max": "R1",
+      "files_max": 3,
+      "modules_max": 1,
+      "module_classes": ["M0", "M1", "M2", "M3"],
+      "require_tests": true,
+      "human_gates": 1
+    },
+    "standard": {
+      "human_gates": 3
+    },
+    "program": {
+      "human_gates": 4,
+      "default_merge_model": "integration",
+      "max_workstreams": 3
+    }
+  },
+  "risk_levels": {
+    "R0": "无运行时行为变化：文档、注释、测试、构建脚本",
+    "R1": "单模块局部行为，有测试可固定",
+    "R2": "结构风险：跨模块、接口/契约、数据模型/迁移、权限、依赖升级",
+    "R3": "高危：认证/授权、支付/计费、密钥/生产配置、不可逆数据、合规"
+  },
+  "module_classes": {
+    "M0": "文档/测试/工具",
+    "M1": "展示层（UI/文案/样式）",
+    "M2": "普通业务模块",
+    "M3": "核心域（领域规则/状态机）",
+    "M4": "接口/契约/公共库/基础设施"
+  },
+  "gates": {
+    "H1": "需求确认",
+    "H2": "方案确认",
+    "H3": "验收与合并"
+  },
+  "docs": {
+    "root": "multica/requirements",
+    "template_skill": "kar-doc-template",
+    "template_version": "4.1",
+    "template_mode": "squad",
+    "fixed_files": [
+      "需求分析文档.html",
+      "方案设计文档.html",
+      "测试设计与用例.html",
+      "开发交付说明.html",
+      "测试验收文档.html"
+    ],
+    "conditional_files": ["交互原型.html"],
+    "optional_files": ["复盘分析文档.html"],
+    "manifest": "delivery-manifest.json",
+    "project_registry": "multica/project/repo-registry.html",
+    "ui_profile": "multica/project/ui-profile.json"
+  },
+  "branch": {
+    "quick": "fix/{KEY}-{SLUG}",
+    "standard": "feat/{KEY}-{SLUG}",
+    "program_parent": "feat/{PARENT_KEY}-{SLUG}",
+    "program_child": "feat/{PARENT_KEY}-{SLUG}/{FEATURE_SLUG}",
+    "commit_trailers": ["Change-Set", "Workstream", "Sub-Issue"]
+  },
+  "wip": {
+    "quick": 3,
+    "standard": 2,
+    "program": 1,
+    "workstreams": 3,
+    "human_pending_gates": 2
+  },
+  "concurrency": {
+    "lead": 6,
+    "analyst": 2,
+    "architect": 2,
+    "testdesigner": 2,
+    "developer": 2,
+    "reviewer": 3,
+    "qa": 2,
+    "retro": 1
+  },
+  "prototype": {
+    "mode": "B",
+    "trigger": "large_complex_ui",
+    "style_source": "code_extract",
+    "h1_binds": true
+  },
+  "retro": {
+    "mode": "on_demand",
+    "triggers": ["human_request", "s0_s1", "rework_ge_2", "overrun_gt_50pct"],
+    "blocks_merge": false
+  },
+  "human": {
+    "commands": ["/approve", "/init"],
+    "aliases": ["/changes", "/reject"],
+    "sla_hours": 24,
+    "reminder_hours": 24,
+    "decision_owner": "root_parent_creator",
+    "roster": "runtime"
+  },
+  "project_facts": {
+    "required": ["repos"],
+    "recommended": ["docs_home", "ci", "staging", "human_defaults", "constraints"],
+    "overrides": ["merge_model", "template", "module_map", "ui_profile", "lane_defaults", "wip", "slas"]
+  }
+}

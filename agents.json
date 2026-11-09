@@ -1,0 +1,114 @@
+[
+  {
+    "name": "KAR-01-Lead",
+    "description": "唯一控制面：分诊、工作道、派发、门禁、人类交互、Program 编排与合并。",
+    "runtime_env": "KAR_CORE_RUNTIME_ID",
+    "max": 6,
+    "skills": [
+      "kar-constitution",
+      "kar-lead-operating",
+      "kar-program-orchestration",
+      "kar-docs-manifest",
+      "kar-degradation",
+      "kar-squad-profile",
+      "kar-doc-template"
+    ]
+  },
+  {
+    "name": "KAR-02-Analyst",
+    "description": "需求澄清、需求文档、像素级原型、UI 风格提取与 H1 包。",
+    "runtime_env": "KAR_CORE_RUNTIME_ID",
+    "max": 2,
+    "skills": [
+      "kar-constitution",
+      "kar-requirements-prototype",
+      "kar-docs-manifest",
+      "kar-degradation",
+      "kar-squad-profile",
+      "kar-doc-template"
+    ]
+  },
+  {
+    "name": "KAR-03-Architect",
+    "description": "方案设计、契约、ADR、原型覆盖矩阵、可测试性与 H2。",
+    "runtime_env": "KAR_CORE_RUNTIME_ID",
+    "max": 2,
+    "skills": [
+      "kar-constitution",
+      "kar-solution-design",
+      "kar-docs-manifest",
+      "kar-degradation",
+      "kar-squad-profile",
+      "kar-doc-template"
+    ]
+  },
+  {
+    "name": "KAR-04-TestDesigner",
+    "description": "测试设计、用例、RTM、可执行验收测试与 A3。",
+    "runtime_env": "KAR_CORE_RUNTIME_ID",
+    "max": 2,
+    "skills": [
+      "kar-constitution",
+      "kar-test-design",
+      "kar-docs-manifest",
+      "kar-degradation",
+      "kar-squad-profile",
+      "kar-doc-template"
+    ]
+  },
+  {
+    "name": "KAR-05-Developer",
+    "description": "唯一实现者：按设计/测试/原型交付代码、测试、开发说明与 A4 候选。",
+    "runtime_env": "KAR_CORE_RUNTIME_ID",
+    "max": 2,
+    "skills": [
+      "kar-constitution",
+      "kar-delivery",
+      "kar-docs-manifest",
+      "kar-degradation",
+      "kar-squad-profile",
+      "kar-doc-template"
+    ]
+  },
+  {
+    "name": "KAR-06-Reviewer",
+    "description": "独立代码、安全与测试可信度评审；不修代码。",
+    "runtime_env": "KAR_CORE_RUNTIME_ID",
+    "max": 3,
+    "skills": [
+      "kar-constitution",
+      "kar-independent-review",
+      "kar-docs-manifest",
+      "kar-degradation",
+      "kar-squad-profile",
+      "kar-doc-template"
+    ]
+  },
+  {
+    "name": "KAR-07-QA",
+    "description": "干净环境验收、回归、非功能、像素级原型一致性与 A5。",
+    "runtime_env": "KAR_QA_RUNTIME_ID",
+    "max": 2,
+    "skills": [
+      "kar-constitution",
+      "kar-qa-conformance",
+      "kar-docs-manifest",
+      "kar-degradation",
+      "kar-squad-profile",
+      "kar-doc-template"
+    ]
+  },
+  {
+    "name": "KAR-08-Retro",
+    "description": "按需复盘，产出系统改进行动；不阻塞交付。",
+    "runtime_env": "KAR_CORE_RUNTIME_ID",
+    "max": 1,
+    "skills": [
+      "kar-constitution",
+      "kar-retro-on-demand",
+      "kar-docs-manifest",
+      "kar-squad-profile",
+      "kar-doc-template"
+    ]
+  }
+]

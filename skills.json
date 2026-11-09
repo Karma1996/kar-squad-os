@@ -1,0 +1,100 @@
+[
+  {
+    "name": "kar-constitution",
+    "description": "小队共同宪法：不变式、工作道、角色边界、变更集、原型锁定与交接。",
+    "path": "skills/kar-constitution/SKILL.md"
+  },
+  {
+    "name": "kar-lead-operating",
+    "description": "Lead 控制面：分诊、判道、WIP、派发、门禁、人类交互与 /init。",
+    "path": "skills/kar-lead-operating/SKILL.md"
+  },
+  {
+    "name": "kar-program-orchestration",
+    "description": "Program 父子 issue、拆分切点、stage、集成验证与合并列车。",
+    "path": "skills/kar-program-orchestration/SKILL.md"
+  },
+  {
+    "name": "kar-requirements-prototype",
+    "description": "需求澄清、需求文档、原型触发、从代码提取 UI 风格、像素级原型与 H1。",
+    "path": "skills/kar-requirements-prototype/SKILL.md"
+  },
+  {
+    "name": "kar-solution-design",
+    "description": "方案设计、契约、ADR、原型覆盖矩阵、可测试性与 H2。",
+    "path": "skills/kar-solution-design/SKILL.md"
+  },
+  {
+    "name": "kar-test-design",
+    "description": "测试设计、用例、RTM、可执行验收测试与 A3。",
+    "path": "skills/kar-test-design/SKILL.md"
+  },
+  {
+    "name": "kar-delivery",
+    "description": "分支与变更集、TDD、测试、PR、开发说明、原型落地与变更控制。",
+    "path": "skills/kar-delivery/SKILL.md"
+  },
+  {
+    "name": "kar-independent-review",
+    "description": "独立代码/安全/测试可信度评审与 A4。",
+    "path": "skills/kar-independent-review/SKILL.md"
+  },
+  {
+    "name": "kar-qa-conformance",
+    "description": "干净环境验收、回归、非功能、像素级原型一致性与 A5。",
+    "path": "skills/kar-qa-conformance/SKILL.md"
+  },
+  {
+    "name": "kar-docs-manifest",
+    "description": "目录、五份固定文档 + 条件原型、manifest、证据与追溯。",
+    "path": "skills/kar-docs-manifest/SKILL.md"
+  },
+  {
+    "name": "kar-retro-on-demand",
+    "description": "按需复盘、系统改进与行动闭环。",
+    "path": "skills/kar-retro-on-demand/SKILL.md"
+  },
+  {
+    "name": "kar-degradation",
+    "description": "失败分类、重试、blocked、冻结、回滚与安全停止。",
+    "path": "skills/kar-degradation/SKILL.md"
+  },
+  {
+    "name": "kar-squad-profile",
+    "description": "小队默认值、解析顺序、薄项目模板与 resolve_config。",
+    "path": "skills/kar-squad-profile/SKILL.md",
+    "files": [
+      {
+        "path": "squad.json",
+        "source": "skills/kar-squad-profile/squad.json"
+      },
+      {
+        "path": "templates/project-description.md",
+        "source": "skills/kar-squad-profile/templates/project-description.md"
+      },
+      {
+        "path": "scripts/resolve_config.py",
+        "source": "skills/kar-squad-profile/scripts/resolve_config.py"
+      }
+    ]
+  },
+  {
+    "name": "kar-doc-template",
+    "description": "唯一文档模板、样式、版本/哈希与 materialize。",
+    "path": "skills/kar-doc-template/SKILL.md",
+    "files": [
+      {
+        "path": "templates/KAR-Deliverable-Template.html",
+        "source": "skills/kar-doc-template/templates/KAR-Deliverable-Template.html"
+      },
+      {
+        "path": "templates/template.json",
+        "source": "skills/kar-doc-template/templates/template.json"
+      },
+      {
+        "path": "scripts/materialize_template.py",
+        "source": "skills/kar-doc-template/scripts/materialize_template.py"
+      }
+    ]
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "name": "KAR Delivery Squad",
+  "leader": "KAR-01-Lead",
+  "members": [
+    {
+      "name": "KAR-01-Lead",
+      "role": "唯一控制面：分诊、工作道、派发、门禁、人类交互、Program 编排与合并"
+    },
+    {
+      "name": "KAR-02-Analyst",
+      "role": "需求澄清、需求文档、像素级原型、UI 风格提取与 H1"
+    },
+    {
+      "name": "KAR-03-Architect",
+      "role": "方案设计、契约、ADR、原型覆盖矩阵与 H2"
+    },
+    {
+      "name": "KAR-04-TestDesigner",
+      "role": "测试设计、RTM、可执行验收测试与 A3"
+    },
+    {
+      "name": "KAR-05-Developer",
+      "role": "唯一实现者：代码、测试、开发说明与 A4 候选"
+    },
+    {
+      "name": "KAR-06-Reviewer",
+      "role": "独立代码/安全/测试可信度评审与 A4"
+    },
+    {
+      "name": "KAR-07-QA",
+      "role": "干净环境验收、回归、非功能、像素级原型一致性与 A5"
+    },
+    {
+      "name": "KAR-08-Retro",
+      "role": "按需复盘与系统改进行动"
+    }
+  ]
+}

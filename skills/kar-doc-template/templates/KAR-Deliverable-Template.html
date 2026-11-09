@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="zh-CN" data-doc-type="{{DOC_TYPE}}" data-template-version="4.1">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="KAR Delivery Squad / squad template v4.1">
+<title>{{DOC_TITLE}} · {{ISSUE_KEY}}</title>
+<style>
+:root{
+  --bg:#f7f5ef;--surface:#fffdf8;--surface-2:#f1eee5;--ink:#1c1b18;--muted:#6e6a61;--faint:#9a958a;
+  --line:#ddd7ca;--line-strong:#c8c0b1;--accent:#1f6f5c;--accent-soft:#e5f1ec;
+  --amber:#a36513;--amber-soft:#fbf0dd;--red:#a33a2b;--red-soft:#f9e7e3;
+  --blue:#2e5f8a;--blue-soft:#e8f0f7;--violet:#6b4b8a;--violet-soft:#f0eafa;
+  --font-serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Songti SC","Noto Serif CJK SC",serif;
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --font-mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --radius:12px;--shadow:0 1px 2px rgba(0,0,0,.05);--max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.75 var(--font-sans);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:2px}
+.skip-link{position:absolute;left:-999px;top:0;background:var(--ink);color:#fff;padding:8px 12px;z-index:100}
+.skip-link:focus{left:12px}
+.doc-head{border-bottom:1px solid var(--line);background:linear-gradient(180deg,var(--surface),var(--bg));padding:34px 28px 26px}
+.doc-head-inner{max-width:var(--max);margin:0 auto}
+.eyebrow{font:600 10px/1.4 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font:700 clamp(26px,3.4vw,42px)/1.2 var(--font-serif);margin:10px 0 10px;letter-spacing:-.02em}
+.subtitle{color:var(--muted);max-width:80ch;margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:18px;font-size:12px;color:var(--muted)}
+.meta b{color:var(--ink);font-weight:600}
+.badge{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font:600 10px/1.6 var(--font-mono);background:var(--surface);color:var(--muted)}
+.badge-accent{border-color:#b9d9ce;background:var(--accent-soft);color:var(--accent)}
+.badge-amber{border-color:#e5cda4;background:var(--amber-soft);color:var(--amber)}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:34px;max-width:var(--max);margin:0 auto;padding:28px}
+.toc{position:sticky;top:18px;align-self:start;max-height:calc(100vh - 36px);overflow:auto;border-right:1px solid var(--line);padding-right:18px}
+.toc h2{font:600 10px/1.4 var(--font-mono);letter-spacing:.12em;color:var(--faint);margin:0 0 12px;text-transform:uppercase}
+.toc a{display:block;padding:5px 8px;border-left:2px solid transparent;color:var(--muted);text-decoration:none;font-size:12px}
+.toc a:hover,.toc a.active{background:var(--surface-2);color:var(--accent);border-left-color:var(--accent)}
+.toc .sub{padding-left:18px;font-size:11px}
+main{min-width:0}
+section{margin:0 0 28px}
+h2{font:700 24px/1.35 var(--font-serif);margin:30px 0 10px;padding-top:6px;border-top:1px solid var(--line)}
+h2:first-child{margin-top:0;border-top:0}
+h3{font:650 17px/1.45 var(--font-sans);margin:22px 0 8px}
+p{margin:0 0 12px}
+.muted{color:var(--muted)}
+.small{font-size:12px;color:var(--muted)}
+.summary{background:var(--accent-soft);border:1px solid #c9e2d8;border-left:4px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0;padding:16px 18px;margin:0 0 26px}
+.summary strong{color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.callout{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0;padding:14px 16px;margin:14px 0}
+.callout-title{font-weight:700;margin-bottom:4px}
+.callout-warn{border-left-color:var(--amber);background:var(--amber-soft)}
+.callout-danger{border-left-color:var(--red);background:var(--red-soft)}
+.callout-human{border-left-color:var(--violet);background:var(--violet-soft)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--surface-2);font:600 11px/1.5 var(--font-mono);letter-spacing:.02em;color:var(--muted);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+code{font-family:var(--font-mono);font-size:.88em;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+pre{font-family:var(--font-mono);font-size:12px;line-height:1.65;background:#1d211f;color:#e9e5db;border-radius:var(--radius);padding:16px;overflow:auto;margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+pre code{background:none;border:0;padding:0;color:inherit}
+.code-wrap{border-radius:var(--radius);overflow:hidden;border:1px solid #2c322f;margin:12px 0}
+.code-head{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#151816;color:#b9c4bd;padding:7px 11px;font:600 10px/1.4 var(--font-mono);letter-spacing:.06em}
+.copy-btn{border:1px solid #46504a;background:transparent;color:#d7dfd9;border-radius:6px;padding:2px 7px;font:600 10px/1.6 var(--font-mono);cursor:pointer}
+.copy-btn:hover{background:#28302c}
+ul,ol{margin:8px 0 12px;padding-left:22px}
+li{margin:4px 0}
+.check-list{list-style:none;padding-left:0}
+.check-list li{padding-left:20px;position:relative}
+.check-list li::before{content:"✓";position:absolute;left:0;color:var(--accent);font-weight:700}
+.evidence,.approval{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:14px 16px;margin:12px 0}
+.doc-footer{border-top:1px solid var(--line);color:var(--faint);font-size:11px;padding:18px 28px 30px;max-width:var(--max);margin:0 auto}
+@media(max-width:1020px){.layout{grid-template-columns:1fr;padding:20px}.toc{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line);padding:0 0 12px}.toc a{display:inline-block;border-left:0;border-bottom:2px solid transparent}.toc a.active{border-bottom-color:var(--accent)}.grid{grid-template-columns:1fr}}
+@media(max-width:560px){.doc-head{padding:24px 18px}.layout{padding:16px}h1{font-size:26px}.table-wrap{border-radius:8px}th,td{padding:8px 9px}pre{font-size:11px}}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--surface-2:#f4f4f4;--ink:#000;--muted:#333;--line:#bbb}
+  body{font-size:10.5pt;background:#fff}
+  .doc-head{padding:0 0 12px;background:#fff;border-bottom:2px solid #000}
+  .layout{display:block;padding:0;max-width:none}
+  .toc{display:none}
+  .copy-btn{display:none}
+  .callout,.card,.table-wrap,.code-wrap{break-inside:avoid;box-shadow:none}
+  pre{white-space:pre-wrap;background:#f4f4f4;color:#000;border:1px solid #bbb}
+  a{color:#000;text-decoration:none}
+  h2{break-after:avoid}
+  .doc-footer{page-break-before:avoid}
+}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到正文</a>
+<header class="doc-head">
+  <div class="doc-head-inner">
+    <div class="eyebrow">{{DOC_TYPE}} / {{ISSUE_KEY}} / KAR DELIVERY SQUAD</div>
+    <h1>{{DOC_TITLE}}</h1>
+    <p class="subtitle">{{SUBTITLE}}</p>
+    <div class="meta">
+      <span><b>版本</b> {{VERSION}}</span>
+      <span><b>状态</b> {{STATUS}}</span>
+      <span><b>Owner</b> {{OWNER}}</span>
+      <span><b>模板</b> S16 / 3.0</span>
+      <span><b>生成</b> {{GENERATED_AT}}</span>
+    </div>
+  </div>
+</header>
+<div class="layout">
+  <nav class="toc" aria-label="本文目录">
+    <h2>目录</h2>
+    {{TOC}}
+  </nav>
+  <main id="main">
+    <div class="summary">
+      <strong>一页摘要</strong>
+      {{SUMMARY}}
+    </div>
+    {{BODY}}
+    <section id="evidence">
+      <h2>证据</h2>
+      <div class="evidence">{{EVIDENCE}}</div>
+    </section>
+    <section id="provenance">
+      <h2>改动来源</h2>
+      {{PROVENANCE}}
+    </section>
+    <section id="approval">
+      <h2>批准记录</h2>
+      <div class="approval">{{APPROVAL}}</div>
+    </section>
+    <section id="changelog">
+      <h2>变更记录</h2>
+      {{CHANGELOG}}
+    </section>
+  </main>
+</div>
+<footer class="doc-footer">
+  {{FOOTER}} · 本文件由 S16 模板 v3.0 生成；样式与结构不得在单篇文档内修改。
+</footer>
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+  var items=links.map(function(a){var el=document.getElementById(a.getAttribute('href').slice(1));return el?{a:a,el:el}:null}).filter(Boolean);
+  function update(){var y=scrollY+100,active=items[0];items.forEach(function(it){if(it.el.getBoundingClientRect().top+scrollY<=y)active=it});links.forEach(function(a){a.classList.remove('active')});if(active)active.a.classList.add('active')}
+  addEventListener('scroll',update,{passive:true});update();
+  [].forEach.call(document.querySelectorAll('.copy-btn'),function(btn){btn.addEventListener('click',function(){var pre=btn.closest('.code-wrap').querySelector('pre');if(!pre)return;navigator.clipboard.writeText(pre.innerText).then(function(){btn.textContent='已复制';setTimeout(function(){btn.textContent='复制'},1200)})})});
+})();
+</script>
+</body>
+</html>
