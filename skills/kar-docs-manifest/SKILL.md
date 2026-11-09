@@ -60,31 +60,66 @@
 - 固定槽位：doc-head、summary、doc-toc、body、evidence、provenance、approval、footer。
 - 模板升级 = 小队发版；不允许每项目手工改壳。
 
-# 五、Manifest
+# 五、候选冻结与 Manifest
+
+`delivery-manifest.json` 升为 `version: 2`；候选身份是 `candidate/<KEY>-<digest>`。
+
+```bash
+# 计算/写回 digest 与 tag
+python3 scripts/manifest.py digest --manifest <path>/delivery-manifest.json --write
+# 冻结：校验 docs SHA、原型 SHA、各仓 head、PR、CI
+python3 scripts/manifest.py freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path> --write
+# A4/A5 校验
+python3 scripts/manifest.py check --profile freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path>
+# H3 校验（含门禁、R3 第二人、10% 抽样、指标）
+python3 scripts/manifest.py check --profile h3 --manifest <path> --docs-root <docs-home> --repo-root <id>=<path> --check-remotes --check-prs --check-ci
+```
+
+digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/prototype/design/test_design/dev_notes` 的 version+sha + 各仓 `repo_id/base/branch/head`；SHA-256 取前 12 位。`qa_report` 变化不重切候选。
 
 最小结构：
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "change_set_id": "KAR-9",
   "issue": "KAR-9",
   "slug": "checkout-idempotency",
+  "risk": "R2",
+  "decision_owner": "<user-id>",
   "docs": {
-    "requirements": {"path": "...", "version": "1.2", "sha": "..."},
-    "prototype": {"path": "...", "version": "1.0", "sha": "...", "mode": "B", "approved_by": "...", "approved_at": "..."},
+    "requirements": {"path": "...", "version": "1.2", "sha": "<64 hex>"},
+    "prototype": {"path": "...", "version": "1.0", "sha": "<64 hex>", "mode": "B", "approved_by": "...", "approved_at": "..."},
     "design": {}, "test_design": {}, "dev_notes": {}, "qa_report": {}
   },
-  "repos": [{"repo_id": "...", "base": "develop", "branch": "...", "head": "...", "pr": "...", "merge_order": 1}],
-  "candidate": {"digest": "...", "frozen_at": "..."},
-  "gates": {"h1": {}, "h2": {}, "h3": {}},
+  "repos": [{"repo_id": "...", "remote": "...", "base": "develop", "branch": "...", "head": "<40 hex>", "pr": "...", "merge_order": 1,
+             "ci": {"status": "passed", "head": "<same 40 hex>", "url": "...", "checked_at": "..."}}],
+  "candidate": {"digest": "<12 hex>", "tag": "candidate/KAR-9-<digest>", "frozen_at": "..."},
+  "gates": {
+    "h1": {"status": "approved", "approved_by": "...", "approver_type": "human", "approved_at": "...",
+           "rationale": "一句话理由", "conditions": [],
+           "checks": [{"id": "scope", "result": "pass", "evidence": "..."},
+                      {"id": "prototype", "result": "pass", "evidence": "..."},
+                      {"id": "evidence", "result": "pass", "evidence": "..."}]},
+    "h2": {"checks": [{"id": "design"}, {"id": "contract"}, {"id": "testability"}]},
+    "h3": {"candidate_digest": "<digest>",
+           "checks": [{"id": "candidate"}, {"id": "verdicts"}, {"id": "ci"}],
+           "second_reviewer": {"reviewer": "...", "role": "security", "verdict": "pass", "at": "..."},
+           "sampling": {"rate": 0.1, "population": 3, "sampled": ["h1"], "reviewed_by": "...", "at": "...", "note": "无发现"}}
+  },
+  "metrics": {"human_touches": 3, "wait_human": 6.5, "rework_rounds": 1, "candidate_recuts": 0, "escaped_defects": 0},
   "merge_receipts": []
 }
 ```
 
-- 一个父级 manifest；子级是条目。
-- 任何候选变化更新 digest；H3 绑定 digest 与各仓 SHA。
-- 原型在 A4/A5 后变化，两个结论同时失效。
+规则：
+
+- 一个父级 manifest；子级是条目。Program 父级 digest 覆盖全部仓 head。
+- 每道门固定 3 项检查 + `rationale` + `conditions`；只有人类能批准，`approver_type` 必须是 `human`。清单见 `docs/GATES.md`。
+- R3 记录 `gates.h3.second_reviewer`；H3 记录 10% 抽样 `gates.h3.sampling`（至少 1 道门）。
+- 每个 issue 在 `metrics` 记录 5 项：`human_touches / wait_human / rework_rounds / candidate_recuts / escaped_defects`；周摘要用 `scripts/metrics.py`。定义见 `docs/METRICS.md`。
+- 文档 SHA、原型 SHA 或任一仓 head 变化 → digest 变化，A4/A5/H3 旧结论失效；late push 必须重切，不能改旧结论。
+- 完整示例：`docs/examples/delivery-manifest.json`；字段与命令：`docs/MANIFEST.md`。
 
 # 六、证据
 

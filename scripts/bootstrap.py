@@ -23,7 +23,7 @@ SKILLS = json.loads((ROOT / "skills.json").read_text(encoding="utf-8"))
 AGENTS = json.loads((ROOT / "agents.json").read_text(encoding="utf-8"))
 SQUAD = json.loads((ROOT / "squad/KAR-Delivery-Squad.json").read_text(encoding="utf-8"))
 SQUAD_INSTRUCTIONS = (ROOT / "squad/KAR-Delivery-Squad.md").read_text(encoding="utf-8")
-SQUAD_DESCRIPTION = "KAR Delivery Squad v4.1：三工作道、运行时人类 roster、父 key 变更集、像素级原型、小队模板与薄项目覆盖层。"
+SQUAD_DESCRIPTION = "KAR Delivery Squad v4.2：三工作道、候选冻结、审批清单、指标与人类 WIP、模板与薄项目覆盖层。"
 
 
 def run(args: list[str], *, check: bool = True) -> dict | list:
@@ -118,7 +118,10 @@ def main() -> int:
             for a in as_list(run(base + ["agent", "list", "--output", "json"])):
                 data["agents"].append(run(base + ["agent", "get", a["id"], "--output", "json"]))
             for s in as_list(run(base + ["skill", "list", "--output", "json"])):
-                data["skills"].append(run(base + ["skill", "get", s["id"], "--with-content", "--output", "json"]))
+                detail = run(base + ["skill", "get", s["id"], "--with-content", "--output", "json"])
+                if isinstance(detail, dict):
+                    detail["files"] = as_list(run(base + ["skill", "files", "list", s["id"], "--with-content", "--output", "json"]))
+                data["skills"].append(detail)
             squads = as_list(run(base + ["squad", "list", "--output", "json"]))
             named = by_name(squads)
             if SQUAD["name"] in named:

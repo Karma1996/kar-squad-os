@@ -1,0 +1,176 @@
+{
+  "version": 2,
+  "change_set_id": "KAR-42",
+  "issue": "KAR-42",
+  "slug": "checkout-idempotency",
+  "risk": "R3",
+  "decision_owner": "decision-owner-user-id",
+  "docs": {
+    "requirements": {
+      "path": "multica/requirements/KAR-42-checkout-idempotency/需求分析文档.html",
+      "version": "1.2",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "prototype": {
+      "path": "multica/requirements/KAR-42-checkout-idempotency/交互原型.html",
+      "version": "1.0",
+      "sha": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "mode": "B",
+      "approved_by": "decision-owner-user-id",
+      "approved_at": "2026-11-03T09:00:00Z"
+    },
+    "design": {
+      "path": "multica/requirements/KAR-42-checkout-idempotency/方案设计文档.html",
+      "version": "2.0",
+      "sha": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+    },
+    "test_design": {
+      "path": "multica/requirements/KAR-42-checkout-idempotency/测试设计与用例.html",
+      "version": "1.0",
+      "sha": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+    },
+    "dev_notes": {
+      "path": "multica/requirements/KAR-42-checkout-idempotency/开发交付说明.html",
+      "version": "1.0",
+      "sha": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "qa_report": {
+      "path": "multica/requirements/KAR-42-checkout-idempotency/测试验收文档.html",
+      "version": "1.0",
+      "sha": "1111111111111111111111111111111111111111111111111111111111111111"
+    }
+  },
+  "repos": [
+    {
+      "repo_id": "storefront",
+      "remote": "git@github.com:example/storefront.git",
+      "base": "develop",
+      "branch": "feat/KAR-42-checkout-idempotency",
+      "head": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pr": "https://github.com/example/storefront/pull/42",
+      "merge_order": 1,
+      "ci": {
+        "status": "passed",
+        "head": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "url": "https://github.com/example/storefront/actions/runs/123456",
+        "checked_at": "2026-11-05T10:00:00Z"
+      }
+    }
+  ],
+  "candidate": {
+    "digest": "dd31c919574d",
+    "tag": "candidate/KAR-42-dd31c919574d",
+    "frozen_at": "2026-11-05T10:05:00Z"
+  },
+  "gates": {
+    "h1": {
+      "status": "approved",
+      "requested_at": "2026-11-03T08:00:00Z",
+      "approved_by": "decision-owner-user-id",
+      "approver_type": "human",
+      "approved_at": "2026-11-03T09:10:00Z",
+      "rationale": "需求与原型覆盖全部 P0，范围未漂移，验收标准可测。",
+      "conditions": [
+        "导出范围仅限本月，不做历史回填"
+      ],
+      "checks": [
+        {
+          "id": "scope",
+          "result": "pass",
+          "evidence": "需求分析文档 v1.2 §3 AC1–AC6；issue 评论 42-H1"
+        },
+        {
+          "id": "prototype",
+          "result": "pass",
+          "evidence": "交互原型 v1.0，sha cccc…，模式 B，H1 一并批准"
+        },
+        {
+          "id": "evidence",
+          "result": "pass",
+          "evidence": "评审记录 evidence/reports/h1-review.md；无未关闭 S0–S2"
+        }
+      ]
+    },
+    "h2": {
+      "status": "approved",
+      "requested_at": "2026-11-04T02:00:00Z",
+      "approved_by": "decision-owner-user-id",
+      "approver_type": "human",
+      "approved_at": "2026-11-04T03:30:00Z",
+      "rationale": "设计覆盖六个验收点，幂等键与回滚方案明确。",
+      "conditions": [],
+      "checks": [
+        {
+          "id": "design",
+          "result": "pass",
+          "evidence": "方案设计文档 v2.0 §2 覆盖矩阵 FR1–FR6"
+        },
+        {
+          "id": "contract",
+          "result": "pass",
+          "evidence": "方案设计文档 §5 迁移与回滚；无对外契约变化"
+        },
+        {
+          "id": "testability",
+          "result": "pass",
+          "evidence": "测试设计与用例 v1.0；命令 npm test -- checkout"
+        }
+      ]
+    },
+    "h3": {
+      "status": "approved",
+      "requested_at": "2026-11-05T11:00:00Z",
+      "approved_by": "decision-owner-user-id",
+      "approver_type": "human",
+      "approved_at": "2026-11-06T02:00:00Z",
+      "rationale": "候选、A4/A5 与 CI 均绑定同一 SHA，抽样复核无异常。",
+      "conditions": [
+        "S3-12 文案问题记录为技术债，下个迭代处理"
+      ],
+      "candidate_digest": "dd31c919574d",
+      "checks": [
+        {
+          "id": "candidate",
+          "result": "pass",
+          "evidence": "tag candidate/KAR-42-000000000000；manifest check 通过"
+        },
+        {
+          "id": "verdicts",
+          "result": "pass",
+          "evidence": "A4 APPROVE @ bbbb…；A5 PASS；0 个未关闭 S0–S2"
+        },
+        {
+          "id": "ci",
+          "result": "pass",
+          "evidence": "CI run 123456 @ bbbb…；gh pr checks 全绿"
+        }
+      ],
+      "second_reviewer": {
+        "reviewer": "security-reviewer-user-id",
+        "role": "security",
+        "verdict": "pass",
+        "at": "2026-11-05T16:00:00Z"
+      },
+      "sampling": {
+        "rate": 0.1,
+        "population": 3,
+        "sampled": [
+          "h1"
+        ],
+        "reviewed_by": "lead-user-id",
+        "at": "2026-11-06T01:30:00Z",
+        "note": "复核 H1 的 3 项检查与批准记录一致，无发现。"
+      }
+    }
+  },
+  "metrics": {
+    "human_touches": 3,
+    "wait_human": 6.5,
+    "rework_rounds": 1,
+    "candidate_recuts": 2,
+    "escaped_defects": 0,
+    "cycle_time_hours": 42.0,
+    "closed_at": "2026-11-06T02:10:00Z"
+  },
+  "merge_receipts": []
+}

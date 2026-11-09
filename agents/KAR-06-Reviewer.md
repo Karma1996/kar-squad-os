@@ -16,10 +16,12 @@
 - 不因进度放行 BLOCKER/MAJOR；不批准证据不可复现的“本地通过”。
 
 # 工作方式
-1. 先读 H1 需求、H2 设计、A3、开发说明、PR、diff、CI、真实测试输出、原型版本。
-2. 按 `kar-independent-review` 执行；只做 A4。
+1. 先读 H1 需求、H2 设计、A3、开发说明、PR、diff、CI、真实测试输出、原型版本与 manifest。
+2. 先跑 `manifest.py check --profile freeze`，确认 `candidate/<KEY>-<digest>` 与 head 一致；失败即 BLOCKED，不评审旧候选。
+3. 按 `kar-independent-review` 执行；只做 A4；R3 确认 H3 有第二人复核记录。
 3. 完成时发 HANDOFF：stage=review、verdict、head、findings、evidence、residual_risks、recommended_next。
 4. 建议：APPROVE → 候选进入 H3 汇总（QA 并行）；REQUEST_CHANGES → Dev；BLOCKED → Lead 升级人类。
+5. 结论标题绑定 candidate tag + head；late push 或 SHA 变化时旧结论作废。
 
 # 完成定义
-评审绑定明确 head SHA；发现按严重度分级；证据可复现；结论明确。
+评审绑定明确 candidate tag 与 head SHA；发现按严重度分级；证据可复现；结论明确。

@@ -1,8 +1,8 @@
-# KAR Delivery Squad 配置手册 v4.1
+# KAR Delivery Squad 配置手册 v4.2
 
 **状态**：可执行基线  
 **适用**：Multica 工作区中的 8 席 Agent 小队 + 1 个 Squad  
-**迁移包**：`KAR-Squad-Bootstrap-v4.zip`  
+**迁移包**：`KAR-Squad-Bootstrap-v4.2.zip`  
 **配置原则**：流程与项目数据分离；人类只做决定；Agent 做执行与证据；同一支小队覆盖小修、标准需求和大项目。
 
 ---
@@ -29,6 +29,8 @@ KAR Delivery Squad 是一支“人类守门、Agent 交付”的小队。它用�
 | **L3 模板与脚本** | 文档模板、卡片、manifest、bootstrap/verify | 低 |
 
 **L1 不得出现真实仓库名、路径、人名、颜色值；这些只能来自 L2。** 这是“高内聚低耦合、可迁移”的硬约束。
+
+**v4.2 P0 基线**：候选冻结 tag `candidate/<KEY>-<digest>` 与 `manifest check`；每道门 3 项检查 + 一句话理由 + 附条件；每个 issue 5 项指标 + 每周 6 指标摘要；每个 Decision Owner 待决策 ≤2、24h 只提醒一次；`restore.py` 可从备份恢复 Agent/Skill/Squad。
 
 ---
 
@@ -74,7 +76,7 @@ KAR Delivery Squad 是一支“人类守门、Agent 交付”的小队。它用�
 
 ### 2.3 Skill 绑定
 
-v4.1 使用 14 个聚焦 Skill，按角色绑定，避免每个 Agent 加载 8–9 个 Skill：
+小队使用 14 个聚焦 Skill，按角色绑定，避免每个 Agent 加载 8–9 个 Skill：
 
 | Skill | 用途 | 绑定 |
 | --- | --- | --- |
@@ -318,23 +320,27 @@ Intake（Lead 判道）
 - 卡里必须写“谁决定”；没有授权的其他人 `/approve` 不算数。
 - 人名解析用 `workspace member list`，member mention 取 `user_id`；没有权限就请发起人自己分配。
 
-### 4.4 卡片格式：固定 5 行，动作第一行
+### 4.4 卡片格式：固定 8 行，动作第一行
 
 ```text
 🟡 需要你：确认需求基线（v1.2 / a1b2c3）
 谁决定：你（Decision Owner）
 先看：3 分钟摘要 → <链接>；原型 → <链接>
+我检查了：① 范围与验收标准一致 ② 原型版本/SHA 一致 ③ 证据可复现
+理由：需求与原型覆盖全部 P0，范围未漂移
+附条件：无（有则逐条写，批准时一并记录）
 回复：/approve　要改：直接说“把 X 改成 Y”
-不做：停在这里，不会自动通过
+不做：停在这里，不会自动通过；24h 后只提醒一次
 ```
 
 规则：
 
 - 第一行必须是动作，不是背景。
+- “我检查了”对应门禁的 3 项检查；“理由”与“附条件”和 manifest 的 `rationale` / `conditions` 逐字一致。
 - 不出现 H1/H2/H3、A4/A5、manifest digest 这类术语；用“需求确认 / 方案确认 / 验收与合并”。
 - 最多 3 个链接；先给 1 页摘要，不要求读全量。
 - 必须写清：谁决定、绑定哪个版本、不回复会怎样、不会操作怎么办。
-- 一行命令单独一行，手机可直接复制，不放在代码块里。
+- 一行命令单独一行，手机可直接复制，不放在代码块里。3 项检查的固定清单见 `docs/GATES.md`。
 
 ### 4.5 四类卡
 
@@ -344,6 +350,9 @@ Intake（Lead 判道）
 🟡 需要你：确认方案（v2.0 / commit 9f8e7d）
 谁决定：你（Decision Owner）
 先看：1 页摘要 → <链接>；设计文档 → <链接>
+我检查了：① 设计覆盖全部 P0 ② 契约/迁移/回滚已定义 ③ 测试可执行
+理由：设计覆盖六个验收点，幂等键与回滚方案明确
+附条件：无
 回复：/approve　要改：直接说，例如“把重试改成 3 次”
 不做：停在这里，不会自动通过；24h 后我只提醒一次
 ```
@@ -404,6 +413,13 @@ Intake（Lead 判道）
 | `/init` | 1–2 批 | 每批 ≤5 问，答完 `/approve` |
 
 超过上限先检查流程，而不是让人多签几次。
+
+### 4.8 人类 WIP 与 SLA
+
+- 每个 Decision Owner 同时待决策 ≤2；第 3 个起由 Lead 排队，前一张解决后再发。同一个 issue 的多道门也占名额。
+- 24h 未回应只提醒一次，写入 `reminder_sent_at` / `reminder_count: 1`；之后继续等待，不代批、不自动通过。
+- 备份人由 Decision Owner 指定并逐门授权；没有授权时保持等待。
+- 用 `scripts/human_wip.py check --manifests <docs-home>` 盘点排队与提醒；脚本只报告，Lead 执行。详见 `docs/HUMAN-WIP.md`。
 
 ---
 
@@ -739,9 +755,11 @@ Reviewer 必须：
 
 ### 9.4 Manifest 最小结构
 
+v4.2 起 `version: 2`；候选冻结/校验命令与字段说明见 `docs/MANIFEST.md`，门的 3 项检查见 `docs/GATES.md`。
+
 ```json
 {
-  "version": 1,
+  "version": 2,
   "change_set_id": "KAR-9",
   "issue": "KAR-9",
   "slug": "checkout-idempotency",
@@ -763,19 +781,27 @@ Reviewer 必须：
   "repos": [
     {
       "repo_id": "...",
+      "remote": "...",
       "base": "develop",
       "branch": "feat/KAR-9-checkout-idempotency/payment",
-      "head": "...",
-      "pr": "...",
-      "merge_order": 1
+      "head": "<40 hex>",
+      "pr": "https://.../pull/9",
+      "merge_order": 1,
+      "ci": {"status": "passed", "head": "<same 40 hex>", "url": "...", "checked_at": "..."}
     }
   ],
-  "candidate": {"digest": "...", "frozen_at": "..."},
+  "candidate": {"digest": "<12 hex>", "tag": "candidate/KAR-9-<digest>", "frozen_at": "..."},
   "gates": {
-    "h1": {"approved_by": "...", "approved_at": "..."},
-    "h2": {"approved_by": "...", "approved_at": "..."},
-    "h3": {"approved_by": "...", "approved_at": "..."}
+    "h1": {"status": "approved", "approved_by": "...", "approver_type": "human", "approved_at": "...",
+            "rationale": "一句话理由", "conditions": [],
+            "checks": [{"id": "scope", "result": "pass", "evidence": "..."}, {"id": "prototype", "result": "pass", "evidence": "..."}, {"id": "evidence", "result": "pass", "evidence": "..."}]},
+    "h2": {"status": "approved", "checks": [{"id": "design"}, {"id": "contract"}, {"id": "testability"}]},
+    "h3": {"status": "approved", "candidate_digest": "<digest>",
+            "checks": [{"id": "candidate"}, {"id": "verdicts"}, {"id": "ci"}],
+            "second_reviewer": {"reviewer": "...", "role": "security", "verdict": "pass", "at": "..."},
+            "sampling": {"rate": 0.1, "population": 3, "sampled": ["h1"], "reviewed_by": "...", "at": "...", "note": "无发现"}}
   },
+  "metrics": {"human_touches": 3, "wait_human": 6.5, "rework_rounds": 1, "candidate_recuts": 0, "escaped_defects": 0, "cycle_time_hours": 42.0, "closed_at": "..."},
   "merge_receipts": []
 }
 ```
@@ -877,8 +903,9 @@ recommended_next: {agent + reason}
 ### 11.3 漂移检查
 
 - bootstrap 提供 `verify.py`：对比部署态与包的 skills/agents/squad/绑定/并发/Skill 文件/模板 hash/Squad 指令。
+- `restore.py` 从 `backups/backup-<stamp>.json` 恢复技能/Agent/Squad；先 dry-run，再 `--apply`，最后 `verify.py`。
 - 任何配置变更后必须跑 verify；不一致就不算完成。
-- 配置仓必须有版本 tag；每次变更可回滚。
+- 配置仓必须有版本 tag；每次变更可回滚。详见 `docs/BACKUP-RESTORE.md`。
 
 ### 11.4 复盘按需
 
@@ -895,15 +922,20 @@ recommended_next: {agent + reason}
 
 | 指标 | 说明 |
 | --- | --- |
-| 人类决策次数/需求 | Quick 1、Standard 3、Program 4–5 |
-| cycle time | 受理到 H3 |
-| 并行工作流数 | Program 实际并行 |
-| 返工轮次 | 退回次数 |
-| 逃逸缺陷 | H3 后发现 |
-| WIP 排队时长 | 等待派发/合并 |
-| 人类卡片一次完成率 | 不需要追问即可完成 |
+每个 issue 在 `delivery-manifest.json` 的 `metrics` 记录 5 项，每周汇总 6 项：
 
-先采基线，再优化；避免“感觉变快了”。
+| 指标 | 说明 | 周汇总 |
+| --- | --- | --- |
+| `human_touches` | 人类决策次数/需求（Quick 1、Standard 3、Program 4–5） | 求和 |
+| `wait_human` | 人类等待时长（小时） | 平均 |
+| `rework_rounds` | 返工轮次 | 求和 |
+| `candidate_recuts` | 候选重切次数 | 求和 |
+| `escaped_defects` | H3 后发现的逃逸缺陷 | 求和 |
+| `cycle_time_hours` | 受理到 H3 | 平均 |
+
+- 每周一份摘要：`python3 scripts/metrics.py report --manifests <docs-home>`。
+- 先采 2 周基线，`baseline.ready` 为真后再用指标做优化决策；避免“感觉变快了”。
+- 指标缺失用 `--strict` 显式失败，不用 0 掩盖。定义与计数规则见 `docs/METRICS.md`。
 
 ### 11.6 安全与提示注入
 
@@ -918,11 +950,11 @@ recommended_next: {agent + reason}
 ### 12.1 包内容
 
 ```text
-KAR-Squad-Bootstrap-v4.1/
+KAR-Squad-Bootstrap-v4.2/
 ├── README.md
 ├── VERSION
 ├── manifest.json
-├── config/KAR-Squad-Config-v4.1.md
+├── config/KAR-Squad-Config-v4.2.md
 ├── agents/ (8)
 ├── skills/ (14)
 │   ├── kar-squad-profile/ (SKILL.md, squad.json, templates/, scripts/)
@@ -930,6 +962,12 @@ KAR-Squad-Bootstrap-v4.1/
 ├── squad/KAR-Delivery-Squad.json
 ├── scripts/bootstrap.py
 ├── scripts/verify.py
+├── scripts/restore.py
+├── scripts/manifest.py
+├── scripts/metrics.py
+├── scripts/human_wip.py
+├── scripts/kar_common.py
+├── docs/ (GATES/MANIFEST/METRICS/HUMAN-WIP/BACKUP-RESTORE)
 ├── agents.json
 ├── skills.json
 ├── bootstrap.json
@@ -946,7 +984,7 @@ KAR-Squad-Bootstrap-v4.1/
 ### 12.3 命令
 
 ```bash
-cd KAR-Squad-Bootstrap-v4.1
+cd KAR-Squad-Bootstrap-v4.2
 
 export MULTICA_CLI_PATH="/path/to/multica"
 export MULTICA_WORKSPACE_ID="<workspace-uuid>"
@@ -956,6 +994,8 @@ export KAR_QA_RUNTIME_ID="<qa-runtime-id>"   # 可同 core
 python3 scripts/bootstrap.py --dry-run       # 先看将创建/更新什么
 python3 scripts/bootstrap.py --apply --update
 python3 scripts/verify.py
+# 需要回滚时：
+# python3 scripts/restore.py --backup backups/backup-<stamp>.json --workspace-id "$MULTICA_WORKSPACE_ID" --apply
 ```
 
 - 脚本只创建/更新 Skill、Agent、Squad 与成员；不创建项目、仓库、分支保护、密钥。
@@ -975,9 +1015,9 @@ python3 scripts/verify.py
 
 ### 12.5 回滚
 
-- 每次 `--apply` 前写 `backups/backup-<timestamp>.json`（当前 agents/skills/squad 快照；`skill get --with-content` 含 Skill 文件）。
-- 回滚：按备份中的 instructions/description/max/skills 逐项写回；或重新部署旧包。
-- 不提供自动删除；删除/归档由人类确认后执行。
+- 每次 `--apply` 前写 `backups/backup-<timestamp>.json`（当前 agents/skills/squad 快照；含 Skill 文件内容）。
+- 回滚：`scripts/restore.py --backup <snapshot> --workspace-id <id> --apply`，再跑 `verify.py`；或重新部署旧包。
+- 不提供自动删除；删除/归档由人类确认后执行。详见 `docs/BACKUP-RESTORE.md`。
 
 ---
 
@@ -985,11 +1025,12 @@ python3 scripts/verify.py
 
 ### A. 门禁卡速查
 
-- 需求确认：`/approve`；绑定需求 v + 原型 v/SHA。
-- 方案确认：`/approve`；绑定设计 v + 原型覆盖矩阵。
-- 验收与合并：`/approve`；绑定 candidate manifest digest + 各仓 SHA。
+- 需求确认：`/approve`；绑定需求 v + 原型 v/SHA；3 项检查 `scope/prototype/evidence`。
+- 方案确认：`/approve`；绑定设计 v + 原型覆盖矩阵；3 项检查 `design/contract/testability`。
+- 验收与合并：`/approve`；绑定 `candidate/<KEY>-<digest>` + 各仓 SHA；3 项检查 `candidate/verdicts/ci`。
 - 拆分方案：`/approve`；绑定 SPLIT PLAN 版本。
-- 不回复 = 等待；24h 提醒一次；不代批。
+- R3：H3 增加第二人复核记录；H3 前 10% 门禁抽样（至少 1 道）写入 `gates.h3.sampling`。
+- 不回复 = 等待；24h 只提醒一次；不代批。
 
 ### B. SPLIT PLAN 模板
 
@@ -1027,6 +1068,7 @@ SPLIT PLAN v1 — {PARENT_KEY}
 
 | 版本 | 状态 | 说明 |
 | --- | --- | --- |
-| 4.1.0 | 当前 | 小队自带模板与默认配置；项目描述薄覆盖层；新增 kar-squad-profile / kar-doc-template |
+| 4.2.0 | 当前 | v4.2 P0：候选冻结 tag + manifest check、审批清单（3 项检查/rationale/conditions/R3 第二人/H3 抽样）、5+1 指标与周摘要、人类 WIP/SLA、restore.py |
+| 4.1.0 | 上一版 | 小队自带模板与默认配置；项目描述薄覆盖层；新增 kar-squad-profile / kar-doc-template |
 
 **本手册是完整基线，不依赖旧版本；项目描述只写覆盖层，共性配置由 `kar-squad-profile` 提供。**

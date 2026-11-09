@@ -1,7 +1,7 @@
 # 目的
 这是 KAR Delivery Squad 的共同操作系统。所有 Agent 在每次运行时先加载本 Skill，再按角色加载各自的阶段 Skill。
 
-# 不可协商的十条
+# 不可协商的十一条
 
 1. **质量是门禁**：测试失败、证据不足、S0–S2 未关闭，不得放行；退回最小必要阶段或 blocked。
 2. **生产者不给自己发合格证**：实现者不能批准自己的代码；Reviewer/QA 独立。
@@ -12,7 +12,7 @@
 7. **main 由人类掌握**：Agent 只合 develop；main 只由人类发布；不 force push、不删除测试、不跳过 CI。
 8. **按需拆分**：没有并行收益就不拆子 issue；拆分只在门边界，先计划后创建。
 9. **配置零项目常量**：仓库、路径、人名、颜色值只来自项目事实；Skill/指令里不得写死。
-10. **人类交互一张卡**：每次只让人类做一个动作；动作第一行、绑定版本、可复制的一行、不做的后果。
+10. **人类交互一张卡**：每次只让人类做一个动作；动作第一行、绑定版本、可复制的一行、不做的后果。同一 Decision Owner 同时待决策 ≤2，超出排队。
 
 # 配置解析顺序
 
@@ -58,6 +58,7 @@
 - Quick：`fix/{KEY}-{SLUG}`；Standard：`feat/{KEY}-{SLUG}`；Program 父级：`feat/{PARENT_KEY}-{SLUG}`；Program 子级：`feat/{PARENT_KEY}-{SLUG}/{FEATURE_SLUG}`。
 - 同一 workstream 跨仓同名；文档目录按父 key；一个父级 manifest。
 - commit trailer：`Change-Set: {PARENT_KEY}`、`Workstream: {slug}`、`Sub-Issue: {CHILD_KEY}`。
+- A4/A5/H3 绑定 `candidate/<KEY>-<digest>`；文档 SHA、原型 SHA 或任一仓 head 变化即失效，重跑受影响验证并重新 freeze，不用旧结论覆盖新 SHA。
 
 # 原型锁定
 

@@ -6,7 +6,9 @@ A4 候选冻结；开发完成并提交 HANDOFF。
 
 # 一、输入
 
-H1 需求、H2 设计、A3、开发交付说明、PR/diff、CI、真实测试输出、已批准原型版本/SHA、SC 映射。
+H1 需求、H2 设计、A3、开发交付说明、PR/diff、CI、真实测试输出、已批准原型版本/SHA、SC 映射、`candidate/<KEY>-<digest>` 与 manifest。
+
+开工先跑 `scripts/manifest.py check --profile freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path>`；失败（LATE PUSH/STALE/CI 未过）直接 BLOCKED，不评审旧候选。
 
 # 二、评审轴
 
@@ -21,7 +23,7 @@ H. **独立验证**：在只读/独立 worktree 运行受影响测试与关键�
 
 # 三、结论
 
-`REVIEW — {ISSUE_KEY} @ {head SHA}`
+`REVIEW — {ISSUE_KEY} @ candidate/<KEY>-<digest>（head SHA）`
 
 - `APPROVE`：A4 通过，候选进入 H3 汇总；QA 仍在并行，不等待你。
 - `REQUEST_CHANGES`：附最小修复清单，退回 Dev。
@@ -43,6 +45,8 @@ H. **独立验证**：在只读/独立 worktree 运行受影响测试与关键�
 - 秘密、后门、生产数据、越权：BLOCKED，立即升级 Lead 与人类。
 - 分支不是 canonical，或存在未说明的额外分支：REQUEST_CHANGES。
 - 证据不可复现或 CI 未运行：REQUEST_CHANGES，不批准“本地通过”。
+- 候选 tag/digest 与当前 head 不一致（late push、文档/原型 SHA 变化）：BLOCKED，旧结论作废，等待重新 freeze；不得把旧 A4 套到新 SHA。
+- `risk: R3` 时确认 H3 有 `second_reviewer` 记录；没有则退回 Lead。
 
 # 五、交接
 

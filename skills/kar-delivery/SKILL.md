@@ -52,10 +52,19 @@ A3 就绪；工作道 Standard/Program 的开发阶段；Quick 的修复阶段�
 - 开发交付说明：范围对照、变更文件、测试矩阵、覆盖率与缺口、迁移/配置、部署/回滚、已知问题、Reviewer 指南、证据索引、变更记录。
 - PR 与文档指向同一 head SHA；CI 通过。
 
-# 七、候选与交接
+# 七、候选冻结与交接
 
-- A4 候选：范围内 FR 已实现；P0/P1 通过；lint/typecheck/unit/integration/build/acceptance 全绿；CI 通过；无 secrets/无越权/无禁用测试；未解决问题显式记录。
-- HANDOFF：stage=build、branch/head、pr、artifacts、tests、coverage、prototype、risks、open_questions、recommended_next。
+A4 候选条件：范围内 FR 已实现；P0/P1 通过；lint/typecheck/unit/integration/build/acceptance 全绿；CI 通过；无 secrets/无越权/无禁用测试；未解决问题显式记录。
+
+冻结步骤：
+
+1. 写 `delivery-manifest.json`：docs 的 path/version/sha、各仓 base/branch/head/pr、ci（status/head/url/checked_at）、`decision_owner`。
+2. `python3 scripts/manifest.py freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path> --write`；失败先修，不 handoff。
+3. `python3 scripts/manifest.py check --profile freeze ...`；把 `candidate/<KEY>-<digest>`、命令与退出码写进开发说明与 HANDOFF。
+4. push 后若 head、文档 SHA 或原型 SHA 变化：旧 tag 作废，重跑受影响测试并重新 freeze；不修改旧 manifest 的 head 来“对齐”。
+
+- HANDOFF：stage=build、branch/head、candidate tag/digest、pr、artifacts、tests、coverage、prototype、metrics、risks、open_questions、recommended_next。
+- 在 `metrics` 记录 5 项指标（human_touches / wait_human / rework_rounds / candidate_recuts / escaped_defects）；周摘要见 `docs/METRICS.md`。
 - 建议下一步 Reviewer（A4）与 QA（A5）并行；不自行批准、不合并、不部署生产。
 
 # 八、禁止

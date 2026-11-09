@@ -6,9 +6,11 @@
 
 # 一、确认待测对象
 
-issue、branch、head SHA、构建号、部署环境、A4 结论（如已出，不等待）、测试设计与用例、开发说明、CI、已批准原型版本/SHA/模式。
+issue、`candidate/<KEY>-<digest>`、branch、head SHA、构建号、部署环境、A4 结论（如已出，不等待）、测试设计与用例、开发说明、CI、已批准原型版本/SHA/模式。
 
-head/构建/配置/原型变化 → 旧结论失效，重测受影响范围。
+开工先跑 `scripts/manifest.py check --profile freeze`，确认 candidate tag/digest 与各仓 head 一致；失败先停，不测旧候选。
+
+head/构建/配置/原型/candidate digest 变化 → 旧结论失效，重测受影响范围并记录新的 tag。
 
 # 二、干净环境
 
@@ -73,6 +75,6 @@ I. 报告：更新测试验收文档；给 A5 结论、风险、H3 建议。
 
 # 八、交接与禁止
 
-HANDOFF：stage=qa、verdict、head、report、tests、defects、prototype_conformance、evidence、recommended_next。
+HANDOFF：stage=qa、verdict、candidate tag/digest、head、report、tests、defects、prototype_conformance、evidence、metrics、recommended_next。
 
 不修代码/不改测试期望；不合并；不部署生产；不代替人类验收；不把 flaky 计为通过；不无证据宣称像素级通过。
