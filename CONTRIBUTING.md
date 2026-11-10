@@ -19,7 +19,7 @@ KAR Squad OS 由人类与 Agent 协作维护。原则：**人类做决定，Agen
    make test
    make check
    ```
-   涉及候选/门禁时另跑 `python3 scripts/manifest.py check --manifest docs/examples/delivery-manifest.json --profile draft`；实际交付用 `--profile freeze|h3`。
+   涉及候选/门禁时另跑 `python3 scripts/manifest.py check --manifest docs/examples/delivery-manifest.json --profile draft` 与 `python3 scripts/policy.py check --manifest docs/examples/delivery-manifest.json --profile h3`；实际交付用 `--profile freeze|h3`。
 5. **PR**：描述含变更、影响、测试、迁移、回滚；CI 必须绿。
 6. **人类评审**：看 diff、配置手册、测试与迁移影响；Approve 后 squash merge。
 7. **发布**：打 tag `vX.Y.Z`；`make build`；把 `release/KAR-Squad-Bootstrap-vX.Y.Z.zip` 附到 issue。
@@ -35,7 +35,7 @@ KAR Squad OS 由人类与 Agent 协作维护。原则：**人类做决定，Agen
 - 如何验证？如何回滚？
 - 是否改变人类动作数、门禁或质量底线？
 - 是否需要同步更新 `config/KAR-Squad-Config-vX.Y.md` 与 `CHANGELOG.md`？
-- 是否改变候选冻结、门禁检查（3 项）、指标字段或人类 WIP/SLA？改了要同步 `docs/` 与脚本测试。
+- 是否改变候选冻结、门禁检查（3 项）、指标字段、人类 WIP/SLA、产物矩阵、R3 安全 overlay、草稿/steer 或接触点预算？改了要同步 `docs/`（含 `ARTIFACTS/SECURITY-OVERLAY/CHECKPOINT-STEER/LEAD-TOUCHPOINTS`）与脚本测试。
 
 ## 质量底线
 

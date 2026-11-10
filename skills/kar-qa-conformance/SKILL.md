@@ -25,6 +25,7 @@ B. 验收：逐条 P0/P1；记录实际结果与证据。
 C. 功能/边界：正常、异常、边界、权限、状态、并发、幂等、迁移。
 D. 回归：受影响模块 + 核心回归集。
 E. 非功能：按设计阈值执行性能、安全、兼容性、可访问性；记录测量方法与环境。
+E2. R3：核对 `security_overlay`；确认密钥/依赖扫描真实执行且 findings=0；亲自或复核回滚演练，记录耗时、数据恢复结果与证据；按权限矩阵逐条执行越权测试。
 F. 探索式：30–60 分钟；关注用例之外的真实风险。
 G. 原型一致性：见下。
 H. 缺陷：复现、分级、记录最小步骤与实际/期望；一个缺陷一条评论。
@@ -75,6 +76,6 @@ I. 报告：更新测试验收文档；给 A5 结论、风险、H3 建议。
 
 # 八、交接与禁止
 
-HANDOFF：stage=qa、verdict、candidate tag/digest、head、report、tests、defects、prototype_conformance、evidence、metrics、recommended_next。
+HANDOFF：stage=qa、verdict、candidate tag/digest、head、report、tests、defects、prototype_conformance、security_overlay（R3：扫描/回滚/越权证据）、evidence、metrics、recommended_next。
 
-不修代码/不改测试期望；不合并；不部署生产；不代替人类验收；不把 flaky 计为通过；不无证据宣称像素级通过。
+不修代码/不改测试期望；不合并；不部署生产；不代替人类验收；不把 flaky 计为通过；不无证据宣称像素级通过；不把“写了回滚步骤”当演练通过。

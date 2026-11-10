@@ -30,10 +30,10 @@ def check() -> int:
     bootstrap = load(ROOT / "bootstrap.json")
     if bootstrap.get("version") != version:
         errors.append(f"bootstrap.json version {bootstrap.get('version')} != VERSION {version}")
-    if bootstrap.get("config") != "config/KAR-Squad-Config-v4.2.md":
-        errors.append("bootstrap.json config path is not v4.2")
-    if not (ROOT / "config/KAR-Squad-Config-v4.2.md").exists():
-        errors.append("missing config/KAR-Squad-Config-v4.2.md")
+    if bootstrap.get("config") != "config/KAR-Squad-Config-v4.3.md":
+        errors.append("bootstrap.json config path is not v4.3")
+    if not (ROOT / "config/KAR-Squad-Config-v4.3.md").exists():
+        errors.append("missing config/KAR-Squad-Config-v4.3.md")
     profile = load(ROOT / "skills/kar-squad-profile/squad.json")
     if profile.get("version") != version:
         errors.append(f"kar-squad-profile version {profile.get('version')} != VERSION {version}")
@@ -43,11 +43,15 @@ def check() -> int:
         "docs/METRICS.md",
         "docs/HUMAN-WIP.md",
         "docs/BACKUP-RESTORE.md",
+        "docs/ARTIFACTS.md",
+        "docs/SECURITY-OVERLAY.md",
+        "docs/CHECKPOINT-STEER.md",
+        "docs/LEAD-TOUCHPOINTS.md",
         "docs/examples/delivery-manifest.json",
     ):
         if not (ROOT / name).exists():
-            errors.append(f"missing v4.2 doc: {name}")
-    for name in ("restore.py", "manifest.py", "metrics.py", "human_wip.py", "kar_common.py"):
+            errors.append(f"missing v4.3 doc: {name}")
+    for name in ("restore.py", "manifest.py", "metrics.py", "human_wip.py", "policy.py", "kar_common.py"):
         if not (ROOT / "scripts" / name).exists():
             errors.append(f"missing script: {name}")
 
@@ -145,7 +149,7 @@ def build() -> int:
             shutil.copy2(src, dst)
         else:
             print(f"WARN: missing release item: {item}")
-    for script in ("bootstrap.py", "verify.py", "restore.py", "manifest.py", "metrics.py", "human_wip.py", "kar_common.py"):
+    for script in ("bootstrap.py", "verify.py", "restore.py", "manifest.py", "metrics.py", "human_wip.py", "policy.py", "kar_common.py"):
         src = ROOT / "scripts" / script
         dst = target / "scripts" / script
         dst.parent.mkdir(parents=True, exist_ok=True)

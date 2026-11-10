@@ -204,6 +204,36 @@ class ManifestH3Test(unittest.TestCase):
             "escaped_defects": 0,
             "cycle_time_hours": 30,
         }
+        self.manifest["lane"] = "standard"
+        self.manifest["artifacts"] = [
+            {"kind": "requirements", "ref": "requirements.html"},
+            {"kind": "design", "ref": "design.html"},
+            {"kind": "test_design", "ref": "test_design.html"},
+        ]
+        self.manifest["checkpoints"] = {
+            "h1_draft": {
+                "published_at": "2026-10-31T23:30:00Z",
+                "review_window_minutes": 10,
+                "reviewers": ["user-1"],
+                "outcome": "unchanged",
+                "steer_ids": [],
+            },
+            "h2_draft": {
+                "published_at": "2026-10-31T23:40:00Z",
+                "review_window_minutes": 10,
+                "reviewers": ["user-1"],
+                "outcome": "unchanged",
+                "steer_ids": [],
+            },
+        }
+        self.manifest["steers"] = []
+        self.manifest["touchpoints"] = [
+            {"kind": "intake", "at": "2026-10-31T23:00:00Z", "actor": "user-1"},
+            {"kind": "contract", "at": "2026-10-31T23:15:00Z", "actor": "user-1"},
+            {"kind": "gates", "gate": "h1", "at": "2026-11-01T00:00:00Z", "actor": "user-1"},
+            {"kind": "gates", "gate": "h2", "at": "2026-11-01T00:00:00Z", "actor": "user-1"},
+            {"kind": "gates", "gate": "h3", "at": "2026-11-01T00:00:00Z", "actor": "user-1"},
+        ]
         self.write(self.manifest)
 
     def tearDown(self):
@@ -241,17 +271,42 @@ class ManifestH3Test(unittest.TestCase):
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("must be human", proc.stdout)
 
-    def test_r3_requires_second_reviewer(self):
+    def test_r3_requires_second_reviewer_and_security_overlay(self):
         data = copy.deepcopy(self.manifest)
         data["risk"] = "R3"
         proc = self.check(data)
         self.assertNotEqual(proc.returncode, 0)
         self.assertIn("second_reviewer", proc.stdout)
+        self.assertIn("security_overlay", proc.stdout)
         data["gates"]["h3"]["second_reviewer"] = {
             "reviewer": "user-3",
             "role": "security",
             "verdict": "pass",
             "at": "2026-11-02T02:00:00Z",
+        }
+        data["artifacts"] = [
+            {"kind": "requirements", "ref": "requirements.html"},
+            {"kind": "prototype", "ref": "prototype.html"},
+            {"kind": "design", "ref": "design.html"},
+            {"kind": "test_design", "ref": "test_design.html"},
+            {"kind": "dev_notes", "ref": "dev_notes.html"},
+            {"kind": "qa_report", "ref": "qa_report.html"},
+            {"kind": "security_overlay", "ref": "threat-model.html"},
+        ]
+        data["security_overlay"] = {
+            "threat_model": {"path": "threat-model.html", "version": "1.0", "sha": "a" * 64},
+            "permission_matrix": {"path": "permissions.html", "version": "1.0", "sha": "b" * 64},
+            "secret_scan": {"tool": "gitleaks", "status": "passed", "findings": 0, "at": "2026-11-01T00:00:00Z"},
+            "dependency_scan": {"tool": "osv-scanner", "status": "passed", "findings": 0, "at": "2026-11-01T00:00:00Z"},
+            "rollback_drill": {"at": "2026-11-01T00:00:00Z", "result": "passed", "evidence": "evidence/drill.md"},
+            "reviewer": {
+                "id": "user-3",
+                "role": "security",
+                "independent": True,
+                "verdict": "pass",
+                "at": "2026-11-01T00:30:00Z",
+                "scope": "authz, secrets, rollback",
+            },
         }
         proc = self.check(data)
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)

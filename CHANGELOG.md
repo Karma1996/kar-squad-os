@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.3.0
+
+- 新增 R3 安全 overlay：威胁模型、权限矩阵、密钥与依赖扫描、回滚演练、独立安全评审人；H3 第二人与 overlay 评审人强制为同一人（`security_overlay.reviewer`）。
+- 新增风险分级产物矩阵：R0/R1 ≤3、R2 三份、R3 全量、Program 子级 1–2；manifest 用 `artifacts` 记录，`policy.py` 校验。
+- 新增草稿 checkpoint + 中途 steer：H1/H2 草稿提前 ≥10 分钟发布，纠偏写入 `steers` 决策台账并绑定文档版本（`checkpoints` / `steers`）。
+- 新增 Lead 接触点预算：只允许 intake/契约/门禁/集成/合并/异常六类，预算与 gate 记录写入 `touchpoints`。
+- 新增 `scripts/policy.py`：可独立或随 `manifest.py check --profile h3` 运行，覆盖以上四类治理规则。
+- Quickstart 压缩为 1 页并增加 `/tour` 五步只读导览；配置手册升为 v4.3，Skills/Agents/Squad 同步。
+- 测试：新增 `tests/test_policy.py`（产物矩阵/安全 overlay/checkpoint/steer/接触点），manifest H3 用例补治理块；`make check` 校验示例 manifest 的 v4.3 策略。
+
 ## 4.2.0
 
 - 新增候选冻结：`scripts/manifest.py freeze/digest/check`；A4/A5 绑定 `candidate/<KEY>-<digest>`，late push 或文档 SHA 变化使结论失效。

@@ -23,6 +23,10 @@
         ├── 测试设计与用例.html
         ├── 开发交付说明.html
         ├── 测试验收文档.html
+        ├── 威胁模型.html            # R3 必填
+        ├── 权限矩阵.html            # R3 必填
+        ├── 安全扫描报告.html        # R3 必填；密钥 + 依赖
+        ├── 回滚演练记录.html        # R3 必填
         ├── 复盘分析文档.html
         ├── delivery-manifest.json
         ├── assets/{diagrams,screenshots,samples,prototype}/
@@ -50,6 +54,8 @@
 7. 复盘分析文档.html（按需；Retro；不做时不创建）
 8. delivery-manifest.json（Lead 维护）
 
+产物数量按风险分级封顶，不靠多写文档换安全感：R0/R1 ≤3、R2 三份（需求/设计/测试设计）、R3 全量 + 安全 overlay、Program 子级 1–2。写入 manifest `artifacts`，详见 `docs/ARTIFACTS.md`。
+
 # 四、模板（小队所有）
 
 - 模板来自 `kar-doc-template` Skill；**不要向项目要模板路径**。
@@ -71,8 +77,10 @@ python3 scripts/manifest.py digest --manifest <path>/delivery-manifest.json --wr
 python3 scripts/manifest.py freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path> --write
 # A4/A5 校验
 python3 scripts/manifest.py check --profile freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path>
-# H3 校验（含门禁、R3 第二人、10% 抽样、指标）
+# H3 校验（含门禁、R3 第二人、10% 抽样、指标、v4.3 治理块）
 python3 scripts/manifest.py check --profile h3 --manifest <path> --docs-root <docs-home> --repo-root <id>=<path> --check-remotes --check-prs --check-ci
+# 只跑 v4.3 治理策略（产物矩阵/安全 overlay/草稿/steer/接触点）
+python3 scripts/policy.py check --manifest <path> --profile h3
 ```
 
 digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/prototype/design/test_design/dev_notes` 的 version+sha + 各仓 `repo_id/base/branch/head`；SHA-256 取前 12 位。`qa_report` 变化不重切候选。
@@ -108,6 +116,12 @@ digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/pro
            "sampling": {"rate": 0.1, "population": 3, "sampled": ["h1"], "reviewed_by": "...", "at": "...", "note": "无发现"}}
   },
   "metrics": {"human_touches": 3, "wait_human": 6.5, "rework_rounds": 1, "candidate_recuts": 0, "escaped_defects": 0},
+  "lane": "standard",
+  "artifacts": [{"kind": "requirements", "ref": "...", "version": "1.2"}],
+  "security_overlay": {"threat_model": {}, "permission_matrix": {}, "secret_scan": {}, "dependency_scan": {}, "rollback_drill": {}, "reviewer": {}},
+  "checkpoints": {"h1_draft": {"published_at": "...", "review_window_minutes": 10, "reviewers": ["..."], "outcome": "unchanged", "steer_ids": []}},
+  "steers": [],
+  "touchpoints": [{"kind": "intake", "at": "...", "actor": "..."}],
   "merge_receipts": []
 }
 ```
@@ -118,6 +132,10 @@ digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/pro
 - 每道门固定 3 项检查 + `rationale` + `conditions`；只有人类能批准，`approver_type` 必须是 `human`。清单见 `docs/GATES.md`。
 - R3 记录 `gates.h3.second_reviewer`；H3 记录 10% 抽样 `gates.h3.sampling`（至少 1 道门）。
 - 每个 issue 在 `metrics` 记录 5 项：`human_touches / wait_human / rework_rounds / candidate_recuts / escaped_defects`；周摘要用 `scripts/metrics.py`。定义见 `docs/METRICS.md`。
+- `artifacts` 按风险分级记录正式产物（见 `docs/ARTIFACTS.md`）；R2 三份、R3 全量 + 安全 overlay，超出或不足都会被 H3 拒绝。
+- R3 写 `security_overlay`：威胁模型/权限矩阵/扫描/回滚演练/独立评审人；评审人必须同时是 `gates.h3.second_reviewer`。见 `docs/SECURITY-OVERLAY.md`。
+- H1/H2 发卡前先发草稿 ≥10 分钟，写 `checkpoints`；纠偏写 `steers` 决策台账。见 `docs/CHECKPOINT-STEER.md`。
+- `touchpoints` 只允许 intake/契约/门禁/集成/合并/异常六类，超出预算 H3 FAIL。见 `docs/LEAD-TOUCHPOINTS.md`。
 - 文档 SHA、原型 SHA 或任一仓 head 变化 → digest 变化，A4/A5/H3 旧结论失效；late push 必须重切，不能改旧结论。
 - 完整示例：`docs/examples/delivery-manifest.json`；字段与命令：`docs/MANIFEST.md`。
 

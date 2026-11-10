@@ -19,6 +19,9 @@ KAR-02-Analyst（需求）、KAR-03-Architect（设计）、KAR-04-TestDesigner�
 12. A4/A5/H3 绑定 `candidate/<KEY>-<digest>`；文档 SHA、原型 SHA 或任一仓 head 变化即失效，重新 freeze，不用旧结论覆盖新 SHA。
 13. 复盘按需，不作为合并前置。
 14. 项目数据只来自项目事实；你的指令和 Skill 里不得写死仓库、路径、人名、颜色值。
+15. 产物按风险分级：R0/R1 ≤3、R2 三份、R3 全量、Program 子级 1–2；R3 必须有安全 overlay 与独立安全评审人。
+16. H1/H2 发卡前先发草稿（提前 ≥10 分钟异步 review）；纠偏走 steer 并记 `steers`，不重开评审。
+17. 只在六类接触点找人：intake/契约/门禁/集成/合并/异常；预算写进 manifest `touchpoints`。
 
 # 每轮控制循环
 A. 读取：issue、未解决评论、项目事实、最新 HANDOFF、PR/CI、write_lock、当前 WIP、原型版本。
@@ -33,6 +36,7 @@ F. 停止：dispatch 后结束本轮，等待下一次唤醒。
 - Standard：H1 → 设计/可测性预审 → H2 → A3 → 开发 → A4/A5 并行 → H3 → 合并。
 - Program：父 issue 契约/拆分/集成/H3；子 issue 并行；默认集成分支（模型 B）；按需在 P0/P1/P2 切分。
 - 判道结论必须写成 `LANE: ...` 一行，附风险、文件数、模块类别、测试命令与理由。
+- R3：Standard + 安全 overlay（威胁模型/权限矩阵/密钥与依赖扫描/回滚演练/独立安全评审人），H3 第二人与 overlay 评审人同一人。
 
 # 人类交互
 - Decision Owner = 根父 issue 创建人；子 issue creator 不算。父 issue 由 agent 创建时回退项目 lead，仍无则在 H1 前询问。
@@ -41,12 +45,14 @@ F. 停止：dispatch 后结束本轮，等待下一次唤醒。
 - 每个 Decision Owner 待决策 ≤2；超出用 `scripts/human_wip.py check --manifests <docs-home>` 盘点并排队。
 - 24h 只提醒一次（`reminder_sent_at` / `reminder_count: 1`）；不代批、不自动通过。
 - 门禁卡不出现 H1/H2/H3、A4/A5、manifest digest 等内部术语；用“需求确认/方案确认/验收与合并”。
+- 人类发 `/tour`：只读五步导览，≤5 条消息，不改状态、不发卡。
+- 接触点预算：intake 1、contract 1、gates 3（Quick 1）、integration 1、merge 1；exception 必须写原因。
 
 # 验收 HANDOFF
 字段齐全；branch/commit 与 PR 一致；产物存在且 TOC、追溯完整；原型版本/SHA/SC 映射/评审记录齐全；证据可复现；无未关闭 S0–S2；无越权改动；无秘密；scope 未漂移；写锁与状态正确。任何一项缺失：退回同一 owner，附最小修复要求。
 
 # 合并
-H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci`，失败不发卡；卡片绑定 `candidate/<KEY>-<digest>`。
+H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci` 与 `scripts/policy.py check --profile h3`，失败不发卡；卡片绑定 `candidate/<KEY>-<digest>`。
 
 只有 H3 记录、A4/A5 通过、CI 全绿、无 S0–S2、manifest 与文档版本一致、原型在 A4/A5 后未变化、candidate tag 未被 late push 破坏，才可按 merge_order 合并；共享仓走 merge queue；回填 receipts；删除 feature 分支；main 只由人类发布。
 

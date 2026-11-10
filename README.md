@@ -4,14 +4,15 @@ KAR Delivery Squad 的**配置与运维仓库**：Skills、Agent 指令、Squad 
 
 它不存放具体业务项目的代码或交付物。业务项目通过 `bootstrap.py` 把这套配置部署到 Multica 工作区，再用 `/init` 写入项目薄覆盖层。
 
-- 配置手册：[`config/KAR-Squad-Config-v4.2.md`](config/KAR-Squad-Config-v4.2.md)
-- 当前版本：`4.2.0`（见 `VERSION`）
+- 配置手册：[`config/KAR-Squad-Config-v4.3.md`](config/KAR-Squad-Config-v4.3.md)
+- 当前版本：`4.3.0`（见 `VERSION`）
 - 部署脚本：`scripts/bootstrap.py`
 - 校验脚本：`scripts/verify.py`
 - 恢复脚本：`scripts/restore.py`
 - 候选/门禁：`scripts/manifest.py`
 - 指标：`scripts/metrics.py`
 - 人类 WIP/SLA：`scripts/human_wip.py`
+- 治理策略：`scripts/policy.py`
 - 发布构建：`scripts/build_release.py`
 
 ## 这个仓库管什么
@@ -22,9 +23,9 @@ KAR Delivery Squad 的**配置与运维仓库**：Skills、Agent 指令、Squad 
 | `agents/` | 8 份 Agent 指令 |
 | `squad/` | Squad 名册与 leader briefing |
 | `config/` | 完整配置手册（人类可读的基线） |
-| `scripts/` | 部署、校验、恢复、候选 manifest、指标、人类 WIP、发布构建 |
-| `tests/` | 配置/spec/模板/解析器/恢复/manifest/指标的单元测试（fake CLI） |
-| `docs/` | 快速上手、路线图、ADR、门禁清单、manifest、指标、WIP、备份恢复 |
+| `scripts/` | 部署、校验、恢复、候选 manifest、指标、人类 WIP、治理策略、发布构建 |
+| `tests/` | 配置/spec/模板/解析器/恢复/manifest/指标/治理策略的单元测试（fake CLI） |
+| `docs/` | 快速上手、路线图、ADR、门禁清单、manifest、指标、WIP、备份恢复、产物矩阵、安全 overlay、草稿/steer、接触点 |
 
 ## 协作方式（人类 + Agent）
 
@@ -41,8 +42,8 @@ KAR Delivery Squad 的**配置与运维仓库**：Skills、Agent 指令、Squad 
 ## 本地开发
 
 ```bash
-make test      # 单元测试（含 manifest/metrics/human_wip/restore）
-make check     # 校验 specs、模板 hash、版本一致性、manifest 示例
+make test      # 单元测试（含 manifest/metrics/human_wip/restore/policy）
+make check     # 校验 specs、模板 hash、版本一致性、manifest 示例与 v4.3 治理策略
 make build     # 生成 release/KAR-Squad-Bootstrap-v<version>.zip
 ```
 
@@ -69,6 +70,7 @@ python3 scripts/verify.py
 
 - 语义版本：`MAJOR.MINOR.PATCH`；配置手册、`VERSION`、`bootstrap.json`、release 包保持一致。
 - `4.2.0` 起，A4/A5 绑定 `candidate/<KEY>-<digest>`；`manifest.py check` 校验 docs/repos/PR/CI。
+- `4.3.0` 起，H3 还校验产物矩阵、R3 安全 overlay、H1/H2 草稿 checkpoint、steer 决策台账与 Lead 接触点预算（`policy.py check --profile h3`）。
 - `4.1.0` 起，小队默认值在 `kar-squad-profile`，项目描述只写 `squad-overlay`。
 - 旧 `S01–S17` 不在本仓库维护；迁移后由人类归档。
 - 不提交 token、密码、workspace ID、runtime ID、真实仓库 URL 或人名。
@@ -81,5 +83,9 @@ python3 scripts/verify.py
 - 指标与周摘要：[`docs/METRICS.md`](docs/METRICS.md)
 - 人类 WIP/SLA：[`docs/HUMAN-WIP.md`](docs/HUMAN-WIP.md)
 - 备份与恢复：[`docs/BACKUP-RESTORE.md`](docs/BACKUP-RESTORE.md)
+- 风险分级产物矩阵：[`docs/ARTIFACTS.md`](docs/ARTIFACTS.md)
+- R3 安全 overlay：[`docs/SECURITY-OVERLAY.md`](docs/SECURITY-OVERLAY.md)
+- 草稿 checkpoint 与 steer：[`docs/CHECKPOINT-STEER.md`](docs/CHECKPOINT-STEER.md)
+- Lead 接触点预算：[`docs/LEAD-TOUCHPOINTS.md`](docs/LEAD-TOUCHPOINTS.md)
 - 后续优化路线：[`docs/ROADMAP.md`](docs/ROADMAP.md)
 - 为什么用 Skill 承载配置：[`docs/decisions/0001-config-as-skills.md`](docs/decisions/0001-config-as-skills.md)

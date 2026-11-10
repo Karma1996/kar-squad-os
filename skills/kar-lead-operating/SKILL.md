@@ -1,5 +1,5 @@
 # 目的
-Lead 的日常控制面：分诊、工作道选择、WIP、派发、门禁、人类交互、`/init`、Quick 流程。
+Lead 的日常控制面：分诊、工作道选择、WIP、派发、门禁、人类交互、接触点预算、`/init`、Quick 流程。
 
 # 触发
 每次作为 Squad leader 运行；或处理父 issue/Program 父级。
@@ -25,7 +25,8 @@ LANE: Quick | Standard | Program
 
 - M3 核心域：必须有该模块测试命令，Reviewer 实际跑回归。
 - M4 接口/契约/公共库/基础设施：排除。
-- R2 → Standard；R3 → Standard + 安全/领域评审。
+- R2 → Standard；R3 → Standard + 安全 overlay + 独立安全评审（见 `docs/SECURITY-OVERLAY.md`）。
+- 产物按风险分级封顶：R0/R1 ≤3、R2 三份、R3 全量、Program 子级 1–2；写入 manifest `artifacts`（见 `docs/ARTIFACTS.md`）。
 - Decision Owner 可上调；下调到 Quick 必须书面接受风险并记录。
 
 ## 模块类别
@@ -69,8 +70,9 @@ write_lock: {agent-name}
 | 拆分方案 | 拆分方案确认 | SPLIT PLAN vN | 切片可独立验证 / 合并顺序 / owner |
 
 - 每道门固定 3 项检查，结果、理由、附条件写入 `manifest.gates.<gate>`：`checks`（3 条，pass/fail/n/a + evidence）、`rationale`（一句话）、`conditions`（列表，无则 `[]`）。检查清单见 `docs/GATES.md`。
-- H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci`；失败不发卡。R3 必须有 `second_reviewer` 记录；H3 记录 10% 抽样（`sampling`，至少 1 道门）。
+- H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci` 与 `scripts/policy.py check --profile h3`；失败不发卡。R3 必须有 `second_reviewer`，且与 `security_overlay.reviewer` 同一人；H3 记录 10% 抽样（`sampling`，至少 1 道门）。
 - 每道门只发一张卡；不出现 H1/H2/H3、A4/A5、manifest digest 等术语；3 项检查翻译成人类语言。
+- 发卡前先发草稿，至少提前 10 分钟；见下一节。
 - 人类 `/approve` 批准；明确自然语言批准也有效，但你必须复述并绑定版本/SHA。只有人类能批准，`approver_type` 必须是 `human`。
 - 不回复 = 等待；24h 只提醒一次；不代批、不自动通过。
 
@@ -89,15 +91,40 @@ write_lock: {agent-name}
 
 四类卡：批准/退回、选择/补充信息（≤5 问，带推荐）、外部操作（5–7 步，成功信号）、阻塞/异常。
 
-# 六、人类 roster 与送达
+# 六、草稿 checkpoint、steer 与接触点预算
+
+## 草稿 checkpoint
+
+- H1/H2 发卡前，把草稿（文档链接 + 版本 + “这次请你确认什么”）发到 issue，至少提前 **10 分钟**给人类异步 review。
+- 记录 `checkpoints.<gate>_draft`：`published_at`、`review_window_minutes`（≥10）、`reviewers`、`outcome`（`unchanged`/`steered`）、`steer_ids`。
+- 草稿不是门，不需要 `/approve`；正式卡仍只发一张。
+
+## 中途 steer
+
+- 草稿期人类说“把 X 改成 Y”：复述影响 → 判断是否出 H1/H2 已批准范围 → 直接改并记 `steers`。
+- `steers` 条目：`id`、`at`、`gate`（h1/h2）、`from`（人类）、`summary`、`applied`、`version_after`、`recorded_by`。
+- `applied: true` 时 `version_after` 必须等于对应文档版本；未落地必须写 `deferred_reason` + `deferred_approved_by`。
+- 已批准后不再接受 steer；改动走退回或新 change set。
+
+## 接触点预算
+
+只允许 6 类接触点：`intake`、`contract`、`gates`、`integration`、`merge`、`exception`。
+
+- 预算：intake 1、contract 1、gates 3（Quick 1）、integration 1、merge 1；exception 按需但必须写原因。
+- “顺便问一下”、让人对 diff、让人跑测试都不算接触点——自己做，做完报告。
+- 记录 manifest `touchpoints`（`kind`/`at`/`actor`/`gate`/`reason`）；H3 校验 intake 与三道门（Quick 一道）齐全。
+- 详见 `docs/CHECKPOINT-STEER.md` 与 `docs/LEAD-TOUCHPOINTS.md`。
+
+# 七、人类 roster 与送达
 
 - Decision Owner = 根父 issue 创建人；子 issue creator 不算。父 issue 由 agent 创建时回退项目 lead，仍无则 H1 前询问。
 - 其他人类由 Decision Owner 运行态指定；记 `HUMAN ROSTER vN`，每次变更发新评论，不原地编辑。
 - member @ 不投递通知；必须行动的人用“人类 assignee 的审批/咨询子 issue”送达；只知会的人由发起人转达。
 - 授权逐门记录；没有明确授权的其他人 `/approve` 不算数。
 - 先做 Agent 能做的，再找人；不让人跑测试、对 diff、查配置。
+- 人类发 `/tour`：只读五步导览（你在哪 / 卡要你做什么 / 证据在哪 / 怎么回 / 不回复会怎样），≤5 条消息，不改状态。
 
-# 七、Quick 流程
+# 八、Quick 流程
 
 ```text
 Intake 判道 → Dev 修复+回归 → Reviewer 一次独立 verify（A4+A5 合并）
@@ -108,7 +135,7 @@ Intake 判道 → Dev 修复+回归 → Reviewer 一次独立 verify（A4+A5 合
 - 不写正式需求/设计文档；不强制 HTML；不做复盘。
 - 触发 UI 大/复杂条件 → 升级 Standard。
 
-# 八、`/init` 与项目事实
+# 九、`/init` 与项目事实
 
 默认值来自 `kar-squad-profile`；项目描述只是薄覆盖层。
 
@@ -121,11 +148,11 @@ Intake 判道 → Dev 修复+回归 → Reviewer 一次独立 verify（A4+A5 合
 7. 旧字段：忽略未知字段并 warning，不覆盖、不阻断；已有活动 change set 用 `/init --force` + 二次确认。
 8. 模板不要问项目：文档模板来自 `kar-doc-template`；需要时运行 `materialize_template.py`。
 
-# 九、HANDOFF 验收
+# 十、HANDOFF 验收
 
 字段齐全；branch/commit 与 PR 一致；产物存在且 TOC、追溯完整；原型版本/SHA/SC/评审齐全；证据可复现；无未关闭 S0–S2；无越权；无秘密；scope 未漂移；写锁与状态正确。缺一项：退回同一 owner，附最小修复要求。
 
-# 十、合并
+# 十一、合并
 
 - 只有 H3、A4/A5、CI 全绿、无 S0–S2、manifest/文档版本一致、原型未变，才可合并。
 - H3 前确认 `manifest.py check --profile h3` 通过，合并授权绑定 `candidate/<KEY>-<digest>`；late push 后旧 H3 也作废。
@@ -134,8 +161,9 @@ Intake 判道 → Dev 修复+回归 → Reviewer 一次独立 verify（A4+A5 合
 - 回填 receipts；删除 feature 分支；main 只由人类发布。
 - 合并失败冻结合并列车；保留已合入仓；人类决定回滚/前向修复/拆分。
 
-# 十一、禁止
+# 十二、禁止
 
 - 不写业务代码；不代替专家产出；不代人类审批。
 - 不跳过门禁；不静默换 Agent；不降低验证标准。
 - 不在配置里写死项目数据。
+- 不以“顺便确认”突破接触点预算；不把草稿 review 变成额外门禁。
