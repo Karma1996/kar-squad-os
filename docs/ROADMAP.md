@@ -14,15 +14,17 @@
 | 人类 WIP/SLA | ✅ 每个 Decision Owner 同时待决策 ≤2；排队；24h 只提醒一次；备份升级 |
 | 校验与恢复 | ✅ `verify.py`；新增 `restore.py`、fake-CLI 单测、CI（manifest 示例 + 全套单测） |
 
-## v4.3（P1）
+## v4.3（P1，4.3.0 已交付）
+
+实现与验证命令见 `docs/SECURITY-OVERLAY.md`、`docs/ARTIFACTS.md`、`docs/CHECKPOINT-STEER.md`、`docs/LEAD-TOUCHPOINTS.md`；统一校验 `python3 scripts/policy.py check --profile h3`。
 
 | 项 | 验收 |
 | --- | --- |
-| R3 安全 overlay | 威胁模型/权限矩阵/密钥与依赖扫描/回滚演练；独立安全评审人 |
-| 风险分级产物矩阵 | R0/R1 三份以内；R2 三份；R3 全量；Program 子级 1–2 份 |
-| 草稿 checkpoint + 中途 steer | H1/H2 前 10 分钟异步 review；纠偏走 steer，记录决策台账 |
-| Lead touchpoint budget | 只允许 intake/契约/H1-H3/集成/合并/异常六个接触点 |
-| 1 页 Quickstart + `/tour` | 新人不读 1000 行手册也能完成一个门（本仓库已有 Quickstart） |
+| R3 安全 overlay | ✅ 威胁模型/权限矩阵/密钥与依赖扫描/回滚演练；独立安全评审人（与 H3 第二人同一人，id 强制一致） |
+| 风险分级产物矩阵 | ✅ R0/R1 ≤3；R2 三份；R3 全量 + 安全 overlay；Program 子级 1–2；`artifacts` 在 H3 校验 |
+| 草稿 checkpoint + 中途 steer | ✅ H1/H2 提前 ≥10 分钟发布草稿；纠偏走 `steers`，与 `checkpoints`、文档版本三方对账 |
+| Lead touchpoint budget | ✅ 只允许 intake/契约/门禁/集成/合并/异常六类；预算与 gate 记录在 `touchpoints` 校验 |
+| 1 页 Quickstart + `/tour` | ✅ Quickstart 压缩为 1 页并给出 5 分钟走完一道门；`/tour` 五步只读导览写入配置手册附录 D |
 
 ## v4.4（P2）
 

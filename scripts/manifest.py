@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Freeze and check a KAR delivery manifest (v4.2).
+"""Freeze and check a KAR delivery manifest (v4.3).
 
 Commands:
   digest  Print (and optionally write) the candidate digest/tag.
   freeze  Validate the recorded facts, then write candidate.digest/tag.
   check   Validate a manifest: docs SHA, prototype SHA, repo head, PR, CI,
           candidate tag, gates, R3 second review, H3 sampling and metrics.
+  policy  (v4.3)  is validated by policy.py: artifact matrix, R3 security
+          overlay, draft checkpoints/steer ledger and the Lead touchpoint budget.
 
 Only the Python standard library is used. ``check`` is offline by default;
 pass --check-remotes / --check-prs / --check-ci to compare against Git
@@ -38,6 +40,7 @@ from kar_common import (
     sha256_file,
     utcnow,
 )
+from policy import validate_policy
 
 PR_RE = re.compile(r"^(https?://\S+/pull/\d+|#?\d+)$")
 CI_STATUSES = ("passed", "failed", "pending", "running")
@@ -462,6 +465,9 @@ def validate(
         require_candidate = profile in ("freeze", "h3")
     validate_candidate(manifest, require_candidate, errors, warnings)
     validate_gates(manifest, profile, errors, warnings)
+    policy_errors, policy_warnings = validate_policy(manifest, profile)
+    errors.extend(policy_errors)
+    warnings.extend(policy_warnings)
     if profile in ("freeze", "h3"):
         validate_external(manifest.get("repos") or [], gh, check_prs, check_ci, errors, warnings)
     return errors, warnings

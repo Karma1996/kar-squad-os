@@ -122,3 +122,37 @@ H3 前由 Lead 对本次变更集的门禁记录抽样复核，比例 **10%**，
 - 每个 Decision Owner 同时待决策 ≤2；超过的由 Lead 排队，不一次发 3 张卡。见 [`docs/HUMAN-WIP.md`](HUMAN-WIP.md)。
 - 24h 未回应只提醒一次；之后继续等待，**不代批、不自动通过**。
 - 卡片、manifest、决策台账三处必须能对上：谁、何时、批准了哪个版本/标签、附了什么条件。
+
+## 7. R3 安全 overlay（v4.3）
+
+`risk: "R3"` 时，H3 之前必须完成安全 overlay 并写入 manifest `security_overlay`：
+
+| 产物 | manifest 键 | 要求 |
+| --- | --- | --- |
+| 威胁模型 | `threat_model` | path/version/64 位 sha；资产、角色、入口、信任边界、攻击面、残余风险 |
+| 权限矩阵 | `permission_matrix` | path/version/64 位 sha；资源 × 角色 × 动作；默认拒绝；每个拒绝有越权测试 |
+| 密钥扫描 | `secret_scan` | tool/status/findings/at；`status=passed`、`findings=0` |
+| 依赖扫描 | `dependency_scan` | tool/status/findings/at；high/critical 必须处置 |
+| 回滚演练 | `rollback_drill` | at/result/evidence；必须在可回退环境实际执行且 `result=passed` |
+| 独立安全评审人 | `reviewer` | id/role=security/independent=true/verdict=pass/at/scope |
+
+规则：
+
+- 安全评审人不能是主责 Developer/Reviewer，也不能是同一个 Agent 身份。
+- 安全评审人 **就是** `gates.h3.second_reviewer`：两处 `id` 必须一致，`role` 必须是 `security`；`policy.py` 强制校验。
+- 安全评审人的 `pass` 不代替人类批准；H3 仍由 Decision Owner `/approve`。
+- `program_child: true` 的子级继承父级 overlay，子级不重复做；父级 H3 统一复核。
+
+```bash
+python3 scripts/policy.py check --manifest <path> --profile h3
+```
+
+缺 overlay、扫描不通过、回滚演练失败、评审人不独立 → H3 FAIL。流程见 [`SECURITY-OVERLAY.md`](SECURITY-OVERLAY.md)。
+
+## 8. 草稿 checkpoint 与 steer（v4.3）
+
+- H1/H2 发卡前，草稿至少提前 **10 分钟**发布，给人类异步 review。
+- 草稿记录写入 `checkpoints.<gate>_draft`：`published_at`、`review_window_minutes`（≥10）、`reviewers`、`outcome`、`steer_ids`。
+- 草稿期的纠偏走 `steers`（决策台账），绑定纠偏后的文档版本；不做第二轮评审。
+- 已批准后不再接受 steer；未落地的 steer 必须有 `deferred_reason` + `deferred_approved_by`。
+- `policy.py check --profile h3` 校验窗口、引用与版本一致性。详见 [`CHECKPOINT-STEER.md`](CHECKPOINT-STEER.md)。

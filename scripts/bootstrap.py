@@ -23,7 +23,7 @@ SKILLS = json.loads((ROOT / "skills.json").read_text(encoding="utf-8"))
 AGENTS = json.loads((ROOT / "agents.json").read_text(encoding="utf-8"))
 SQUAD = json.loads((ROOT / "squad/KAR-Delivery-Squad.json").read_text(encoding="utf-8"))
 SQUAD_INSTRUCTIONS = (ROOT / "squad/KAR-Delivery-Squad.md").read_text(encoding="utf-8")
-SQUAD_DESCRIPTION = "KAR Delivery Squad v4.2：三工作道、候选冻结、审批清单、指标与人类 WIP、模板与薄项目覆盖层。"
+SQUAD_DESCRIPTION = "KAR Delivery Squad v4.3：三工作道、候选冻结、审批清单、指标与人类 WIP、R3 安全 overlay、草稿 checkpoint/steer、接触点预算、模板与薄项目覆盖层。"
 
 
 def run(args: list[str], *, check: bool = True) -> dict | list:

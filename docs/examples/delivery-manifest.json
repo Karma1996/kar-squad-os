@@ -172,5 +172,157 @@
     "cycle_time_hours": 42.0,
     "closed_at": "2026-11-06T02:10:00Z"
   },
-  "merge_receipts": []
+  "merge_receipts": [],
+  "lane": "standard",
+  "program_child": false,
+  "artifacts": [
+    {
+      "kind": "requirements",
+      "ref": "multica/requirements/KAR-42-checkout-idempotency/需求分析文档.html",
+      "version": "1.2"
+    },
+    {
+      "kind": "prototype",
+      "ref": "multica/requirements/KAR-42-checkout-idempotency/交互原型.html",
+      "version": "1.0"
+    },
+    {
+      "kind": "design",
+      "ref": "multica/requirements/KAR-42-checkout-idempotency/方案设计文档.html",
+      "version": "2.0"
+    },
+    {
+      "kind": "test_design",
+      "ref": "multica/requirements/KAR-42-checkout-idempotency/测试设计与用例.html",
+      "version": "1.0"
+    },
+    {
+      "kind": "dev_notes",
+      "ref": "multica/requirements/KAR-42-checkout-idempotency/开发交付说明.html",
+      "version": "1.0"
+    },
+    {
+      "kind": "qa_report",
+      "ref": "multica/requirements/KAR-42-checkout-idempotency/测试验收文档.html",
+      "version": "1.0"
+    },
+    {
+      "kind": "security_overlay",
+      "ref": "multica/requirements/KAR-42-checkout-idempotency/威胁模型.html",
+      "version": "1.0"
+    }
+  ],
+  "security_overlay": {
+    "threat_model": {
+      "path": "multica/requirements/KAR-42-checkout-idempotency/威胁模型.html",
+      "version": "1.0",
+      "sha": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    "permission_matrix": {
+      "path": "multica/requirements/KAR-42-checkout-idempotency/权限矩阵.html",
+      "version": "1.0",
+      "sha": "3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    "secret_scan": {
+      "tool": "gitleaks detect --no-git --redact",
+      "status": "passed",
+      "findings": 0,
+      "at": "2026-11-05T09:00:00Z"
+    },
+    "dependency_scan": {
+      "tool": "npm audit --audit-level=high",
+      "status": "passed",
+      "severity": "high",
+      "findings": 0,
+      "at": "2026-11-05T09:10:00Z"
+    },
+    "rollback_drill": {
+      "at": "2026-11-05T14:30:00Z",
+      "result": "passed",
+      "duration_minutes": 8,
+      "evidence": "evidence/reports/rollback-drill.md"
+    },
+    "reviewer": {
+      "id": "security-reviewer-user-id",
+      "role": "security",
+      "independent": true,
+      "verdict": "pass",
+      "at": "2026-11-05T16:00:00Z",
+      "scope": "认证授权、密钥、不可逆数据与回滚路径"
+    }
+  },
+  "checkpoints": {
+    "h1_draft": {
+      "published_at": "2026-11-03T07:30:00Z",
+      "review_window_minutes": 10,
+      "reviewers": [
+        "decision-owner-user-id"
+      ],
+      "outcome": "unchanged",
+      "steer_ids": [],
+      "note": "需求草案提前 30 分钟发布，异步 review 后进入 H1。"
+    },
+    "h2_draft": {
+      "published_at": "2026-11-04T01:30:00Z",
+      "review_window_minutes": 15,
+      "reviewers": [
+        "decision-owner-user-id"
+      ],
+      "outcome": "steered",
+      "steer_ids": [
+        "ST-1"
+      ],
+      "note": "设计草案 review 期间接受一次纠偏，重试次数改为 3。"
+    }
+  },
+  "steers": [
+    {
+      "id": "ST-1",
+      "at": "2026-11-04T01:45:00Z",
+      "gate": "h2",
+      "from": "decision-owner-user-id",
+      "summary": "重试改为 3 次，保持幂等键不变，不新增队列。",
+      "applied": true,
+      "version_after": "2.0",
+      "recorded_by": "KAR-01-Lead"
+    }
+  ],
+  "touchpoints": [
+    {
+      "kind": "intake",
+      "at": "2026-11-03T07:20:00Z",
+      "actor": "decision-owner-user-id",
+      "summary": "intake 确认 Standard、R3 与 Decision Owner。"
+    },
+    {
+      "kind": "contract",
+      "at": "2026-11-03T12:00:00Z",
+      "actor": "decision-owner-user-id",
+      "summary": "确认幂等键契约与不接受重复扣款。"
+    },
+    {
+      "kind": "gates",
+      "gate": "h1",
+      "at": "2026-11-03T08:00:00Z",
+      "actor": "decision-owner-user-id"
+    },
+    {
+      "kind": "gates",
+      "gate": "h2",
+      "at": "2026-11-04T02:00:00Z",
+      "actor": "decision-owner-user-id"
+    },
+    {
+      "kind": "integration",
+      "at": "2026-11-05T14:00:00Z",
+      "actor": "decision-owner-user-id",
+      "summary": "集成验证结果与回滚演练确认。"
+    },
+    {
+      "kind": "gates",
+      "gate": "h3",
+      "at": "2026-11-05T11:00:00Z",
+      "actor": "decision-owner-user-id"
+    }
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "version": "4.2.0",
+  "version": "4.3.0",
   "project_overlay_marker": "squad-overlay",
   "required_project_fields": ["repos"],
   "allowed_project_fields": [
@@ -68,6 +68,36 @@
     "H1": "需求确认",
     "H2": "方案确认",
     "H3": "验收与合并"
+  },
+  "artifacts": {
+    "matrix": {
+      "R0": [1, 3],
+      "R1": [1, 3],
+      "R2": [3, 3],
+      "R3": [6, null],
+      "program_child": [1, 2]
+    },
+    "r2_required": ["requirements", "design", "test_design"],
+    "r3_required": ["requirements", "design", "test_design", "dev_notes", "qa_report", "security_overlay"],
+    "program_child_required": ["dev_notes"]
+  },
+  "security": {
+    "r3_overlay": ["threat_model", "permission_matrix", "secret_scan", "dependency_scan", "rollback_drill", "reviewer"],
+    "reviewer_role": "security",
+    "reviewer_independent": true,
+    "scan_findings_max": 0,
+    "second_reviewer_must_match": true
+  },
+  "checkpoints": {
+    "gates": ["H1", "H2"],
+    "min_review_minutes": 10,
+    "outcomes": ["unchanged", "steered"]
+  },
+  "touchpoints": {
+    "kinds": ["intake", "contract", "gates", "integration", "merge", "exception"],
+    "budget": {"intake": 1, "contract": 1, "gates": 3, "integration": 1, "merge": 1},
+    "quick_gates": 1,
+    "program_requires_contract": true
   },
   "gate_checks": {
     "H1": ["scope", "prototype", "evidence"],
@@ -147,7 +177,7 @@
     "blocks_merge": false
   },
   "human": {
-    "commands": ["/approve", "/init"],
+    "commands": ["/approve", "/init", "/tour"],
     "aliases": ["/changes", "/reject"],
     "sla_hours": 24,
     "reminder_hours": 24,

@@ -8,7 +8,7 @@ A4 候选冻结；开发完成并提交 HANDOFF。
 
 H1 需求、H2 设计、A3、开发交付说明、PR/diff、CI、真实测试输出、已批准原型版本/SHA、SC 映射、`candidate/<KEY>-<digest>` 与 manifest。
 
-开工先跑 `scripts/manifest.py check --profile freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path>`；失败（LATE PUSH/STALE/CI 未过）直接 BLOCKED，不评审旧候选。
+开工先跑 `scripts/manifest.py check --profile freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path>`；失败（LATE PUSH/STALE/CI 未过）直接 BLOCKED，不评审旧候选。R3 另读 `security_overlay`：威胁模型、权限矩阵、密钥/依赖扫描报告、回滚演练记录与独立评审人结论。
 
 # 二、评审轴
 
@@ -20,6 +20,7 @@ E. **质量/可维护性**：复杂度、命名、重复、模块边界、可观
 F. **测试可信度**：断言是否有效；是否覆盖失败路径；有无 skip/xfail/删除/篡改期望；能否在干净环境复现。
 G. **原型**：开发说明/PR 是否引用已批准原型；可见偏差是否已走 DECISION-REQUEST；不自行做像素级验收（QA 负责），但未记录的偏差要指出。
 H. **独立验证**：在只读/独立 worktree 运行受影响测试与关键命令；记录命令、环境、结果。
+I. **R3 安全 overlay**：权限矩阵的每条拒绝是否有越权测试；密钥/依赖扫描是否真实执行、findings 是否为 0；回滚演练是否实际执行而非纸面步骤；独立评审人是否为 reviewer/developer 以外的人且结论有证据。
 
 # 三、结论
 
@@ -46,7 +47,8 @@ H. **独立验证**：在只读/独立 worktree 运行受影响测试与关键�
 - 分支不是 canonical，或存在未说明的额外分支：REQUEST_CHANGES。
 - 证据不可复现或 CI 未运行：REQUEST_CHANGES，不批准“本地通过”。
 - 候选 tag/digest 与当前 head 不一致（late push、文档/原型 SHA 变化）：BLOCKED，旧结论作废，等待重新 freeze；不得把旧 A4 套到新 SHA。
-- `risk: R3` 时确认 H3 有 `second_reviewer` 记录；没有则退回 Lead。
+- `risk: R3` 时确认 H3 有 `second_reviewer` 记录，且与 `security_overlay.reviewer` 为同一人；缺 overlay、扫描失败、回滚演练失败、评审人不独立：BLOCKED，退回 Lead。
+- 产物数量与风险级别不符（R2 ≠3、R3 缺固定产物）或存在凑数文档：REQUEST_CHANGES，先校正产物矩阵。
 
 # 五、交接
 
