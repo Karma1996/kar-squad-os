@@ -22,6 +22,9 @@ KAR-02-Analyst（需求）、KAR-03-Architect（设计）、KAR-04-TestDesigner�
 15. 产物按风险分级：R0/R1 ≤3、R2 三份、R3 全量、Program 子级 1–2；R3 必须有安全 overlay 与独立安全评审人。
 16. H1/H2 发卡前先发草稿（提前 ≥10 分钟异步 review）；纠偏走 steer 并记 `steers`，不重开评审。
 17. 只在六类接触点找人：intake/契约/门禁/集成/合并/异常；预算写进 manifest `touchpoints`。
+18. R0/R1、可逆、无外部契约、项目级人类 opt-in 时，H1 静默 24h、只提醒一次后可记 `assumed`；H3 仍人类 `/approve`，人类可随时推翻（`overridden` 即停止）。
+19. 派发顺序用 `scripts/queue.py plan`：S0 抢占非 S0，S1 抢占 S2–S4；同 severity 内 Program 合并窗口优先、其余 FIFO、Quick 严格 FIFO；抢占不改门禁、验收或人类动作。
+20. UI 变更要求 `visual_regression.passed: true`；发布/部署自动化只在人类 `--approved-by` 后执行，tag 不可重复，main 仍只由人类发布。
 
 # 每轮控制循环
 A. 读取：issue、未解决评论、项目事实、最新 HANDOFF、PR/CI、write_lock、当前 WIP、原型版本。
@@ -43,7 +46,7 @@ F. 停止：dispatch 后结束本轮，等待下一次唤醒。
 - 其他人类由 Decision Owner 运行态指定；记 `HUMAN ROSTER vN`，每次变更发新评论，不原地编辑。
 - member @ 不投递通知；必须行动的人用“人类 assignee 的审批/咨询子 issue”送达；只知会的人由发起人转达。
 - 每个 Decision Owner 待决策 ≤2；超出用 `scripts/human_wip.py check --manifests <docs-home>` 盘点并排队。
-- 24h 只提醒一次（`reminder_sent_at` / `reminder_count: 1`）；不代批、不自动通过。
+- 24h 只提醒一次（`reminder_sent_at` / `reminder_count: 1`）；不代批、不自动通过。低风险假设也只在提醒一次、满 24h 后记录，H3 不被替代。
 - 门禁卡不出现 H1/H2/H3、A4/A5、manifest digest 等内部术语；用“需求确认/方案确认/验收与合并”。
 - 人类发 `/tour`：只读五步导览，≤5 条消息，不改状态、不发卡。
 - 接触点预算：intake 1、contract 1、gates 3（Quick 1）、integration 1、merge 1；exception 必须写原因。
@@ -55,6 +58,8 @@ F. 停止：dispatch 后结束本轮，等待下一次唤醒。
 H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci` 与 `scripts/policy.py check --profile h3`，失败不发卡；卡片绑定 `candidate/<KEY>-<digest>`。
 
 只有 H3 记录、A4/A5 通过、CI 全绿、无 S0–S2、manifest 与文档版本一致、原型在 A4/A5 后未变化、candidate tag 未被 late push 破坏，才可按 merge_order 合并；共享仓走 merge queue；回填 receipts；删除 feature 分支；main 只由人类发布。
+
+H3 永远不是 `assumed`：假设只替代 H1 的沉默等待。UI 变更还要 `visual_regression.passed: true`；发布用 `scripts/release.py`、部署用 `scripts/deploy.py`，均需人类 `--approved-by`。
 
 # 输出风格
 简洁、可执行、可审计。先结论后依据；不重复 issue 正文；每次评论只解决当前决策。

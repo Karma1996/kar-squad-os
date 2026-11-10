@@ -7,7 +7,9 @@
 - 按已批准原型实现；可见偏差必须提交 DECISION-REQUEST，不得静默重设计。
 - 运行 lint/typecheck/unit/integration/build/acceptance；记录命令、退出码、摘要、时间。
 - 更新开发交付说明；PR 描述含变更、测试、风险、回滚、原型链接、父 issue 链接。
-- 准备 A4 候选：写 manifest 并 `scripts/manifest.py freeze --write`，产出 `candidate/<KEY>-<digest>`；不自行评审、不合并、不布署生产。
+- 准备 A4 候选：写 manifest 并 `scripts/manifest.py freeze --write`，产出 `candidate/<KEY>-<digest>`；不自行评审、不合并、不部署生产。
+- UI 变更交付前跑 `scripts/visual.py capture/check`，把 `visual_regression` 摘要写进 manifest；工具不可用需显式记录，不得宣称像素级通过。
+- 发布/部署由人类批准；不执行 `release.py`/`deploy.py` 的 apply 步骤。
 
 # 绝不
 - 不删除/跳过测试、不降低断言、不绕过 CI、不扩大 scope。

@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SCRIPT = ROOT / "scripts/manifest.py"
 sys.path.insert(0, str(ROOT / "scripts"))
 from kar_common import GATE_CHECKS, candidate_digest, candidate_tag  # noqa: E402
+from manifest import validate_gates  # noqa: E402
 
 
 def sha(text):
@@ -386,6 +387,55 @@ class ManifestExternalTest(unittest.TestCase):
         self.path.write_text(json.dumps(data), encoding="utf-8")
         proc = run("check", *self.base, "--profile", "freeze", "--check-ci", "--check-prs", "--gh", str(gh))
         self.assertNotEqual(proc.returncode, 0)
+
+
+class AssumedH1GateTest(unittest.TestCase):
+    def assumed_manifest(self, risk="R1", autonomy_state="assumed"):
+        return {
+            "risk": risk,
+            "autonomy": {"state": autonomy_state},
+            "gates": {
+                "h1": {
+                    "status": "assumed",
+                    "requested_at": "2026-11-01T01:00:00Z",
+                    "assumed_at": "2026-11-02T01:00:00Z",
+                    "approver_type": "assumption",
+                    "rationale": "低风险可逆改动，静默 24h 后按假设推进。",
+                    "conditions": [],
+                    "checks": [
+                        {"id": "scope", "result": "pass", "evidence": "需求 §2"},
+                        {"id": "prototype", "result": "n/a", "evidence": "无 UI", "note": "纯工具"},
+                        {"id": "evidence", "result": "pass", "evidence": "issue 评论"},
+                    ],
+                }
+            },
+        }
+
+    def errors(self, manifest):
+        errors, warnings = [], []
+        validate_gates(manifest, "draft", errors, warnings)
+        return errors
+
+    def test_assumed_h1_is_accepted(self):
+        self.assertEqual(self.errors(self.assumed_manifest()), [])
+
+    def test_assumed_h1_requires_autonomy_state(self):
+        manifest = self.assumed_manifest(autonomy_state="approved")
+        self.assertTrue(any("autonomy.state=assumed" in e for e in self.errors(manifest)))
+
+    def test_only_r0_r1_may_assume(self):
+        manifest = self.assumed_manifest(risk="R2")
+        self.assertTrue(any("only R0/R1" in e for e in self.errors(manifest)))
+
+    def test_assumed_requires_assumption_approver(self):
+        manifest = self.assumed_manifest()
+        manifest["gates"]["h1"]["approver_type"] = "human"
+        self.assertTrue(any("approver_type" in e for e in self.errors(manifest)))
+
+    def test_only_h1_may_be_assumed(self):
+        manifest = self.assumed_manifest()
+        manifest["gates"]["h2"] = {"status": "assumed", "approver_type": "assumption", "assumed_at": "2026-11-02T01:00:00Z"}
+        self.assertTrue(any("only H1 may be assumed" in e for e in self.errors(manifest)))
 
 
 if __name__ == "__main__":

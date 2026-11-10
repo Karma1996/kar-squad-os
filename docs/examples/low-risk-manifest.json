@@ -1,0 +1,177 @@
+{
+  "version": 2,
+  "change_set_id": "KAR-77",
+  "issue": "KAR-77",
+  "slug": "low-risk-flaky-test-fix",
+  "risk": "R1",
+  "lane": "standard",
+  "decision_owner": "decision-owner-user-id",
+  "docs": {
+    "requirements": {
+      "path": "multica/requirements/KAR-77-low-risk-flaky-test-fix/需求分析文档.html",
+      "version": "1.0",
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "design": {
+      "path": "multica/requirements/KAR-77-low-risk-flaky-test-fix/方案设计文档.html",
+      "version": "1.0",
+      "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  },
+  "gates": {
+    "h1": {
+      "status": "assumed",
+      "requested_at": "2026-11-01T09:00:00Z",
+      "assumed_at": "2026-11-02T09:00:00Z",
+      "approver_type": "assumption",
+      "rationale": "R1 可逆改动，静默 24h 后按已记录的假设推进；H3 仍需人类批准。",
+      "conditions": [],
+      "checks": [
+        {
+          "id": "scope",
+          "result": "pass",
+          "evidence": "需求分析文档 v1.0 §2；仅调整一条测试的等待策略，不改产品行为"
+        },
+        {
+          "id": "prototype",
+          "result": "n/a",
+          "evidence": "无界面变更",
+          "note": "纯测试可靠性修复"
+        },
+        {
+          "id": "evidence",
+          "result": "pass",
+          "evidence": "issue 评论记录 24h 提醒与假设正文；无未关闭 S0–S2"
+        }
+      ]
+    },
+    "h2": {
+      "status": "approved",
+      "requested_at": "2026-11-03T09:00:00Z",
+      "approved_by": "decision-owner-user-id",
+      "approver_type": "human",
+      "approved_at": "2026-11-03T10:00:00Z",
+      "rationale": "只替换等待方式，保持断言与覆盖范围不变。",
+      "conditions": [],
+      "checks": [
+        {
+          "id": "design",
+          "result": "pass",
+          "evidence": "方案设计文档 v1.0 §2"
+        },
+        {
+          "id": "contract",
+          "result": "n/a",
+          "evidence": "无接口/数据契约变化",
+          "note": "测试内部实现"
+        },
+        {
+          "id": "testability",
+          "result": "pass",
+          "evidence": "测试设计与命令沿用仓库现有 npm test -- foo"
+        }
+      ]
+    },
+    "h3": {
+      "status": "approved",
+      "requested_at": "2026-11-04T09:00:00Z",
+      "approved_by": "decision-owner-user-id",
+      "approver_type": "human",
+      "approved_at": "2026-11-04T10:00:00Z",
+      "rationale": "候选、测试与 CI 一致，人类完成合并批准。",
+      "conditions": []
+    }
+  },
+  "autonomy": {
+    "project_opt_in": {
+      "by": "decision-owner-user-id",
+      "at": "2026-10-30T08:00:00Z",
+      "scope": "repo:storefront"
+    },
+    "reversible": true,
+    "external_contract": false,
+    "window_hours": 24,
+    "wait_started_at": "2026-11-01T09:00:00Z",
+    "notification": {
+      "at": "2026-11-02T09:00:00Z",
+      "actor": "decision-owner-user-id",
+      "channel": "issue comment"
+    },
+    "assumption": {
+      "statement": "沿用现有断言与测试命令，仅把固定 sleep 改为条件等待；若人类否决则回到 H1。",
+      "owner": "decision-owner-user-id",
+      "recorded_at": "2026-11-02T09:05:00Z"
+    },
+    "state": "assumed",
+    "assumed_at": "2026-11-02T09:00:00Z"
+  },
+  "artifacts": [
+    {
+      "kind": "issue_record",
+      "ref": "KAR-77 评论（intake、24h 提醒、假设记录）"
+    },
+    {
+      "kind": "pr",
+      "ref": "https://github.com/example/storefront/pull/77"
+    },
+    {
+      "kind": "test_evidence",
+      "ref": "evidence/logs/unit-77.log"
+    }
+  ],
+  "checkpoints": {
+    "h1_draft": {
+      "published_at": "2026-11-01T08:30:00Z",
+      "review_window_minutes": 10,
+      "reviewers": [
+        "decision-owner-user-id"
+      ],
+      "outcome": "unchanged",
+      "steer_ids": [],
+      "note": "H1 草稿发出后无人回复；24h 提醒一次后记录假设。"
+    },
+    "h2_draft": {
+      "published_at": "2026-11-03T08:40:00Z",
+      "review_window_minutes": 10,
+      "reviewers": [
+        "decision-owner-user-id"
+      ],
+      "outcome": "unchanged",
+      "steer_ids": [],
+      "note": "方案草稿 review 无纠偏。"
+    }
+  },
+  "steers": [],
+  "touchpoints": [
+    {
+      "kind": "intake",
+      "at": "2026-11-01T08:00:00Z",
+      "actor": "decision-owner-user-id",
+      "summary": "intake 判定 R1/Standard，记录项目级 24h opt-in。"
+    },
+    {
+      "kind": "contract",
+      "at": "2026-11-01T08:10:00Z",
+      "actor": "decision-owner-user-id",
+      "summary": "确认不改对外契约。"
+    },
+    {
+      "kind": "gates",
+      "gate": "h1",
+      "at": "2026-11-01T09:00:00Z",
+      "actor": "decision-owner-user-id"
+    },
+    {
+      "kind": "gates",
+      "gate": "h2",
+      "at": "2026-11-03T09:00:00Z",
+      "actor": "decision-owner-user-id"
+    },
+    {
+      "kind": "gates",
+      "gate": "h3",
+      "at": "2026-11-04T09:00:00Z",
+      "actor": "decision-owner-user-id"
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 {
-  "version": "4.3.0",
+  "version": "4.4.0",
   "project_overlay_marker": "squad-overlay",
-  "required_project_fields": ["repos"],
+  "required_project_fields": [
+    "repos"
+  ],
   "allowed_project_fields": [
     "version",
     "repos",
@@ -13,7 +15,9 @@
     "overrides",
     "goal",
     "success_metrics",
-    "notes"
+    "notes",
+    "autonomy",
+    "visual"
   ],
   "allowed_overrides": [
     "merge_model",
@@ -38,7 +42,12 @@
       "risk_max": "R1",
       "files_max": 3,
       "modules_max": 1,
-      "module_classes": ["M0", "M1", "M2", "M3"],
+      "module_classes": [
+        "M0",
+        "M1",
+        "M2",
+        "M3"
+      ],
       "require_tests": true,
       "human_gates": 1
     },
@@ -71,44 +80,120 @@
   },
   "artifacts": {
     "matrix": {
-      "R0": [1, 3],
-      "R1": [1, 3],
-      "R2": [3, 3],
-      "R3": [6, null],
-      "program_child": [1, 2]
+      "R0": [
+        1,
+        3
+      ],
+      "R1": [
+        1,
+        3
+      ],
+      "R2": [
+        3,
+        3
+      ],
+      "R3": [
+        6,
+        null
+      ],
+      "program_child": [
+        1,
+        2
+      ]
     },
-    "r2_required": ["requirements", "design", "test_design"],
-    "r3_required": ["requirements", "design", "test_design", "dev_notes", "qa_report", "security_overlay"],
-    "program_child_required": ["dev_notes"]
+    "r2_required": [
+      "requirements",
+      "design",
+      "test_design"
+    ],
+    "r3_required": [
+      "requirements",
+      "design",
+      "test_design",
+      "dev_notes",
+      "qa_report",
+      "security_overlay"
+    ],
+    "program_child_required": [
+      "dev_notes"
+    ]
   },
   "security": {
-    "r3_overlay": ["threat_model", "permission_matrix", "secret_scan", "dependency_scan", "rollback_drill", "reviewer"],
+    "r3_overlay": [
+      "threat_model",
+      "permission_matrix",
+      "secret_scan",
+      "dependency_scan",
+      "rollback_drill",
+      "reviewer"
+    ],
     "reviewer_role": "security",
     "reviewer_independent": true,
     "scan_findings_max": 0,
     "second_reviewer_must_match": true
   },
   "checkpoints": {
-    "gates": ["H1", "H2"],
+    "gates": [
+      "H1",
+      "H2"
+    ],
     "min_review_minutes": 10,
-    "outcomes": ["unchanged", "steered"]
+    "outcomes": [
+      "unchanged",
+      "steered"
+    ]
   },
   "touchpoints": {
-    "kinds": ["intake", "contract", "gates", "integration", "merge", "exception"],
-    "budget": {"intake": 1, "contract": 1, "gates": 3, "integration": 1, "merge": 1},
+    "kinds": [
+      "intake",
+      "contract",
+      "gates",
+      "integration",
+      "merge",
+      "exception"
+    ],
+    "budget": {
+      "intake": 1,
+      "contract": 1,
+      "gates": 3,
+      "integration": 1,
+      "merge": 1
+    },
     "quick_gates": 1,
     "program_requires_contract": true
   },
   "gate_checks": {
-    "H1": ["scope", "prototype", "evidence"],
-    "H2": ["design", "contract", "testability"],
-    "H3": ["candidate", "verdicts", "ci"]
+    "H1": [
+      "scope",
+      "prototype",
+      "evidence"
+    ],
+    "H2": [
+      "design",
+      "contract",
+      "testability"
+    ],
+    "H3": [
+      "candidate",
+      "verdicts",
+      "ci"
+    ]
   },
   "candidate": {
     "tag_pattern": "candidate/{KEY}-{digest}",
     "digest_length": 12,
-    "digest_inputs": ["change_set_id", "issue", "slug", "docs", "repos"],
-    "invalidate_on": ["doc_sha", "prototype_sha", "repo_head"]
+    "digest_inputs": [
+      "change_set_id",
+      "issue",
+      "slug",
+      "docs",
+      "repos"
+    ],
+    "invalidate_on": [
+      "doc_sha",
+      "prototype_sha",
+      "repo_head"
+    ]
   },
   "approval": {
     "checks_per_gate": 3,
@@ -119,8 +204,21 @@
     "h3_sample_rate": 0.1
   },
   "metrics": {
-    "per_issue": ["human_touches", "wait_human", "rework_rounds", "candidate_recuts", "escaped_defects"],
-    "weekly": ["human_touches", "wait_human", "rework_rounds", "candidate_recuts", "escaped_defects", "cycle_time_hours"],
+    "per_issue": [
+      "human_touches",
+      "wait_human",
+      "rework_rounds",
+      "candidate_recuts",
+      "escaped_defects"
+    ],
+    "weekly": [
+      "human_touches",
+      "wait_human",
+      "rework_rounds",
+      "candidate_recuts",
+      "escaped_defects",
+      "cycle_time_hours"
+    ],
     "baseline_weeks": 2
   },
   "docs": {
@@ -135,8 +233,12 @@
       "开发交付说明.html",
       "测试验收文档.html"
     ],
-    "conditional_files": ["交互原型.html"],
-    "optional_files": ["复盘分析文档.html"],
+    "conditional_files": [
+      "交互原型.html"
+    ],
+    "optional_files": [
+      "复盘分析文档.html"
+    ],
     "manifest": "delivery-manifest.json",
     "project_registry": "multica/project/repo-registry.html",
     "ui_profile": "multica/project/ui-profile.json"
@@ -146,7 +248,11 @@
     "standard": "feat/{KEY}-{SLUG}",
     "program_parent": "feat/{PARENT_KEY}-{SLUG}",
     "program_child": "feat/{PARENT_KEY}-{SLUG}/{FEATURE_SLUG}",
-    "commit_trailers": ["Change-Set", "Workstream", "Sub-Issue"]
+    "commit_trailers": [
+      "Change-Set",
+      "Workstream",
+      "Sub-Issue"
+    ]
   },
   "wip": {
     "quick": 3,
@@ -173,12 +279,24 @@
   },
   "retro": {
     "mode": "on_demand",
-    "triggers": ["human_request", "s0_s1", "rework_ge_2", "overrun_gt_50pct"],
+    "triggers": [
+      "human_request",
+      "s0_s1",
+      "rework_ge_2",
+      "overrun_gt_50pct"
+    ],
     "blocks_merge": false
   },
   "human": {
-    "commands": ["/approve", "/init", "/tour"],
-    "aliases": ["/changes", "/reject"],
+    "commands": [
+      "/approve",
+      "/init",
+      "/tour"
+    ],
+    "aliases": [
+      "/changes",
+      "/reject"
+    ],
     "sla_hours": 24,
     "reminder_hours": 24,
     "decision_owner": "root_parent_creator",
@@ -188,8 +306,66 @@
     "backup_escalation": "decision_owner"
   },
   "project_facts": {
-    "required": ["repos"],
-    "recommended": ["docs_home", "ci", "staging", "human_defaults", "constraints"],
-    "overrides": ["merge_model", "template", "module_map", "ui_profile", "lane_defaults", "wip", "slas"]
+    "required": [
+      "repos"
+    ],
+    "recommended": [
+      "docs_home",
+      "ci",
+      "staging",
+      "human_defaults",
+      "constraints",
+      "autonomy",
+      "visual"
+    ],
+    "overrides": [
+      "merge_model",
+      "template",
+      "module_map",
+      "ui_profile",
+      "lane_defaults",
+      "wip",
+      "slas"
+    ]
+  },
+  "autonomy": {
+    "enabled_by_default": false,
+    "eligible_risks": [
+      "R0",
+      "R1"
+    ],
+    "window_hours": 24,
+    "reminder_once": true,
+    "reversible_only": true,
+    "external_contract_forbidden": true,
+    "h1_override": true,
+    "h3_human_required": true
+  },
+  "queue": {
+    "severities": [
+      "S0",
+      "S1",
+      "S2",
+      "S3",
+      "S4"
+    ],
+    "preempt_severities": [
+      "S0",
+      "S1"
+    ],
+    "quick_fifo": true,
+    "program_merge_window_priority": true
+  },
+  "visual": {
+    "config": "multica/project/visual.json",
+    "max_diff_ratio": 0.005,
+    "critical_max_diff_ratio": 0.0,
+    "required_when_ui_affected": true
+  },
+  "release": {
+    "tag_pattern": "v{semver}",
+    "human_approval_required": true,
+    "attach_to_issue": true,
+    "deploy_default": "dry-run"
   }
 }

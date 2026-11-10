@@ -4,7 +4,7 @@
 
 ## 1. 何时触发
 
-按 `config/KAR-Squad-Config-v4.3.md` §3.1 的风险定义：认证/授权、支付/计费、密钥/生产配置、不可逆数据、合规。Lead 在 intake 判定 `R3` 后立即：
+按 `config/KAR-Squad-Config-v4.4.md` §3.1 的风险定义：认证/授权、支付/计费、密钥/生产配置、不可逆数据、合规。Lead 在 intake 判定 `R3` 后立即：
 
 1. 在 H1 卡上写明“这是 R3，需要独立安全评审”。
 2. 指定独立安全评审人（不能是 Developer/Reviewer 本人，也不能是同一个 Agent 身份）。

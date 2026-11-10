@@ -48,11 +48,13 @@ I. 报告：更新测试验收文档；给 A5 结论、风险、H3 建议。
 
 方法：
 
+0. 优先用项目 `visual.json` + `scripts/visual.py capture/check` 自动对比；每个界面 × 断点 × 主题恰好一条结果，关键界面默认 0 差异；工具不可用或采集失败判 BLOCKED，不写 PASS。
 1. 用固定 fixture；动画/过渡在截图前冻结；关闭随机数据。
 2. 截图命名 `SC-xxx-{breakpoint}-{theme}.png`，放 `evidence/screenshots/`。
 3. 原型渲染截图与实现截图并排；用自动化视觉回归优先，没有工具则人工逐区域比对并记录。
 4. 字体不可用、浏览器渲染差异（抗锯齿/hinting）可请 Decision Owner 书面豁免；记录证据、范围、影响。
 5. 结构性差异、状态缺失、权限错误、断点错位：阻塞，不得豁免。
+6. 把结果摘要写入 manifest `visual_regression`（`config/tool/breakpoints/thresholds/results/passed/at`）；`ui_affected: true` 时 H3 必须有且 `passed: true`。截图只放项目证据目录，不进小队仓库/迁移包。
 
 # 五、缺陷分级
 

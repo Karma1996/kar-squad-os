@@ -25,6 +25,9 @@
 | WIP/并发 | Quick 3；Standard 2；Program 1（2–3 工作流）；人类待决策 ≤2 |
 | 原型 | 大/复杂 UI 触发；模式 B；风格从项目代码提取；H1 绑定 |
 | 复盘 | 按需；不阻塞合并 |
+| 低风险默认 | 仅 R0/R1、可逆、无外部契约；项目级人类 opt-in；24h 后可按假设推进，H3 仍人类 |
+| 队列 | S0/S1 抢占；Program 合并窗口优先；Quick FIFO；规则在 `queue.py` |
+| 视觉回归 | 项目事实声明工具/断点/阈值/关键界面；关键界面默认 0 差异；工具不可用判 BLOCKED |
 | 人类 | `/approve` + `/init`；Decision Owner = 根父 issue 创建人；24h SLA |
 
 完整机器可读默认值见本 Skill 的 `squad.json`。
@@ -50,7 +53,10 @@
 <!-- /squad-overlay -->
 ````
 
-允许的顶层字段：`version / repos / docs_home / ci / staging / human_defaults / constraints / overrides / goal / success_metrics / notes`。
+允许的顶层字段：`version / repos / docs_home / ci / staging / human_defaults / constraints / autonomy / visual / overrides / goal / success_metrics / notes`。
+
+- `autonomy`：低风险 24h 默认的项目级 opt-in（`enabled / opted_in_by / opted_in_at / scope`），默认关闭，只能由人类开启。
+- `visual`：视觉回归的工具/命令/断点/阈值/关键界面；有 UI 的项目建议配置。
 
 允许的 `overrides`：`merge_model / template / module_map / ui_profile / lane_defaults / wip / slas`。
 

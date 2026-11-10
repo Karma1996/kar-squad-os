@@ -22,7 +22,7 @@ class SpecsTest(unittest.TestCase):
 
     def test_versions_match(self):
         self.assertEqual(self.bootstrap["version"], self.version)
-        self.assertEqual(self.bootstrap["config"], "config/KAR-Squad-Config-v4.3.md")
+        self.assertEqual(self.bootstrap["config"], "config/KAR-Squad-Config-v4.4.md")
         profile = load("skills/kar-squad-profile/squad.json")
         self.assertEqual(profile["version"], self.version)
 
@@ -52,15 +52,16 @@ class SpecsTest(unittest.TestCase):
         for m in self.squad["members"]:
             self.assertIn(m["name"], agent_names)
 
-    def test_config_doc_mentions_v43(self):
-        doc = (ROOT / "config/KAR-Squad-Config-v4.3.md").read_text(encoding="utf-8")
+    def test_config_doc_mentions_v44(self):
+        doc = (ROOT / "config/KAR-Squad-Config-v4.4.md").read_text(encoding="utf-8")
         for needle in (
-            "v4.3", "candidate/<KEY>-<digest>", "manifest check", "human_touches", "restore.py",
+            "v4.4", "candidate/<KEY>-<digest>", "manifest check", "human_touches", "restore.py",
             "security_overlay", "touchpoints", "checkpoints", "/tour",
+            "autonomy", "queue.py", "generate.py", "visual_regression", "deploy.py",
         ):
             self.assertIn(needle, doc)
 
-    def test_v43_docs_and_scripts_exist(self):
+    def test_v44_docs_and_scripts_exist(self):
         for name in (
             "docs/GATES.md",
             "docs/MANIFEST.md",
@@ -71,13 +72,28 @@ class SpecsTest(unittest.TestCase):
             "docs/SECURITY-OVERLAY.md",
             "docs/CHECKPOINT-STEER.md",
             "docs/LEAD-TOUCHPOINTS.md",
+            "docs/AUTONOMY.md",
+            "docs/QUEUE.md",
+            "docs/SINGLE-SOURCE.md",
+            "docs/VISUAL-REGRESSION.md",
+            "docs/RELEASE-AUTOMATION.md",
+            "docs/decisions/0002-v4.4-controls.md",
             "docs/examples/delivery-manifest.json",
+            "docs/examples/low-risk-manifest.json",
+            "docs/examples/queue.json",
+            "sources/squad.json",
             "scripts/kar_common.py",
             "scripts/manifest.py",
             "scripts/metrics.py",
             "scripts/human_wip.py",
             "scripts/restore.py",
             "scripts/policy.py",
+            "scripts/autonomy.py",
+            "scripts/queue.py",
+            "scripts/generate.py",
+            "scripts/visual.py",
+            "scripts/release.py",
+            "scripts/deploy.py",
         ):
             self.assertTrue((ROOT / name).exists(), name)
 
@@ -89,13 +105,14 @@ class SpecsTest(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 
-    def test_manifest_example_passes_v43_policy(self):
-        proc = subprocess.run(
-            [sys.executable, str(ROOT / "scripts/policy.py"), "check",
-             "--manifest", str(ROOT / "docs/examples/delivery-manifest.json"), "--profile", "h3"],
-            text=True, capture_output=True,
-        )
-        self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+    def test_manifest_examples_pass_v44_policy(self):
+        for manifest in ("delivery-manifest.json", "low-risk-manifest.json"):
+            proc = subprocess.run(
+                [sys.executable, str(ROOT / "scripts/policy.py"), "check",
+                 "--manifest", str(ROOT / "docs/examples" / manifest), "--profile", "h3"],
+                text=True, capture_output=True,
+            )
+            self.assertEqual(proc.returncode, 0, manifest + "\n" + proc.stdout + proc.stderr)
 
     def test_quickstart_is_one_page_with_tour(self):
         text = (ROOT / "docs/HUMAN-QUICKSTART.md").read_text(encoding="utf-8")

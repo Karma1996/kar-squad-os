@@ -324,5 +324,43 @@
       "at": "2026-11-05T11:00:00Z",
       "actor": "decision-owner-user-id"
     }
-  ]
+  ],
+  "ui_affected": true,
+  "visual_regression": {
+    "config": {
+      "path": "multica/project/visual.json",
+      "version": "1.0",
+      "sha": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    "tool": "playwright",
+    "breakpoints": [
+      "mobile",
+      "desktop"
+    ],
+    "themes": [
+      "light"
+    ],
+    "thresholds": {
+      "max_diff_ratio": 0.005,
+      "critical_max_diff_ratio": 0.0
+    },
+    "results": [
+      {
+        "screen": "SC-01-checkout",
+        "breakpoint": "mobile",
+        "theme": "light",
+        "diff_ratio": 0.0,
+        "critical": true
+      },
+      {
+        "screen": "SC-01-checkout",
+        "breakpoint": "desktop",
+        "theme": "light",
+        "diff_ratio": 0.0012,
+        "critical": false
+      }
+    ],
+    "passed": true,
+    "at": "2026-11-05T09:30:00Z"
+  }
 }

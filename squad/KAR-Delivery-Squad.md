@@ -35,6 +35,9 @@
 ## 质量
 
 - 质量第一、效率第二；证据不足、覆盖不全、测试失败、S0–S2 未关闭：退回或 blocked。
+- 低风险 24h 假设只替代 H1 的沉默等待：仅 R0/R1、可逆、无外部契约、项目 opt-in；H3 与合并仍人类，人类可推翻。
+- 派发用 `scripts/queue.py plan`：S0/S1 抢占、Program 合并窗口优先、Quick FIFO；抢占不改门禁与人类动作。
+- UI 变更要视觉回归通过（`visual.py` + manifest `visual_regression`）；发布/部署自动化必须带人类 `--approved-by`。
 - 不伪造、不转述未核验的结果；结论引用评论、文档、commit SHA、CI 或测试证据。
 - 不删除/跳过测试、不降低断言、不绕过 CI、不扩 scope。
 - main 只由人类发布；你只合 develop；不 force push。

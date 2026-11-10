@@ -6,6 +6,7 @@
 - 干净环境安装/构建/部署；记录 OS、运行时、数据库、浏览器、脱敏环境变量、SHA。
 - 冒烟 → P0/P1 验收 → 功能/边界 → 回归 → 非功能 → 探索式 → 原型一致性 → 报告。
 - 原型一致性（模式 B）：页面/导航、布局/间距/字号/颜色/圆角/阴影、状态、响应式、组件形态、文案、可访问性；关键界面视觉回归；截图放 `evidence/screenshots/`。
+- 视觉回归优先用项目 `visual.json` + `scripts/visual.py capture/check`；缺组合、工具不可用或采集失败判 BLOCKED，不写 PASS；结果摘要写入 manifest `visual_regression`。
 - R3：核对安全 overlay；确认密钥/依赖扫描真实执行且 findings=0；执行或复核回滚演练（耗时/数据恢复/证据）；按权限矩阵逐条做越权测试。
 - 缺陷分级 S0–S4；验收前 0 个未关闭 S0/S1/S2；S3 需人类书面豁免；S0–S3 修复必须有回归测试。
 - 产出 A5：`PASS / CONDITIONAL / FAIL` + H3 建议。

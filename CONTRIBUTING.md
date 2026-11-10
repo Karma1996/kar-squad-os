@@ -13,17 +13,18 @@ KAR Squad OS 由人类与 Agent 协作维护。原则：**人类做决定，Agen
 
 1. **Issue**：在 Multica 的 **KAR Squad OS** 项目开 issue；写目标、验收、风险、回滚。
 2. **分支**：`feat/{ISSUE_KEY}-{SLUG}`；一个 issue 一个 PR。
-3. **实现**：同步更新 `config/`、`skills/`、`agents/`、`tests/`；保持 `VERSION` 一致。
+3. **实现**：先改 `sources/squad.json` 并 `make generate`；同步更新 `config/`、`skills/`、`agents/`、`tests/`；保持 `VERSION` 一致。
 4. **本地验证**：
    ```bash
+   make generate   # 只改 sources/squad.json 时
    make test
    make check
    ```
-   涉及候选/门禁时另跑 `python3 scripts/manifest.py check --manifest docs/examples/delivery-manifest.json --profile draft` 与 `python3 scripts/policy.py check --manifest docs/examples/delivery-manifest.json --profile h3`；实际交付用 `--profile freeze|h3`。
+   涉及候选/门禁时另跑 `python3 scripts/manifest.py check --manifest docs/examples/delivery-manifest.json --profile draft` 与 `python3 scripts/policy.py check --manifest docs/examples/delivery-manifest.json --profile h3`；实际交付用 `--profile freeze|h3`。低风险假设用 `scripts/autonomy.py check`，队列用 `scripts/queue.py plan`，视觉回归用 `scripts/visual.py check`。
 5. **PR**：描述含变更、影响、测试、迁移、回滚；CI 必须绿。
 6. **人类评审**：看 diff、配置手册、测试与迁移影响；Approve 后 squash merge。
-7. **发布**：打 tag `vX.Y.Z`；`make build`；把 `release/KAR-Squad-Bootstrap-vX.Y.Z.zip` 附到 issue。
-8. **部署**：`bootstrap.py --dry-run` → `--apply --update` → `verify.py`；执行前备份。
+7. **发布**：人类批准后 `python3 scripts/release.py publish --tag vX.Y.Z --issue <KEY> --approved-by <human> --apply`（tag → GitHub Release → issue 附件）；或手工 `make build` 后打 tag。
+8. **部署**：`deploy.py --dry-run` → `--apply --update --approved-by <human>`（内部 `bootstrap.py` → `verify.py`）；执行前备份。
 9. **回滚**：用 `backups/` 或上一版 release；不删除对象。
 
 ## 配置变更协议
@@ -35,7 +36,8 @@ KAR Squad OS 由人类与 Agent 协作维护。原则：**人类做决定，Agen
 - 如何验证？如何回滚？
 - 是否改变人类动作数、门禁或质量底线？
 - 是否需要同步更新 `config/KAR-Squad-Config-vX.Y.md` 与 `CHANGELOG.md`？
-- 是否改变候选冻结、门禁检查（3 项）、指标字段、人类 WIP/SLA、产物矩阵、R3 安全 overlay、草稿/steer 或接触点预算？改了要同步 `docs/`（含 `ARTIFACTS/SECURITY-OVERLAY/CHECKPOINT-STEER/LEAD-TOUCHPOINTS`）与脚本测试。
+- 是否改变候选冻结、门禁检查（3 项）、指标字段、人类 WIP/SLA、产物矩阵、R3 安全 overlay、草稿/steer、接触点预算、低风险 24h 假设、队列排序、视觉回归或发布/部署流程？改了要同步 `docs/`（含 `ARTIFACTS/SECURITY-OVERLAY/CHECKPOINT-STEER/LEAD-TOUCHPOINTS/AUTONOMY/QUEUE/VISUAL-REGRESSION/RELEASE-AUTOMATION`）与脚本测试。
+- 是否改了 `sources/squad.json`？改了必须 `make generate`，并在 PR 里说明生成文件 diff。
 
 ## 质量底线
 

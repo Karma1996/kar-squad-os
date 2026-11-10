@@ -1,6 +1,6 @@
 # 候选冻结与 `manifest check`
 
-`delivery-manifest.json` 是变更集的可审计快照。v4.2 起，A4/A5 不只绑定 branch/head，而是绑定一个可重建、可验证的候选标签；v4.3 起再加治理块（产物矩阵、安全 overlay、草稿/steer、接触点）：
+`delivery-manifest.json` 是变更集的可审计快照。v4.2 起，A4/A5 不只绑定 branch/head，而是绑定一个可重建、可验证的候选标签；v4.3 起再加治理块（产物矩阵、安全 overlay、草稿/steer、接触点）；v4.4 再加低风险 24h 假设（`autonomy`）与视觉回归（`ui_affected` / `visual_regression`）：
 
 ```text
 candidate/<ISSUE_KEY>-<digest>
@@ -49,9 +49,14 @@ python3 scripts/manifest.py check \
   --repo-root storefront=/path/to/storefront \
   --profile h3 --check-remotes --check-prs --check-ci
 
-# 单独跑 v4.3 治理策略（不校验文件存在，CI 可快速跑）
+# 单独跑治理策略（不校验文件存在，CI 可快速跑）
 python3 scripts/policy.py check --manifest <path>/delivery-manifest.json --profile h3
 python3 scripts/policy.py matrix
+
+# v4.4：低风险 24h 假设与视觉回归单独审阅
+python3 scripts/autonomy.py check --manifest <path>/delivery-manifest.json --profile h3
+python3 scripts/autonomy.py deadline --manifest <path>/delivery-manifest.json
+python3 scripts/visual.py check --config <visual.json> --results <results.json>
 ```
 
 ### profile
@@ -60,7 +65,7 @@ python3 scripts/policy.py matrix
 | --- | --- |
 | `draft` | 结构、字段、gate 形状、metrics 类型；不要求文件存在或 head 可读 |
 | `freeze` | 上述 + 文档/原型 SHA 与文件一致 + 各仓本地 head 一致 + PR 字段 + CI `passed` + candidate digest/tag/frozen_at |
-| `h3` | 上述 + `risk` R0–R3 + 三道门各 3 项检查 + rationale/conditions + 人类批准 + R3 第二人 + H3 10% 抽样 + 5 项指标 + v4.3 治理块 |
+| `h3` | 上述 + `risk` R0–R3 + 三道门各 3 项检查 + rationale/conditions + 人类批准（H1 可为 `assumed`）+ R3 第二人 + H3 10% 抽样 + 5 项指标 + v4.3/v4.4 治理块 |
 
 ### 退出码
 
@@ -137,7 +142,9 @@ CI 记录本身在 `repos[].ci`：`status`、`head`、`url`、`checked_at`。`he
 }
 ```
 
-完整可运行示例：[`docs/examples/delivery-manifest.json`](examples/delivery-manifest.json)。门的字段与检查项见 [`docs/GATES.md`](GATES.md)，指标见 [`docs/METRICS.md`](METRICS.md)。
+启用低风险假设或 UI 变更时，再按第 6 节加 `autonomy` 与 `ui_affected` / `visual_regression`。
+
+完整可运行示例：[`docs/examples/delivery-manifest.json`](examples/delivery-manifest.json)（R3 + 视觉回归）、[`docs/examples/low-risk-manifest.json`](examples/low-risk-manifest.json)（R1 + 24h 假设）。门的字段与检查项见 [`docs/GATES.md`](GATES.md)，指标见 [`docs/METRICS.md`](METRICS.md)。
 
 ## 6. v4.3 治理块
 
@@ -150,6 +157,8 @@ CI 记录本身在 `repos[].ci`：`status`、`head`、`url`、`checked_at`。`he
 | `checkpoints` | H3 | H1/H2 草稿发布与 10 分钟异步 review | [`CHECKPOINT-STEER.md`](CHECKPOINT-STEER.md) |
 | `steers` | H3 | 草稿期纠偏的决策台账（无则 `[]`） | [`CHECKPOINT-STEER.md`](CHECKPOINT-STEER.md) |
 | `touchpoints` | H3 | Lead 找人的六个接触点与预算 | [`LEAD-TOUCHPOINTS.md`](LEAD-TOUCHPOINTS.md) |
+| `autonomy` | H3（启用时） | 低风险 24h 假设：opt-in、可逆、无外部契约、提醒、假设与 H1 `assumed` | [`AUTONOMY.md`](AUTONOMY.md) |
+| `ui_affected` / `visual_regression` | UI 变更 H3 | 视觉回归摘要；`ui_affected: true` 时必须 `passed: true` | [`VISUAL-REGRESSION.md`](VISUAL-REGRESSION.md) |
 
 这些块在 `draft`/`freeze` 只做形状提示；`h3` 缺项或越预算直接 FAIL。`policy.py check` 与 `manifest.py check --profile h3` 使用同一套校验。
 
@@ -157,5 +166,5 @@ CI 记录本身在 `repos[].ci`：`status`、`head`、`url`、`checked_at`。`he
 
 - **Developer（A4 候选）**：push 后写 manifest，跑 `freeze --write` + `check --profile freeze`，把 tag、digest、命令与退出码写进 HANDOFF。
 - **Reviewer/QA**：先跑 `check --profile freeze`，结论标题绑定同一个 tag；head 或 tag 变了，旧结论作废。
-- **Lead（H3）**：跑 `check --profile h3 --check-remotes --check-prs --check-ci` 与 `policy.py check --profile h3`；只有通过才发 H3 卡，卡上绑定 tag（对人可写短 SHA）。草稿 checkpoint 与 steer 在发卡前就记录。
+- **Lead（H3）**：跑 `check --profile h3 --check-remotes --check-prs --check-ci` 与 `policy.py check --profile h3`；只有通过才发 H3 卡，卡上绑定 tag（对人可写短 SHA）。草稿 checkpoint 与 steer 在发卡前就记录。R0/R1 项目 opt-in 且 H1 已 `assumed` 时，`autonomy.py check` 必须通过；UI 变更还要 `visual_regression.passed: true`。
 - **合并后**：回填 `merge_receipts`；归档时保留 manifest，digest 不重算。

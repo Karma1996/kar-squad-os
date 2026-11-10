@@ -27,6 +27,7 @@ LANE: Quick | Standard | Program
 - M4 接口/契约/公共库/基础设施：排除。
 - R2 → Standard；R3 → Standard + 安全 overlay + 独立安全评审（见 `docs/SECURITY-OVERLAY.md`）。
 - 产物按风险分级封顶：R0/R1 ≤3、R2 三份、R3 全量、Program 子级 1–2；写入 manifest `artifacts`（见 `docs/ARTIFACTS.md`）。
+- 低风险 24h 假设：仅 R0/R1、可逆、无外部契约、项目级人类 opt-in；H1 静默 24h 后可记 `assumed`，H3 仍人类批准（见 `docs/AUTONOMY.md`）。
 - Decision Owner 可上调；下调到 Quick 必须书面接受风险并记录。
 
 ## 模块类别
@@ -44,6 +45,7 @@ M0 文档/测试/工具；M1 展示层；M2 普通业务；M3 核心域；M4 接
 - WIP 单位是“活动工作流”，不是需求数。
 - Dev 默认 2；Program 需要 3 工作流时，先测队列再决定是否调到 3。
 - 同一 Agent 并行不同 issue 必须独立 worktree；上下文串扰时降为串行。
+- 派发顺序用 `scripts/queue.py plan`：S0 抢占非 S0，S1 抢占 S2–S4；同 severity 内 Program 合并窗口优先、其余 FIFO、Quick 严格 FIFO。抢占只改顺序，不改门禁与人类动作（见 `docs/QUEUE.md`）。
 
 # 四、派发格式
 
@@ -72,6 +74,7 @@ write_lock: {agent-name}
 - 每道门固定 3 项检查，结果、理由、附条件写入 `manifest.gates.<gate>`：`checks`（3 条，pass/fail/n/a + evidence）、`rationale`（一句话）、`conditions`（列表，无则 `[]`）。检查清单见 `docs/GATES.md`。
 - H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci` 与 `scripts/policy.py check --profile h3`；失败不发卡。R3 必须有 `second_reviewer`，且与 `security_overlay.reviewer` 同一人；H3 记录 10% 抽样（`sampling`，至少 1 道门）。
 - 每道门只发一张卡；不出现 H1/H2/H3、A4/A5、manifest digest 等术语；3 项检查翻译成人类语言。
+- R0/R1 且项目 opt-in：H1 静默 24h、只提醒一次后可记 `assumed`（`approver_type: assumption`）；H3 仍由人类批准，人类可随时推翻。详见 `docs/AUTONOMY.md`。
 - 发卡前先发草稿，至少提前 10 分钟；见下一节。
 - 人类 `/approve` 批准；明确自然语言批准也有效，但你必须复述并绑定版本/SHA。只有人类能批准，`approver_type` 必须是 `human`。
 - 不回复 = 等待；24h 只提醒一次；不代批、不自动通过。
@@ -115,6 +118,14 @@ write_lock: {agent-name}
 - 记录 manifest `touchpoints`（`kind`/`at`/`actor`/`gate`/`reason`）；H3 校验 intake 与三道门（Quick 一道）齐全。
 - 详见 `docs/CHECKPOINT-STEER.md` 与 `docs/LEAD-TOUCHPOINTS.md`。
 
+## 低风险 24h 假设（R0/R1，项目 opt-in）
+
+- 前提：风险 R0/R1、可逆、无外部契约、非 Program 子级；项目描述有 `autonomy` 人类 opt-in。
+- H1 卡发出满 24h、只提醒一次后仍无回复：写 `autonomy` 块（`project_opt_in / reversible / window_hours / wait_started_at / notification / assumption / state / assumed_at`），把 `gates.h1` 记为 `assumed`。
+- 假设一句话写清“按什么条件推进”，归属 Decision Owner；H2 照常，H3 仍人类 `/approve`。
+- 人类推翻：`overridden` + `override.decision: rejected` → H3 失败，重做/重走 H1；`human_gate_restored` → 必须人类重新批准 H1。
+- 校验：`scripts/autonomy.py check|deadline` 与 `scripts/policy.py check --profile h3`。假设不增加人类动作数，也不新增接触点。
+
 # 七、人类 roster 与送达
 
 - Decision Owner = 根父 issue 创建人；子 issue creator 不算。父 issue 由 agent 创建时回退项目 lead，仍无则 H1 前询问。
@@ -130,6 +141,8 @@ write_lock: {agent-name}
 Intake 判道 → Dev 修复+回归 → Reviewer 一次独立 verify（A4+A5 合并）
 → 人类一次 /approve → Lead squash merge → 关闭
 ```
+
+- R0/R1 且项目 opt-in 时，H1 允许 24h 沉默后按假设继续；Quick 的那一次 `/approve` 仍是验收+合入授权，不由假设替代。
 
 - Reviewer 必须实际运行测试或复现，不接受只看代码。
 - 不写正式需求/设计文档；不强制 HTML；不做复盘。

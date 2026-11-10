@@ -26,15 +26,17 @@
 | Lead touchpoint budget | ✅ 只允许 intake/契约/门禁/集成/合并/异常六类；预算与 gate 记录在 `touchpoints` 校验 |
 | 1 页 Quickstart + `/tour` | ✅ Quickstart 压缩为 1 页并给出 5 分钟走完一道门；`/tour` 五步只读导览写入配置手册附录 D |
 
-## v4.4（P2）
+## v4.4（P2，4.4.0 已交付）
+
+实现与验证命令见 `docs/AUTONOMY.md`、`docs/QUEUE.md`、`docs/SINGLE-SOURCE.md`、`docs/VISUAL-REGRESSION.md`、`docs/RELEASE-AUTOMATION.md`；统一校验 `python3 scripts/policy.py check --profile h3` 与 `make check`。
 
 | 项 | 验收 |
 | --- | --- |
-| 低风险 24h 默认 + 假设 | 仅 R0/R1、可逆、无外部契约；项目级 opt-in；H1 可推翻 |
-| 队列抢占 | S0/S1 抢占；Quick FIFO；Program 合并窗口优先 |
-| 单一源生成 | 从 YAML/JSON 生成 config/skills/agents，消除三套源漂移 |
-| 视觉回归工具化 | 项目事实配置工具/断点/阈值；关键界面自动对比 |
-| 发布自动化 | tag → GitHub Release → Multica issue 附件；部署 dry-run/apply/verify 一键 |
+| 低风险 24h 默认 + 假设 | ✅ 仅 R0/R1、可逆、无外部契约、项目级人类 opt-in；H1 静默 24h 后记 `assumed`；人类可推翻（`overridden` 时 H3 失败）；H3 仍人类；`autonomy.py check|deadline` + `policy.py` 校验 |
+| 队列抢占 | ✅ S0/S1 抢占；同 severity 内 Program 合并窗口优先、其余 FIFO、Quick 严格 FIFO；`queue.py check|plan` 确定性输出与抢占记录 |
+| 单一源生成 | ✅ `sources/squad.json` 生成 skills/agents/squad/bootstrap/profile；`generate.py --check` 在 `make check` 拦截漂移；ADR 0002 记录 JSON 选型 |
+| 视觉回归工具化 | ✅ 项目事实 `visual.json` 配置工具/断点/阈值/关键界面；`visual.py init|capture|check`；关键界面默认 0 差异，缺组合/工具不可用判 FAIL/BLOCKED；`visual_regression` 在 H3 校验 |
+| 发布自动化 | ✅ `release.py check|plan|tag|github-release|attach|publish`；tag → GitHub Release → Multica issue 附件；`deploy.py` dry-run → apply → verify 一键，人类 `--approved-by` 前置 |
 
 ## 暂不做
 
