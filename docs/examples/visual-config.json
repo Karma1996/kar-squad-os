@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "tool": "playwright",
+  "command": [
+    "node",
+    "visual/compare.mjs"
+  ],
+  "breakpoints": [
+    {
+      "name": "mobile",
+      "width": 375
+    },
+    {
+      "name": "desktop",
+      "width": 1440
+    }
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "thresholds": {
+    "max_diff_ratio": 0.005,
+    "critical_max_diff_ratio": 0.0
+  },
+  "screens": [
+    {
+      "id": "SC-01-login",
+      "url": "/login",
+      "critical": true
+    },
+    {
+      "id": "SC-02-home",
+      "url": "/"
+    }
+  ],
+  "critical_screens": [
+    "SC-01-login"
+  ]
+}

@@ -77,12 +77,14 @@ SPLIT PLAN v1 — {PARENT_KEY}
 - 子级 A4/A5 通过不等于父级完成；父级必须做集成验证：跨工作流契约、组合 staging、端到端关键路径、manifest 一致性。
 - H3 看父级 candidate tag/digest + 各仓 SHA + 集成证据；不重复子级全部证据。
 - H3 前跑 `scripts/manifest.py check --profile h3 --check-remotes --check-prs --check-ci`；任一仓 late push 则父级结论作废。
+- 父级 `ui_affected: true` 时，`visual_regression` 必须 `passed: true` 且覆盖父级全部关键界面/断点；子级视觉证据并入父级，不重复占产物额度。
 - 原型：跨工作流 UI 用父级 `交互原型.html`；各工作流独立页面放子目录；H1 一次批准整套，模式 B。
 - 复盘按需；不作为合并前置。
 
 # 九、合并列车
 
 - 按 manifest 的 merge_order 逐仓合并；共享仓走 merge queue；一次一个 PR。
+- 合并窗口开放时用 `scripts/queue.py plan` 让窗口内 Program 项优先派发；窗口只改执行顺序，不跳过父级 H3 或人类合并授权。
 - Docs PR 最后合入。
 - 合并失败：冻结合并列车；保留已合入仓；人类在回滚/前向修复/拆分之间决定；不自动继续。
 - 回填 merge receipts；删除 feature 分支；main 只由人类发布。

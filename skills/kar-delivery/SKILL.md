@@ -44,6 +44,7 @@ A3 就绪；工作道 Standard/Program 的开发阶段；Quick 的修复阶段�
 - 可见偏差 → 停止，提交 `DECISION-REQUEST`：前后对比、影响、建议、是否改变 AC；由 Decision Owner 决定。
 - 实现细节差异（DOM 结构、内部组件）只要可见结果一致，不需要批准。
 - 不静默重设计；不以“实现更方便”改变已批准交互。
+- UI 变更交付前跑项目视觉回归（`scripts/visual.py capture/check`），结果摘要写入 manifest `visual_regression`；工具不可用要显式记录，不能宣称像素级通过。
 
 # 六、PR 与开发说明
 
@@ -66,6 +67,7 @@ A4 候选条件：范围内 FR 已实现；P0/P1 通过；lint/typecheck/unit/in
 - HANDOFF：stage=build、branch/head、candidate tag/digest、pr、artifacts、tests、coverage、prototype、metrics、risks、open_questions、recommended_next。
 - 在 `metrics` 记录 5 项指标（human_touches / wait_human / rework_rounds / candidate_recuts / escaped_defects）；周摘要见 `docs/METRICS.md`。
 - 建议下一步 Reviewer（A4）与 QA（A5）并行；不自行批准、不合并、不部署生产。
+- 发布/部署是人类的决定：`scripts/release.py`（tag → GitHub Release → issue 附件）与 `scripts/deploy.py`（dry-run → apply → verify）必须带人类 `--approved-by`；Developer 不执行发布。
 
 # 八、禁止
 

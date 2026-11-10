@@ -1,5 +1,15 @@
 # Changelog
 
+## 4.4.0
+
+- 新增低风险 24h 默认与假设：仅 R0/R1、可逆、无外部契约、项目级人类 opt-in；H1 静默 24h 且只提醒一次后记 `assumed`，人类可推翻，H3 仍由人类批准（`autonomy.py check|deadline`、`policy.py` 的 `autonomy` 校验）。
+- 新增队列抢占：`queue.py check|plan` 按 S0/S1 抢占、Program 合并窗口优先、Quick FIFO 的确定性顺序派发；抢占不改门禁与人类动作。
+- 新增单一源生成：`sources/squad.json` 生成 `skills.json`、`agents.json`、`squad/`、`bootstrap.json`、`kar-squad-profile/squad.json`；`generate.py --check` 在 `make check` 拦截漂移；ADR 0002 记录选型。
+- 新增视觉回归工具化：项目事实配置工具/断点/阈值/关键界面；`visual.py init|capture|check` 校验覆盖与阈值，关键界面默认 0 差异；manifest `ui_affected` / `visual_regression` 在 H3 校验。
+- 新增发布/部署自动化：`release.py check|plan|tag|github-release|attach|publish`（tag → GitHub Release → issue 附件）与 `deploy.py`（dry-run → apply --update → verify 一键）；不可逆步骤默认 dry-run 且必须人类 `--approved-by`。
+- 配置手册升为 v4.4，新增 `docs/AUTONOMY.md`、`docs/QUEUE.md`、`docs/SINGLE-SOURCE.md`、`docs/VISUAL-REGRESSION.md`、`docs/RELEASE-AUTOMATION.md`、ADR 0002 与三份示例；Skills/Agents/Squad 同步。
+- 测试：新增 autonomy/queue/generate/visual/release/deploy 单测与示例 manifest 的 v4.4 策略校验；`make check` 增加生成漂移、低风险假设与队列示例校验。
+
 ## 4.3.0
 
 - 新增 R3 安全 overlay：威胁模型、权限矩阵、密钥与依赖扫描、回滚演练、独立安全评审人；H3 第二人与 overlay 评审人强制为同一人（`security_overlay.reviewer`）。

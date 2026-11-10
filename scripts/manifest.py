@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
-"""Freeze and check a KAR delivery manifest (v4.3).
+"""Freeze and check a KAR delivery manifest (v4.4).
 
 Commands:
   digest  Print (and optionally write) the candidate digest/tag.
   freeze  Validate the recorded facts, then write candidate.digest/tag.
   check   Validate a manifest: docs SHA, prototype SHA, repo head, PR, CI,
           candidate tag, gates, R3 second review, H3 sampling and metrics.
-  policy  (v4.3)  is validated by policy.py: artifact matrix, R3 security
-          overlay, draft checkpoints/steer ledger and the Lead touchpoint budget.
+  policy  (v4.3/v4.4) is validated by policy.py: artifact matrix, R3 security
+          overlay, draft checkpoints/steer ledger, Lead touchpoint budget,
+          low-risk autonomy and visual regression.
 
 Only the Python standard library is used. ``check`` is offline by default;
 pass --check-remotes / --check-prs / --check-ci to compare against Git
@@ -301,8 +302,22 @@ def validate_gates(manifest: dict, profile: str, errors: list, warnings: list) -
         status = gate.get("status")
         if status not in GATE_STATUS:
             errors.append(f"gates.{key}.status: expected one of {', '.join(GATE_STATUS)}")
-        if strict and status != "approved":
+        allowed = ("approved", "assumed") if key == "h1" else ("approved",)
+        if strict and status not in allowed:
             errors.append(f"gates.{key}: must be approved at H3, got {status!r}")
+        if status == "assumed":
+            if key != "h1":
+                errors.append(f"gates.{key}.status: only H1 may be assumed")
+            risk = str(manifest.get("risk") or "").upper()
+            if risk not in ("R0", "R1"):
+                errors.append("gates.h1.status=assumed: only R0/R1 changes may use the 24h default")
+            autonomy = manifest.get("autonomy")
+            if not isinstance(autonomy, dict) or autonomy.get("state") != "assumed":
+                errors.append("gates.h1.status=assumed: requires autonomy.state=assumed")
+            if gate.get("approver_type") != "assumption":
+                errors.append("gates.h1.approver_type: expected assumption when H1 is assumed")
+            if not parse_time(gate.get("assumed_at")):
+                errors.append("gates.h1.assumed_at: invalid timestamp")
         checks = gate.get("checks")
         if checks is not None:
             expected = [check_id for check_id, _ in GATE_CHECKS[key]]
@@ -325,7 +340,7 @@ def validate_gates(manifest: dict, profile: str, errors: list, warnings: list) -
                         errors.append(f"gates.{key}.{cid}.evidence: required")
                     if c.get("result") == "n/a" and not _nonempty(c.get("note")):
                         warnings.append(f"gates.{key}.{cid}: n/a without note")
-        elif strict and status == "approved":
+        elif strict and status in ("approved", "assumed"):
             errors.append(f"gates.{key}.checks: 3 checks required before approval")
         rationale = gate.get("rationale")
         if _nonempty(rationale) and len(rationale.strip()) > 280:
@@ -344,9 +359,18 @@ def validate_gates(manifest: dict, profile: str, errors: list, warnings: list) -
                 errors.append(f"gates.{key}.approved_by: required")
             if not parse_time(gate.get("approved_at")):
                 errors.append(f"gates.{key}.approved_at: invalid timestamp")
+        if status == "assumed":
+            if gate.get("approved_at"):
+                errors.append(f"gates.h1: assumed gate must not have a human approved_at")
+            if strict and not _nonempty(rationale):
+                errors.append("gates.h1.rationale: one-sentence assumption reason required")
+            if strict and conditions is None:
+                errors.append("gates.h1.conditions: required (use [] when none)")
         if status == "pending":
             if gate.get("approved_at"):
                 errors.append(f"gates.{key}: pending gate has approved_at")
+            if gate.get("assumed_at"):
+                errors.append(f"gates.{key}: pending gate has assumed_at")
             if strict and not parse_time(gate.get("requested_at")):
                 errors.append(f"gates.{key}.requested_at: required for pending gate")
         if status == "rejected" and not _nonempty(rationale):

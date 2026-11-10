@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""v4.3 governance policy checks for a KAR delivery manifest.
+"""v4.4 governance policy checks for a KAR delivery manifest.
 
-The four P1 controls introduced in v4.3 live here so they can be tested and
+The P1/P2 controls introduced in v4.3 and v4.4 live here so they can be tested and
 run on their own:
 
 * artifact matrix    - how many formal deliverables each risk tier may spend
@@ -9,6 +9,8 @@ run on their own:
 * draft checkpoints  - H1/H2 drafts published at least 10 minutes before the gate
 * steer ledger       - corrections made during draft review are recorded
 * touchpoint budget  - the Lead may only touch humans at six contact points
+* low-risk autonomy   - R0/R1 reversible changes may assume agreement after 24h
+* visual regression   - UI-affected changes carry a passing visual summary
 
 Only the Python standard library is used. ``manifest.py check --profile h3``
 calls :func:`validate_policy`, so a manifest cannot pass H3 while violating
@@ -20,6 +22,7 @@ import argparse
 import json
 import re
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 from kar_common import GATE_ORDER, load_manifest, parse_time
@@ -82,6 +85,17 @@ TOUCHPOINT_CAPS = {
 }
 LANES = ("quick", "standard", "program")
 QUICK_GATE = "quick"
+
+# --- v4.4 low-risk autonomy ------------------------------------------------
+
+AUTONOMY_RISKS = ("R0", "R1")
+AUTONOMY_STATES = ("assumed", "approved", "overridden")
+AUTONOMY_OVERRIDE_DECISIONS = ("rejected", "human_gate_restored")
+AUTONOMY_MIN_WINDOW_HOURS = 24
+
+# --- v4.4 visual regression ------------------------------------------------
+
+VISUAL_THEME_DEFAULT = "light"
 
 
 def _nonempty(value) -> bool:
@@ -452,12 +466,312 @@ def validate_touchpoints(manifest: dict, strict: bool, errors: list, warnings: l
             errors.append("touchpoints: Program requires a contract touchpoint (split/contract approval)")
 
 
+def _is_ratio(value) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and 0 <= value <= 1
+
+
+def validate_autonomy(manifest: dict, strict: bool, errors: list, warnings: list) -> None:
+    """v4.4: R0/R1 reversible changes may assume agreement after a 24h window.
+
+    The autonomy block records a *completed* 24h window. ``state`` says what
+    the human then did: ``assumed`` (no answer, H1 recorded as assumed),
+    ``approved`` (the human approved after the window) or ``overridden``
+    (the human rejected the assumption; H3 must wait for rework and a human
+    gate). H3 itself can never be replaced by an assumption.
+    """
+    block = manifest.get("autonomy")
+    gates = manifest.get("gates") if isinstance(manifest.get("gates"), dict) else {}
+    h1 = gates.get("h1") if isinstance(gates.get("h1"), dict) else {}
+    if block is None:
+        if h1.get("status") == "assumed":
+            errors.append("autonomy: required when gates.h1.status is assumed")
+        return
+    if not isinstance(block, dict):
+        errors.append("autonomy: expected an object")
+        return
+
+    risk = str(manifest.get("risk") or "").upper()
+    if risk not in AUTONOMY_RISKS:
+        errors.append(
+            f"autonomy: only R0/R1 may use the 24h default, got {risk or 'unknown risk'}"
+        )
+    if manifest.get("program_child") is True:
+        errors.append("autonomy: Program children inherit the parent's gates; do not record a child assumption")
+
+    opt_in = block.get("project_opt_in")
+    if not isinstance(opt_in, dict):
+        errors.append("autonomy.project_opt_in: required object (by/at/scope; project-level human opt-in)")
+    else:
+        if not _nonempty(opt_in.get("by")):
+            errors.append("autonomy.project_opt_in.by: required (the human who opted in)")
+        if not _timestamp(opt_in.get("at")):
+            errors.append("autonomy.project_opt_in.at: invalid timestamp")
+        if not _nonempty(opt_in.get("scope")):
+            errors.append("autonomy.project_opt_in.scope: required (project/repo scope)")
+
+    if block.get("reversible") is not True:
+        errors.append("autonomy.reversible: must be explicitly true (only reversible changes qualify)")
+    if block.get("external_contract") is not False:
+        errors.append("autonomy.external_contract: must be explicitly false (no external contract)")
+
+    window = block.get("window_hours")
+    window_ok = (
+        isinstance(window, (int, float))
+        and not isinstance(window, bool)
+        and window >= AUTONOMY_MIN_WINDOW_HOURS
+    )
+    if not window_ok:
+        errors.append(
+            f"autonomy.window_hours: must be >= {AUTONOMY_MIN_WINDOW_HOURS} hours"
+        )
+
+    wait_started = parse_time(block.get("wait_started_at"))
+    if wait_started is None:
+        errors.append("autonomy.wait_started_at: invalid timestamp (when the H1 card was sent)")
+    assumed_at = parse_time(block.get("assumed_at"))
+    if assumed_at is None:
+        errors.append("autonomy.assumed_at: invalid timestamp (when the 24h window elapsed)")
+
+    notification = block.get("notification")
+    reminder = None
+    if not isinstance(notification, dict):
+        errors.append("autonomy.notification: required object (single 24h reminder: at/actor/channel)")
+    else:
+        reminder = parse_time(notification.get("at"))
+        if reminder is None:
+            errors.append("autonomy.notification.at: invalid timestamp")
+        if not _nonempty(notification.get("actor")):
+            errors.append("autonomy.notification.actor: required (who was reminded)")
+        if not _nonempty(notification.get("channel")):
+            errors.append("autonomy.notification.channel: required (issue comment, etc.)")
+
+    assumption = block.get("assumption")
+    recorded = None
+    if not isinstance(assumption, dict):
+        errors.append("autonomy.assumption: required object (statement/owner/recorded_at)")
+    else:
+        statement = assumption.get("statement")
+        if not _nonempty(statement):
+            errors.append("autonomy.assumption.statement: required (the assumption being made)")
+        elif len(statement.strip()) > 280:
+            errors.append("autonomy.assumption.statement: keep to one line (<=280 chars)")
+        if not _nonempty(assumption.get("owner")):
+            errors.append("autonomy.assumption.owner: required (the Decision Owner)")
+        recorded = parse_time(assumption.get("recorded_at"))
+        if recorded is None:
+            errors.append("autonomy.assumption.recorded_at: invalid timestamp")
+        if assumption.get("expires_at") is not None:
+            expires = parse_time(assumption.get("expires_at"))
+            if expires is None:
+                errors.append("autonomy.assumption.expires_at: invalid timestamp")
+            elif recorded and expires <= recorded:
+                errors.append("autonomy.assumption.expires_at: must be after recorded_at")
+
+    state = block.get("state")
+    if state not in AUTONOMY_STATES:
+        errors.append(f"autonomy.state: expected one of {', '.join(AUTONOMY_STATES)}")
+
+    if wait_started and window_ok and assumed_at:
+        window_end = wait_started + timedelta(hours=float(window))
+        if assumed_at < window_end:
+            errors.append(
+                "autonomy.assumed_at: the 24h window has not elapsed "
+                f"(wait_started_at + {window:g}h)"
+            )
+        if reminder is not None and reminder < window_end:
+            errors.append("autonomy.notification.at: the single reminder may not precede the 24h window")
+    if wait_started and reminder is not None and reminder < wait_started:
+        errors.append("autonomy.notification.at: must not precede autonomy.wait_started_at")
+    if assumed_at and reminder is not None and reminder > assumed_at:
+        errors.append("autonomy.notification.at: reminder must be recorded at or before assumed_at")
+
+    if state == "assumed":
+        if h1.get("status") != "assumed":
+            errors.append("autonomy.state=assumed: requires gates.h1.status=assumed")
+        elif parse_time(h1.get("assumed_at")) != assumed_at:
+            errors.append("autonomy.assumed_at: must equal gates.h1.assumed_at")
+        if h1.get("approver_type") != "assumption":
+            errors.append("gates.h1.approver_type: expected assumption when H1 is assumed")
+    elif state == "approved":
+        if h1.get("status") != "approved":
+            errors.append("autonomy.state=approved: requires gates.h1.status=approved (human)")
+        approved_at = parse_time(h1.get("approved_at"))
+        if approved_at and assumed_at and approved_at < assumed_at:
+            errors.append(
+                "gates.h1.approved_at: a normal early H1 approval should not carry an autonomy block; "
+                "record it after the 24h assumption instead"
+            )
+    elif state == "overridden":
+        if h1.get("status") == "assumed":
+            errors.append("gates.h1: must not stay assumed after a human override")
+        message = (
+            "autonomy.state=overridden: the human rejected the assumption; restore H1 and rework before H3"
+        )
+        if strict:
+            errors.append(message)
+        else:
+            warnings.append(message)
+
+    override = block.get("override")
+    if state == "overridden" and override is None:
+        errors.append("autonomy.override: required when state is overridden (by/at/decision/reason)")
+    if override is not None:
+        if not isinstance(override, dict):
+            errors.append("autonomy.override: expected an object")
+        else:
+            if not _nonempty(override.get("by")):
+                errors.append("autonomy.override.by: required (the human who overrode)")
+            overridden_at = parse_time(override.get("at"))
+            if overridden_at is None:
+                errors.append("autonomy.override.at: invalid timestamp")
+            elif assumed_at and overridden_at < assumed_at:
+                errors.append("autonomy.override.at: cannot precede the assumption")
+            if not _nonempty(override.get("reason")):
+                errors.append("autonomy.override.reason: required")
+            decision = override.get("decision")
+            if decision not in AUTONOMY_OVERRIDE_DECISIONS:
+                errors.append(
+                    "autonomy.override.decision: expected rejected or human_gate_restored"
+                )
+            if decision == "rejected" and state != "overridden":
+                errors.append("autonomy.override.decision=rejected: state must be overridden")
+            if decision == "human_gate_restored":
+                if state != "approved":
+                    errors.append(
+                        "autonomy.override.decision=human_gate_restored: H1 must be human-approved before H3"
+                    )
+                if h1.get("status") != "approved":
+                    errors.append("gates.h1: human_gate_restored requires a human H1 approval")
+
+
+def validate_visual_regression(manifest: dict, strict: bool, errors: list, warnings: list) -> None:
+    """v4.4: UI-affected changes must carry a passing visual-regression summary.
+
+    The summary is a pointer + coverage proof; ``visual.py check`` validates the
+    project's own config/results file (tool, breakpoints, thresholds, coverage).
+    """
+    ui = manifest.get("ui_affected")
+    if ui is not None and not isinstance(ui, bool):
+        errors.append("ui_affected: expected true or false")
+    block = manifest.get("visual_regression")
+    if manifest.get("program_child") is True:
+        if block is not None:
+            warnings.append("visual_regression: Program children inherit the parent's visual evidence")
+        return
+    if block is None:
+        if strict and ui is True:
+            errors.append(
+                "visual_regression: required at H3 when ui_affected is true "
+                "(config/tool/breakpoints/thresholds/results)"
+            )
+        return
+    if not isinstance(block, dict):
+        errors.append("visual_regression: expected an object")
+        return
+    if ui is not True:
+        warnings.append("visual_regression: only required when ui_affected is true; recorded anyway")
+
+    _check_doc_entry(block, "config", errors, prefix="visual_regression")
+    if not _nonempty(block.get("tool")):
+        errors.append("visual_regression.tool: required (the tool that produced the results)")
+
+    breakpoints = block.get("breakpoints")
+    names: list[str] = []
+    if not isinstance(breakpoints, list) or not breakpoints:
+        errors.append("visual_regression.breakpoints: non-empty list of breakpoint names required")
+    else:
+        for i, name in enumerate(breakpoints):
+            if not _nonempty(name):
+                errors.append(f"visual_regression.breakpoints[{i}]: expected a non-empty name")
+            elif name in names:
+                errors.append(f"visual_regression.breakpoints[{i}]: duplicate breakpoint {name!r}")
+            else:
+                names.append(name)
+
+    themes = block.get("themes")
+    theme_names: list[str] = []
+    if themes is not None:
+        if not isinstance(themes, list) or not themes:
+            errors.append("visual_regression.themes: expected a non-empty list when set")
+        else:
+            for i, theme in enumerate(themes):
+                if not _nonempty(theme):
+                    errors.append(f"visual_regression.themes[{i}]: expected a non-empty name")
+                elif theme in theme_names:
+                    errors.append(f"visual_regression.themes[{i}]: duplicate theme {theme!r}")
+                else:
+                    theme_names.append(theme)
+
+    thresholds = block.get("thresholds")
+    max_ratio = critical_ratio = None
+    if not isinstance(thresholds, dict):
+        errors.append("visual_regression.thresholds: required object (max_diff_ratio, critical_max_diff_ratio)")
+    else:
+        max_ratio = thresholds.get("max_diff_ratio")
+        if not _is_ratio(max_ratio):
+            errors.append("visual_regression.thresholds.max_diff_ratio: required number in [0, 1]")
+            max_ratio = None
+        critical_ratio = thresholds.get("critical_max_diff_ratio")
+        if critical_ratio is not None and not _is_ratio(critical_ratio):
+            errors.append("visual_regression.thresholds.critical_max_diff_ratio: number in [0, 1]")
+            critical_ratio = None
+        elif critical_ratio is not None and max_ratio is not None and critical_ratio > max_ratio:
+            errors.append(
+                "visual_regression.thresholds.critical_max_diff_ratio: must not exceed max_diff_ratio"
+            )
+
+    results = block.get("results")
+    if not isinstance(results, list) or not results:
+        errors.append("visual_regression.results: non-empty list of screen results required")
+    else:
+        for i, entry in enumerate(results):
+            where = f"visual_regression.results[{i}]"
+            if not isinstance(entry, dict):
+                errors.append(f"{where}: must be an object")
+                continue
+            if not _nonempty(entry.get("screen")):
+                errors.append(f"{where}.screen: required")
+            breakpoint = entry.get("breakpoint")
+            if not _nonempty(breakpoint):
+                errors.append(f"{where}.breakpoint: required")
+            elif names and breakpoint not in names:
+                errors.append(f"{where}.breakpoint: unknown breakpoint {breakpoint!r}")
+            theme = entry.get("theme")
+            if theme is not None and not _nonempty(theme):
+                errors.append(f"{where}.theme: must be a non-empty string when set")
+            elif theme and theme_names and theme not in theme_names:
+                errors.append(f"{where}.theme: unknown theme {theme!r}")
+            diff = entry.get("diff_ratio")
+            if not _is_ratio(diff):
+                errors.append(f"{where}.diff_ratio: required number in [0, 1]")
+                continue
+            critical = entry.get("critical")
+            if critical is not None and not isinstance(critical, bool):
+                errors.append(f"{where}.critical: expected true or false")
+            limit = critical_ratio if (critical is True and critical_ratio is not None) else max_ratio
+            if limit is not None and diff > limit:
+                errors.append(
+                    f"{where}.diff_ratio: {diff} exceeds the "
+                    f"{'critical ' if critical is True else ''}threshold {limit}"
+                )
+
+    passed = block.get("passed")
+    if not isinstance(passed, bool):
+        errors.append("visual_regression.passed: expected true or false")
+    elif strict and passed is not True:
+        errors.append("visual_regression.passed: visual comparison must pass at H3")
+    if not _timestamp(block.get("at")):
+        errors.append("visual_regression.at: invalid timestamp")
+
+
 def validate_policy(manifest: dict, profile: str) -> tuple[list, list]:
-    """Validate the v4.3 policy blocks. Strict at H3, advisory before it."""
+    """Validate the policy blocks. Strict at H3, advisory before it."""
     strict = profile == "h3"
     errors: list[str] = []
     warnings: list[str] = []
     validate_artifacts(manifest, strict, errors, warnings)
+    validate_autonomy(manifest, strict, errors, warnings)
+    validate_visual_regression(manifest, strict, errors, warnings)
     if manifest.get("program_child") is True:
         # A Program child only budgets its own deliverables; gates, checkpoints,
         # steer ledger, security overlay and touchpoints belong to the parent.
@@ -513,9 +827,9 @@ def cmd_matrix(_args) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    ap = argparse.ArgumentParser(description="KAR v4.3 governance policy checks")
+    ap = argparse.ArgumentParser(description="KAR v4.4 governance policy checks")
     sub = ap.add_subparsers(dest="command", required=True)
-    p_check = sub.add_parser("check", help="Validate the v4.3 policy blocks of a manifest")
+    p_check = sub.add_parser("check", help="Validate the v4.3/v4.4 policy blocks of a manifest")
     p_check.add_argument("--manifest", required=True)
     p_check.add_argument("--profile", choices=("draft", "freeze", "h3"), default="h3")
     p_check.add_argument("--json", action="store_true")

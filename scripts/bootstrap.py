@@ -19,11 +19,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip() if (ROOT / "VERSION").exists() else "4.0.0"
+BOOTSTRAP = json.loads((ROOT / "bootstrap.json").read_text(encoding="utf-8"))
 SKILLS = json.loads((ROOT / "skills.json").read_text(encoding="utf-8"))
 AGENTS = json.loads((ROOT / "agents.json").read_text(encoding="utf-8"))
 SQUAD = json.loads((ROOT / "squad/KAR-Delivery-Squad.json").read_text(encoding="utf-8"))
 SQUAD_INSTRUCTIONS = (ROOT / "squad/KAR-Delivery-Squad.md").read_text(encoding="utf-8")
-SQUAD_DESCRIPTION = "KAR Delivery Squad v4.3：三工作道、候选冻结、审批清单、指标与人类 WIP、R3 安全 overlay、草稿 checkpoint/steer、接触点预算、模板与薄项目覆盖层。"
+SQUAD_DESCRIPTION = BOOTSTRAP.get("squad_description") or (
+    f"KAR Delivery Squad v{VERSION}：三工作道、候选冻结、审批清单、指标与人类 WIP、"
+    "R3 安全 overlay、草稿 checkpoint/steer、接触点预算、低风险 24h 假设、队列抢占、"
+    "单一源生成、视觉回归与发布部署自动化。"
+)
 
 
 def run(args: list[str], *, check: bool = True) -> dict | list:

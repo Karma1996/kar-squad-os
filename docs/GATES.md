@@ -51,8 +51,9 @@
 
 - `rationale`：一句话，为什么可以过这道门；`manifest.py` 限制 280 字符。
 - `conditions`：批准附条件；没有就写 `[]`，不要省略。
-- `approved_by` + `approver_type: "human"`：**只有人类能批准**。`approver_type` 不是 `human` 时 `manifest.py check --profile h3` 直接失败。
+- `approved_by` + `approver_type: "human"`：**只有人类能批准**。`approver_type` 不是 `human` 时 `manifest.py check --profile h3` 直接失败；唯一例外是 R0/R1 项目 opt-in 的 H1 `assumed`（`approver_type: "assumption"`，见第 9 节）。
 - `requested_at`：卡片发出时间，用于 24h SLA 与 WIP 排队。
+- `status` 默认 `approved/pending/rejected`；v4.4 起 **仅 H1** 可为 `assumed`（R0/R1、项目 opt-in、24h 窗口、人类可推翻）；H2/H3 不可假设。
 
 ## 3. 人类看到的卡（8 行）
 
@@ -156,3 +157,21 @@ python3 scripts/policy.py check --manifest <path> --profile h3
 - 草稿期的纠偏走 `steers`（决策台账），绑定纠偏后的文档版本；不做第二轮评审。
 - 已批准后不再接受 steer；未落地的 steer 必须有 `deferred_reason` + `deferred_approved_by`。
 - `policy.py check --profile h3` 校验窗口、引用与版本一致性。详见 [`CHECKPOINT-STEER.md`](CHECKPOINT-STEER.md)。
+
+## 9. 低风险 24h 假设（v4.4）
+
+仅当 `risk` 为 R0/R1、变更可逆、无外部契约、项目级人类 opt-in 时启用：
+
+- H1 卡发出满 **24h**、只提醒一次后无回复：`gates.h1.status: "assumed"`、`approver_type: "assumption"`，并在 manifest `autonomy` 记录 opt-in、窗口、提醒、假设正文与 `assumed_at`。
+- `autonomy.state: assumed` 时 H1 可为 assumed；`approved` 要求人类在假设生效后批准；`overridden` 时 H3 FAIL，必须重做/重走 H1。
+- H3 永远需要人类批准；假设只替代 H1 的沉默等待。人类 `override.decision: human_gate_restored` 时必须回到人类 H1。
+- 校验：`scripts/autonomy.py check --profile h3` 与 `policy.py check --profile h3`。详见 [`AUTONOMY.md`](AUTONOMY.md)。
+
+## 10. 视觉回归（v4.4）
+
+`ui_affected: true` 时，H3 前必须：
+
+- 用项目 `visual.json` 对每个关键界面 × 断点 × 主题自动对比；关键界面默认 0 差异，其他界面在项目阈值内。
+- 把摘要写入 `visual_regression`：`config`（path/version/64 位 sha）、`tool`、`breakpoints`、`themes`、`thresholds`、`results`、`passed`、`at`。
+- `policy.py` 校验形状、断点、阈值与 `passed`；`visual.py check` 校验覆盖（缺组合即失败）与工具不可用（BLOCKED）。
+- 结构性差异、状态缺失、断点错位、工具不可用：阻塞，不得用“人工看过”代替。详见 [`VISUAL-REGRESSION.md`](VISUAL-REGRESSION.md)。

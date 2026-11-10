@@ -30,10 +30,10 @@ def check() -> int:
     bootstrap = load(ROOT / "bootstrap.json")
     if bootstrap.get("version") != version:
         errors.append(f"bootstrap.json version {bootstrap.get('version')} != VERSION {version}")
-    if bootstrap.get("config") != "config/KAR-Squad-Config-v4.3.md":
-        errors.append("bootstrap.json config path is not v4.3")
-    if not (ROOT / "config/KAR-Squad-Config-v4.3.md").exists():
-        errors.append("missing config/KAR-Squad-Config-v4.3.md")
+    if bootstrap.get("config") != "config/KAR-Squad-Config-v4.4.md":
+        errors.append("bootstrap.json config path is not v4.4")
+    if not (ROOT / "config/KAR-Squad-Config-v4.4.md").exists():
+        errors.append("missing config/KAR-Squad-Config-v4.4.md")
     profile = load(ROOT / "skills/kar-squad-profile/squad.json")
     if profile.get("version") != version:
         errors.append(f"kar-squad-profile version {profile.get('version')} != VERSION {version}")
@@ -47,13 +47,35 @@ def check() -> int:
         "docs/SECURITY-OVERLAY.md",
         "docs/CHECKPOINT-STEER.md",
         "docs/LEAD-TOUCHPOINTS.md",
+        "docs/AUTONOMY.md",
+        "docs/QUEUE.md",
+        "docs/SINGLE-SOURCE.md",
+        "docs/VISUAL-REGRESSION.md",
+        "docs/RELEASE-AUTOMATION.md",
+        "docs/decisions/0002-v4.4-controls.md",
         "docs/examples/delivery-manifest.json",
+        "docs/examples/low-risk-manifest.json",
+        "docs/examples/queue.json",
+        "docs/examples/visual-config.json",
+        "docs/examples/visual-results.json",
     ):
         if not (ROOT / name).exists():
-            errors.append(f"missing v4.3 doc: {name}")
-    for name in ("restore.py", "manifest.py", "metrics.py", "human_wip.py", "policy.py", "kar_common.py"):
+            errors.append(f"missing v4.4 doc: {name}")
+    for name in (
+        "restore.py", "manifest.py", "metrics.py", "human_wip.py", "policy.py",
+        "autonomy.py", "queue.py", "generate.py", "visual.py", "release.py",
+        "deploy.py", "kar_common.py",
+    ):
         if not (ROOT / "scripts" / name).exists():
             errors.append(f"missing script: {name}")
+
+    if not (ROOT / "sources/squad.json").exists():
+        errors.append("missing single source: sources/squad.json")
+    else:
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import generate  # noqa: PLC0415
+        gen_errors, _ = generate.check(ROOT)
+        errors.extend(gen_errors)
 
     skills = load(ROOT / "skills.json")
     skill_names = [s["name"] for s in skills]
@@ -136,6 +158,7 @@ def build() -> int:
         "agents",
         "skills",
         "squad",
+        "sources",
         "CONTRIBUTING.md",
         "docs",
     ]
@@ -149,7 +172,11 @@ def build() -> int:
             shutil.copy2(src, dst)
         else:
             print(f"WARN: missing release item: {item}")
-    for script in ("bootstrap.py", "verify.py", "restore.py", "manifest.py", "metrics.py", "human_wip.py", "policy.py", "kar_common.py"):
+    for script in (
+        "bootstrap.py", "verify.py", "restore.py", "manifest.py", "metrics.py",
+        "human_wip.py", "policy.py", "autonomy.py", "queue.py", "generate.py",
+        "visual.py", "release.py", "deploy.py", "kar_common.py",
+    ):
         src = ROOT / "scripts" / script
         dst = target / "scripts" / script
         dst.parent.mkdir(parents=True, exist_ok=True)

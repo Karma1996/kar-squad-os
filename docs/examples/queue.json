@@ -1,0 +1,39 @@
+{
+  "now": "2026-11-10T09:00:00Z",
+  "running": [
+    {
+      "id": "run-1",
+      "issue": "KAR-2",
+      "lane": "standard",
+      "severity": "S3",
+      "started_at": "2026-11-10T08:00:00Z"
+    }
+  ],
+  "queued": [
+    {
+      "id": "q-1",
+      "issue": "KAR-3",
+      "lane": "quick",
+      "severity": "S1",
+      "enqueued_at": "2026-11-10T08:30:00Z"
+    },
+    {
+      "id": "q-2",
+      "issue": "KAR-4",
+      "lane": "program",
+      "severity": "S2",
+      "enqueued_at": "2026-11-09T10:00:00Z",
+      "program_merge_window": {
+        "open_at": "2026-11-10T08:30:00Z",
+        "close_at": "2026-11-10T12:00:00Z"
+      }
+    },
+    {
+      "id": "q-3",
+      "issue": "KAR-5",
+      "lane": "quick",
+      "severity": "S3",
+      "enqueued_at": "2026-11-10T08:40:00Z"
+    }
+  ]
+}

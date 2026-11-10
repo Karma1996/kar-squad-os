@@ -68,7 +68,7 @@
 
 # 五、候选冻结与 Manifest
 
-`delivery-manifest.json` 升为 `version: 2`；候选身份是 `candidate/<KEY>-<digest>`。
+`delivery-manifest.json` 升为 `version: 2`；候选身份是 `candidate/<KEY>-<digest>`。v4.4 起 H3 还校验低风险假设（`autonomy`）与 UI 变更的视觉回归（`ui_affected` / `visual_regression`）。
 
 ```bash
 # 计算/写回 digest 与 tag
@@ -79,8 +79,11 @@ python3 scripts/manifest.py freeze --manifest <path> --docs-root <docs-home> --r
 python3 scripts/manifest.py check --profile freeze --manifest <path> --docs-root <docs-home> --repo-root <id>=<path>
 # H3 校验（含门禁、R3 第二人、10% 抽样、指标、v4.3 治理块）
 python3 scripts/manifest.py check --profile h3 --manifest <path> --docs-root <docs-home> --repo-root <id>=<path> --check-remotes --check-prs --check-ci
-# 只跑 v4.3 治理策略（产物矩阵/安全 overlay/草稿/steer/接触点）
+# 只跑治理策略（产物矩阵/安全 overlay/草稿/steer/接触点/低风险假设/视觉回归）
 python3 scripts/policy.py check --manifest <path> --profile h3
+# 低风险 24h 假设与视觉回归单独审阅
+python3 scripts/autonomy.py check --manifest <path> --profile h3
+python3 scripts/visual.py check --config <visual.json> --results <results.json>
 ```
 
 digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/prototype/design/test_design/dev_notes` 的 version+sha + 各仓 `repo_id/base/branch/head`；SHA-256 取前 12 位。`qa_report` 变化不重切候选。

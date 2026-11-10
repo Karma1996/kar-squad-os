@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "tool": "playwright",
+  "generated_at": "2026-11-05T08:00:00Z",
+  "tool_available": true,
+  "screens": [
+    {
+      "screen": "SC-01-login",
+      "breakpoint": "mobile",
+      "theme": "light",
+      "diff_ratio": 0.0,
+      "baseline_sha": "0123456789abcdef",
+      "current_sha": "0123456789abcdef",
+      "artifact": "evidence/visual/SC-01-login-mobile-light.png"
+    },
+    {
+      "screen": "SC-01-login",
+      "breakpoint": "mobile",
+      "theme": "dark",
+      "diff_ratio": 0.0,
+      "baseline_sha": "0123456789abcdef",
+      "current_sha": "0123456789abcdef",
+      "artifact": "evidence/visual/SC-01-login-mobile-dark.png"
+    },
+    {
+      "screen": "SC-01-login",
+      "breakpoint": "desktop",
+      "theme": "light",
+      "diff_ratio": 0.0,
+      "baseline_sha": "0123456789abcdef",
+      "current_sha": "0123456789abcdef",
+      "artifact": "evidence/visual/SC-01-login-desktop-light.png"
+    },
+    {
+      "screen": "SC-01-login",
+      "breakpoint": "desktop",
+      "theme": "dark",
+      "diff_ratio": 0.0,
+      "baseline_sha": "0123456789abcdef",
+      "current_sha": "0123456789abcdef",
+      "artifact": "evidence/visual/SC-01-login-desktop-dark.png"
+    },
+    {
+      "screen": "SC-02-home",
+      "breakpoint": "mobile",
+      "theme": "light",
+      "diff_ratio": 0.0012,
+      "baseline_sha": "0123456789abcdef",
+      "current_sha": "fedcba9876543210",
+      "artifact": "evidence/visual/SC-02-home-mobile-light.png"
+    },
+    {
+      "screen": "SC-02-home",
+      "breakpoint": "mobile",
+      "theme": "dark",
+      "diff_ratio": 0.0,
+      "baseline_sha": "0123456789abcdef",
+      "current_sha": "0123456789abcdef",
+      "artifact": "evidence/visual/SC-02-home-mobile-dark.png"
+    },
+    {
+      "screen": "SC-02-home",
+      "breakpoint": "desktop",
+      "theme": "light",
+      "diff_ratio": 0.0008,
+      "baseline_sha": "0123456789abcdef",
+      "current_sha": "fedcba9876543210",
+      "artifact": "evidence/visual/SC-02-home-desktop-light.png"
+    },
+    {
+      "screen": "SC-02-home",
+      "breakpoint": "desktop",
+      "theme": "dark",
+      "diff_ratio": 0.0,
+      "baseline_sha": "0123456789abcdef",
+      "current_sha": "0123456789abcdef",
+      "artifact": "evidence/visual/SC-02-home-desktop-dark.png"
+    }
+  ]
+}

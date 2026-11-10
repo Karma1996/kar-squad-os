@@ -1,8 +1,8 @@
-# KAR Delivery Squad 配置手册 v4.3
+# KAR Delivery Squad 配置手册 v4.4
 
 **状态**：可执行基线  
 **适用**：Multica 工作区中的 8 席 Agent 小队 + 1 个 Squad  
-**迁移包**：`KAR-Squad-Bootstrap-v4.3.zip`  
+**迁移包**：`KAR-Squad-Bootstrap-v4.4.zip`  
 **配置原则**：流程与项目数据分离；人类只做决定；Agent 做执行与证据；同一支小队覆盖小修、标准需求和大项目。
 
 ---
@@ -33,6 +33,8 @@ KAR Delivery Squad 是一支“人类守门、Agent 交付”的小队。它用�
 **v4.2 P0 基线**：候选冻结 tag `candidate/<KEY>-<digest>` 与 `manifest check`；每道门 3 项检查 + 一句话理由 + 附条件；每个 issue 5 项指标 + 每周 6 指标摘要；每个 Decision Owner 待决策 ≤2、24h 只提醒一次；`restore.py` 可从备份恢复 Agent/Skill/Squad。
 
 **v4.3 P1 基线**：R3 安全 overlay（威胁模型/权限矩阵/密钥与依赖扫描/回滚演练/独立安全评审人）；风险分级产物矩阵；H1/H2 草稿 checkpoint（提前 ≥10 分钟异步 review）与 steer 决策台账；Lead 六个接触点预算；1 页 Quickstart + `/tour`。
+
+**v4.4 P2 基线**：低风险 24h 假设（仅 R0/R1、可逆、无外部契约、项目级 opt-in、H1 可推翻；H3 仍由人类批准）；队列抢占（S0/S1 抢占、Program 合并窗口优先、Quick FIFO）；`sources/squad.json` 单一源生成；视觉回归工具化；`release.py` / `deploy.py` 发布与一键部署自动化。
 
 ---
 
@@ -460,6 +462,13 @@ Lead 只在 **6 类接触点** 找人类；其他时候自己做完并报告。
 - “顺便问一下”不算新接触点：先自己查、自己验证；确实要问时归到 `exception` 并写原因。
 - 记录在 manifest `touchpoints`；H3 校验 `intake` 与三道门（Quick 一道）都有记录。详见 `docs/LEAD-TOUCHPOINTS.md`。
 
+### 4.11 低风险 24h 默认与假设
+
+- 仅 R0/R1、可逆、无外部契约、非 Program 子级的变更，在**项目级人类 opt-in** 后可启用；默认关闭。
+- H1 卡发出满 **24h**、且只提醒一次后人类仍无回复：Lead 记录 `autonomy` 与一句话假设，`gates.h1.status: assumed`；假设归属 Decision Owner。
+- H2/H3 不变；**H3 仍由人类 `/approve`**，假设只替代 H1 的沉默等待。人类可随时推翻：`overridden` 时 H3 失败，恢复 H1 后重走人类门。
+- 校验：`scripts/autonomy.py check|deadline` 与 `scripts/policy.py check --profile h3`；字段见 `docs/AUTONOMY.md`。
+
 ---
 
 ## 5. 需求与原型
@@ -588,6 +597,13 @@ QA 必须做“原型一致性验证”，并附证据：
 - 动态内容用固定 fixture；动画/过渡在截图前冻结；字体不可用时记录并请 Decision Owner 决定。
 - 纯浏览器渲染差异（抗锯齿、字体 hinting）可由 Decision Owner 书面豁免，但必须记录证据与范围。
 - 没有原型时，按需求与设计验证，并记录“未触发”的理由。
+
+### 5.9 视觉回归工具化
+
+- 项目事实 `visual.json` 声明工具与命令、断点、主题、阈值、关键界面；工具/断点/阈值不进小队默认值。
+- `scripts/visual.py init` 生成模板，`capture` 逐屏/断点/主题采集，`check` 校验覆盖与阈值；关键界面默认 0 差异。
+- 每个界面 × 断点 × 主题恰好一条结果；缺组合、工具不可用、采集失败都判 FAIL/BLOCKED，不写 PASS。
+- 结果摘要写入 manifest `visual_regression`；`ui_affected: true` 时 H3 必须有该块且 `passed: true`。详见 `docs/VISUAL-REGRESSION.md`。
 
 ---
 
@@ -720,6 +736,12 @@ Reviewer 必须：
 ### 8.3 Skill 瘦身
 
 每个 Agent 只绑定需要的 Skill（5–7 个），不把全部 14 个都挂上。减少 token 成本和串扰。
+
+### 8.4 队列抢占
+
+- 排序与抢占是确定性的：S0 抢占非 S0；S1 抢占 S2–S4；同 severity 内 Program 合并窗口优先，其余按入队时间 FIFO；Quick 严格 FIFO。
+- 抢占只改执行顺序，不改门禁、验收或人类动作数；被抢占项保留 branch/head/write_lock，恢复时先重跑受影响测试。
+- 用 `scripts/queue.py plan` 生成派发顺序与抢占记录，`check` 校验队列输入。详见 `docs/QUEUE.md`。
 
 ---
 
@@ -874,6 +896,12 @@ v4.3 起 `version: 2` 并增加治理块；候选冻结/校验命令与字段说
 }
 ```
 
+### 9.5 单一源生成
+
+- `sources/squad.json` 是唯一源：kit 元数据、Skills、Agents 绑定、Squad 名册与小队默认值。
+- `python3 scripts/generate.py --write` 生成 `skills.json`、`agents.json`、`squad/KAR-Delivery-Squad.json`、`bootstrap.json`、`skills/kar-squad-profile/squad.json`；`--check` 检出漂移。
+- 手改生成文件会被 `make check` 拦下；散文（SKILL.md、Agent 指令、docs）仍手写。详见 `docs/SINGLE-SOURCE.md`。
+
 ---
 
 ## 10. 项目事实（Project Fact Sheet）
@@ -890,6 +918,8 @@ v4.3 起 `version: 2` 并增加治理块；候选冻结/校验命令与字段说
 | `staging` | 否 | 集成环境 |
 | `human_defaults` | 否 | 默认/备份人；运行态 roster 为准 |
 | `constraints` | 否 | 安全、合规、禁止项 |
+| `autonomy` | 否 | 低风险 24h 默认的项目级 opt-in（人类 by/at/scope）；默认关闭 |
+| `visual` | 否 | 视觉回归工具/断点/阈值/关键界面；有 UI 的项目建议配置 |
 | `overrides` | 否 | merge_model / template / module_map / ui_profile / lane_defaults / wip / slas |
 | `goal` / `success_metrics` | 否 | 上下文，不作为启动阻塞 |
 
@@ -974,6 +1004,7 @@ recommended_next: {agent + reason}
 - bootstrap 提供 `verify.py`：对比部署态与包的 skills/agents/squad/绑定/并发/Skill 文件/模板 hash/Squad 指令。
 - `restore.py` 从 `backups/backup-<stamp>.json` 恢复技能/Agent/Squad；先 dry-run，再 `--apply`，最后 `verify.py`。
 - 任何配置变更后必须跑 verify；不一致就不算完成。
+- 配置源漂移：`python3 scripts/generate.py --check` 保证 5 个生成文件与 `sources/squad.json` 一致；不一致先 `--write` 再验证。
 - 配置仓必须有版本 tag；每次变更可回滚。详见 `docs/BACKUP-RESTORE.md`。
 
 ### 11.4 复盘按需
@@ -1020,11 +1051,11 @@ recommended_next: {agent + reason}
 ### 12.1 包内容
 
 ```text
-KAR-Squad-Bootstrap-v4.3/
+KAR-Squad-Bootstrap-v4.4/
 ├── README.md
 ├── VERSION
 ├── manifest.json
-├── config/KAR-Squad-Config-v4.3.md
+├── config/KAR-Squad-Config-v4.4.md
 ├── agents/ (8)
 ├── skills/ (14)
 │   ├── kar-squad-profile/ (SKILL.md, squad.json, templates/, scripts/)
@@ -1037,8 +1068,14 @@ KAR-Squad-Bootstrap-v4.3/
 ├── scripts/metrics.py
 ├── scripts/human_wip.py
 ├── scripts/policy.py
+├── scripts/autonomy.py
+├── scripts/queue.py
+├── scripts/generate.py
+├── scripts/visual.py
+├── scripts/release.py
+├── scripts/deploy.py
 ├── scripts/kar_common.py
-├── docs/ (GATES/MANIFEST/METRICS/HUMAN-WIP/BACKUP-RESTORE/ARTIFACTS/SECURITY-OVERLAY/CHECKPOINT-STEER/LEAD-TOUCHPOINTS)
+├── docs/ (GATES/MANIFEST/METRICS/HUMAN-WIP/BACKUP-RESTORE/ARTIFACTS/SECURITY-OVERLAY/CHECKPOINT-STEER/LEAD-TOUCHPOINTS/QUEUE/AUTONOMY/SINGLE-SOURCE/VISUAL-REGRESSION/RELEASE-AUTOMATION)
 ├── agents.json
 ├── skills.json
 ├── bootstrap.json
@@ -1055,7 +1092,7 @@ KAR-Squad-Bootstrap-v4.3/
 ### 12.3 命令
 
 ```bash
-cd KAR-Squad-Bootstrap-v4.3
+cd KAR-Squad-Bootstrap-v4.4
 
 export MULTICA_CLI_PATH="/path/to/multica"
 export MULTICA_WORKSPACE_ID="<workspace-uuid>"
@@ -1065,6 +1102,11 @@ export KAR_QA_RUNTIME_ID="<qa-runtime-id>"   # 可同 core
 python3 scripts/bootstrap.py --dry-run       # 先看将创建/更新什么
 python3 scripts/bootstrap.py --apply --update
 python3 scripts/verify.py
+
+# 或一键 dry-run → apply → verify（默认 dry-run，apply 需人类批准）
+python3 scripts/deploy.py --dry-run
+python3 scripts/deploy.py --apply --update --approved-by <human-id>
+
 # 需要回滚时：
 # python3 scripts/restore.py --backup backups/backup-<stamp>.json --workspace-id "$MULTICA_WORKSPACE_ID" --apply
 ```
@@ -1089,6 +1131,13 @@ python3 scripts/verify.py
 - 每次 `--apply` 前写 `backups/backup-<timestamp>.json`（当前 agents/skills/squad 快照；含 Skill 文件内容）。
 - 回滚：`scripts/restore.py --backup <snapshot> --workspace-id <id> --apply`，再跑 `verify.py`；或重新部署旧包。
 - 不提供自动删除；删除/归档由人类确认后执行。详见 `docs/BACKUP-RESTORE.md`。
+
+### 12.6 发布自动化与一键部署
+
+- `scripts/release.py check|plan|tag|github-release|attach|publish`：版本/CHANGELOG/干净树检查，打 tag，创建 GitHub Release，把发布包作为附件评论到 issue。
+- 发布必须人类批准：`tag` / `publish` 带 `--approved-by <human>`；默认 dry-run，`--apply` 才执行。tag 不可重复；`main` 仍只由人类掌握。
+- `scripts/deploy.py` 默认 dry-run 跑 `bootstrap.py --dry-run`；`--apply --approved-by <human>` 依次执行 `bootstrap.py --apply --update` 与 `verify.py`，任一步失败即停，自动备份可回滚。
+- `deploy.py --apply` 不包含生产发布；生产发布按项目事实单独批准。详见 `docs/RELEASE-AUTOMATION.md`。
 
 ---
 
@@ -1158,8 +1207,9 @@ SPLIT PLAN v1 — {PARENT_KEY}
 
 | 版本 | 状态 | 说明 |
 | --- | --- | --- |
-| 4.3.0 | 当前 | v4.3 P1：R3 安全 overlay、风险分级产物矩阵、草稿 checkpoint + steer 决策台账、Lead 六接触点预算、1 页 Quickstart + `/tour` |
-| 4.2.0 | 上一版 | v4.2 P0：候选冻结 tag + manifest check、审批清单（3 项检查/rationale/conditions/R3 第二人/H3 抽样）、5+1 指标与周摘要、人类 WIP/SLA、restore.py |
+| 4.4.0 | 当前 | v4.4 P2：低风险 24h 假设、队列抢占、单一源生成、视觉回归工具化、发布与一键部署自动化 |
+| 4.3.0 | 上一版 | v4.3 P1：R3 安全 overlay、风险分级产物矩阵、草稿 checkpoint + steer 决策台账、Lead 六接触点预算、1 页 Quickstart + `/tour` |
+| 4.2.0 | 更早 | v4.2 P0：候选冻结 tag + manifest check、审批清单（3 项检查/rationale/conditions/R3 第二人/H3 抽样）、5+1 指标与周摘要、人类 WIP/SLA、restore.py |
 | 4.1.0 | 更早 | 小队自带模板与默认配置；项目描述薄覆盖层；新增 kar-squad-profile / kar-doc-template |
 
 **本手册是完整基线，不依赖旧版本；项目描述只写覆盖层，共性配置由 `kar-squad-profile` 提供。**

@@ -14,6 +14,8 @@
 - “全量”指五份固定文档 + 安全 overlay；原型按第 5 节条件触发。原型一旦绑定（`docs.prototype` 存在），R3 必须把它计入产物。
 - Program 子级继承父级安全 overlay、门禁、草稿/steer 与接触点记录；子级 manifest 记 `program_child: true` 时只校验产物预算（1–2 份），其余治理块归父级。子级若自身触碰 R3 范围，由父级 H3 统一复核。
 - 复盘文档按需，不计入矩阵上限。
+- 低风险 24h 假设（`autonomy`）不改变产物矩阵：R0/R1 仍 1–3 份，可用 issue 记录、PR、测试证据。
+- UI 变更的视觉回归摘要写入 `visual_regression`，截图归入项目证据目录；它不占产物额度，但 H3 必须 `passed: true`。
 
 ## 2. manifest 记录
 

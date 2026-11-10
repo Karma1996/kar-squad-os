@@ -45,7 +45,7 @@ GATE_CHECKS = {
     ),
 }
 GATE_ORDER = ("h1", "h2", "h3")
-GATE_STATUS = ("pending", "approved", "rejected")
+GATE_STATUS = ("pending", "approved", "assumed", "rejected")
 CHECK_RESULTS = ("pass", "fail", "n/a")
 H3_SAMPLE_RATE = 0.1
 HUMAN_WIP_LIMIT = 2

@@ -357,3 +357,108 @@ class PolicyCliTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AutonomyPolicyTest(unittest.TestCase):
+    def low_risk_manifest(self):
+        data = base_manifest("R1")
+        data["artifacts"] = [artifact("issue_record"), artifact("pr"), artifact("test_evidence")]
+        data["gates"]["h1"] = {
+            "status": "assumed",
+            "requested_at": "2026-11-01T01:00:00Z",
+            "assumed_at": "2026-11-02T01:00:00Z",
+            "approver_type": "assumption",
+            "rationale": "R1 可逆改动，静默 24h 后按假设推进。",
+            "conditions": [],
+        }
+        data["autonomy"] = {
+            "project_opt_in": {"by": "owner-1", "at": "2026-10-31T00:00:00Z", "scope": "repo:x"},
+            "reversible": True,
+            "external_contract": False,
+            "window_hours": 24,
+            "wait_started_at": "2026-11-01T01:00:00Z",
+            "notification": {"at": "2026-11-02T01:00:00Z", "actor": "owner-1", "channel": "issue comment"},
+            "assumption": {"statement": "按现有测试与目录推进。", "owner": "owner-1", "recorded_at": "2026-11-02T01:05:00Z"},
+            "state": "assumed",
+            "assumed_at": "2026-11-02T01:00:00Z",
+        }
+        return data
+
+    def test_valid_assumed_manifest_passes(self):
+        errors, warnings = errors_for(self.low_risk_manifest())
+        self.assertEqual(errors, [], errors + warnings)
+
+    def test_assumed_gate_without_block_fails(self):
+        data = self.low_risk_manifest()
+        del data["autonomy"]
+        self.assertTrue(any("autonomy" in e for e in errors_for(data)[0]))
+
+    def test_overridden_assumption_fails_at_h3(self):
+        data = self.low_risk_manifest()
+        data["autonomy"]["state"] = "overridden"
+        data["autonomy"]["override"] = {
+            "by": "owner-1", "at": "2026-11-02T02:00:00Z",
+            "decision": "rejected", "reason": "假设不成立。",
+        }
+        data["gates"]["h1"]["status"] = "pending"
+        self.assertTrue(any("human rejected the assumption" in e for e in errors_for(data)[0]))
+
+    def test_r2_cannot_use_autonomy(self):
+        data = self.low_risk_manifest()
+        data["risk"] = "R2"
+        self.assertTrue(any("only R0/R1" in e for e in errors_for(data)[0]))
+
+
+def visual_block():
+    return {
+        "config": {"path": "multica/project/visual.json", "version": "1.0", "sha": "c" * 64},
+        "tool": "playwright",
+        "breakpoints": ["mobile", "desktop"],
+        "themes": ["light"],
+        "thresholds": {"max_diff_ratio": 0.005, "critical_max_diff_ratio": 0.0},
+        "results": [
+            {"screen": "SC-01-login", "breakpoint": "mobile", "theme": "light", "diff_ratio": 0.0, "critical": True},
+            {"screen": "SC-01-login", "breakpoint": "desktop", "theme": "light", "diff_ratio": 0.001},
+        ],
+        "passed": True,
+        "at": "2026-11-01T00:00:00Z",
+    }
+
+
+class VisualRegressionPolicyTest(unittest.TestCase):
+    def ui_manifest(self):
+        data = base_manifest("R2")
+        data["ui_affected"] = True
+        data["visual_regression"] = visual_block()
+        return data
+
+    def test_valid_visual_summary_passes(self):
+        errors, warnings = errors_for(self.ui_manifest())
+        self.assertEqual(errors, [], errors + warnings)
+
+    def test_ui_change_requires_visual_summary_at_h3(self):
+        data = self.ui_manifest()
+        del data["visual_regression"]
+        self.assertTrue(any("visual_regression: required" in e for e in errors_for(data)[0]))
+
+    def test_visual_failure_blocks_h3(self):
+        data = self.ui_manifest()
+        data["visual_regression"]["passed"] = False
+        self.assertTrue(any("must pass at H3" in e for e in errors_for(data)[0]))
+
+    def test_threshold_breach_is_reported(self):
+        data = self.ui_manifest()
+        data["visual_regression"]["results"][0]["diff_ratio"] = 0.01
+        self.assertTrue(any("exceeds the critical threshold" in e for e in errors_for(data)[0]))
+
+    def test_unknown_breakpoint_is_rejected(self):
+        data = self.ui_manifest()
+        data["visual_regression"]["results"][1]["breakpoint"] = "watch"
+        self.assertTrue(any("unknown breakpoint" in e for e in errors_for(data)[0]))
+
+    def test_non_ui_block_only_warns(self):
+        data = self.ui_manifest()
+        data["ui_affected"] = False
+        errors, warnings = errors_for(data)
+        self.assertEqual(errors, [], errors)
+        self.assertTrue(any("only required when ui_affected" in w for w in warnings))

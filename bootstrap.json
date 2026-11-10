@@ -1,7 +1,7 @@
 {
   "name": "KAR Delivery Squad",
-  "version": "4.3.0",
-  "profile": "KAR-Squad-Bootstrap-v4.3",
+  "version": "4.4.0",
+  "profile": "KAR-Squad-Bootstrap-v4.4",
   "requires": {
     "multica_cli": ">=0.8.1",
     "python": "3.9+",
@@ -10,8 +10,9 @@
   "skills": "skills.json",
   "agents": "agents.json",
   "squad": "squad/KAR-Delivery-Squad.json",
-  "config": "config/KAR-Squad-Config-v4.3.md",
+  "config": "config/KAR-Squad-Config-v4.4.md",
   "init_template": "skills/kar-squad-profile/templates/project-description.md",
+  "squad_description": "KAR Delivery Squad v4.4：三工作道、候选冻结、审批清单、指标与人类 WIP、R3 安全 overlay、草稿 checkpoint/steer、接触点预算、低风险 24h 假设、队列抢占、单一源生成、视觉回归与发布部署自动化。",
   "notes": [
     "No workspace_id / runtime_id / repo URL / token / human name is included.",
     "bootstrap.py creates or updates Skills, Agents, Squad, and uploads Skill supporting files.",
@@ -19,7 +20,8 @@
     "Project description is a thin squad-overlay; defaults come from kar-squad-profile.",
     "v4.2: candidate freeze + manifest.py check, gate checks/rationale/conditions, metrics.py, human_wip.py, restore.py.",
     "v4.3: policy.py (artifact matrix, R3 security overlay, draft checkpoint/steer, Lead touchpoint budget), /tour, 1-page quickstart.",
+    "v4.4: autonomy.py (low-risk 24h assumption), queue.py (preemption), sources/squad.json single source + generate.py, visual.py (visual regression), release.py/deploy.py (release + rollout).",
     "Backups include Skill supporting files and can be replayed with restore.py.",
-    "Old workspace skills S01-S17 are not deleted; rebind agents to v4.3 skills and archive old ones manually after verification."
+    "Old workspace skills S01-S17 are not deleted; rebind agents to v4.4 skills and archive old ones manually after verification."
   ]
 }
