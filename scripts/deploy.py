@@ -176,6 +176,11 @@ def main(argv: list[str] | None = None) -> int:
         help="Repository root (default: parent of scripts/)",
     )
     parser.add_argument("--apply", action="store_true", help="Actually write the workspace")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Explicit dry-run (the default); cannot be combined with --apply",
+    )
     parser.add_argument("--approved-by", default="", help="Human approval reference (required with --apply)")
     parser.add_argument(
         "--update",
@@ -197,6 +202,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--timeout", type=int, default=600)
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
+    if args.apply and args.dry_run:
+        parser.error("--dry-run and --apply are mutually exclusive")
+    if args.dry_run:
+        args.apply = False
 
     root = Path(args.root).resolve()
     if not root.is_dir():

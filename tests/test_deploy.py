@@ -134,6 +134,29 @@ class DeployTest(unittest.TestCase):
         )
         self.assertIn("skipped", proc.stdout)
 
+    def test_explicit_dry_run_flag_calls_only_bootstrap_dry_run(self):
+        proc = run_deploy(self.root, *self.common_args(), "--dry-run", env=self.env())
+        self.assertEqual(proc.returncode, 0, proc.stderr + proc.stdout)
+        calls = read_log(self.log)
+        self.assertEqual(len(calls), 1, calls)
+        self.assertIn("--dry-run", calls[0])
+        self.assertNotIn("--apply", calls[0])
+        self.assertIn("dry-run only", proc.stdout)
+
+    def test_dry_run_and_apply_are_mutually_exclusive(self):
+        proc = run_deploy(
+            self.root,
+            *self.common_args(),
+            "--dry-run",
+            "--apply",
+            "--approved-by",
+            "owner-1",
+            env=self.env(),
+        )
+        self.assertEqual(proc.returncode, 2, proc.stderr + proc.stdout)
+        self.assertIn("mutually exclusive", proc.stderr)
+        self.assertEqual(read_log(self.log), [])
+
     def test_apply_requires_approved_by(self):
         proc = run_deploy(self.root, "--apply", *self.common_args(), env=self.env())
         self.assertNotEqual(proc.returncode, 0)
