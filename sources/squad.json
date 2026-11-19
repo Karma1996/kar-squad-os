@@ -1,9 +1,9 @@
 {
   "kit": {
     "name": "KAR Delivery Squad",
-    "version": "4.4.0",
-    "bootstrap_profile": "KAR-Squad-Bootstrap-v4.4",
-    "config": "config/KAR-Squad-Config-v4.4.md",
+    "version": "4.5.0",
+    "bootstrap_profile": "KAR-Squad-Bootstrap-v4.5",
+    "config": "config/KAR-Squad-Config-v4.5.md",
     "requires": {
       "multica_cli": ">=0.8.1",
       "python": "3.9+",
@@ -12,7 +12,7 @@
     "squad_file": "squad/KAR-Delivery-Squad.json",
     "squad_instructions": "squad/KAR-Delivery-Squad.md",
     "init_template": "skills/kar-squad-profile/templates/project-description.md",
-    "squad_description": "KAR Delivery Squad v4.4：三工作道、候选冻结、审批清单、指标与人类 WIP、R3 安全 overlay、草稿 checkpoint/steer、接触点预算、低风险 24h 假设、队列抢占、单一源生成、视觉回归与发布部署自动化。",
+    "squad_description": "KAR Delivery Squad v4.5：意图前置、Leader 减负、/discuss /fixbug /status /check、文档暂存与产物校验、状态/标签、候选冻结、安全 overlay、发布部署自动化。",
     "notes": [
       "No workspace_id / runtime_id / repo URL / token / human name is included.",
       "bootstrap.py creates or updates Skills, Agents, Squad, and uploads Skill supporting files.",
@@ -22,18 +22,19 @@
       "v4.3: policy.py (artifact matrix, R3 security overlay, draft checkpoint/steer, Lead touchpoint budget), /tour, 1-page quickstart.",
       "v4.4: autonomy.py (low-risk 24h assumption), queue.py (preemption), sources/squad.json single source + generate.py, visual.py (visual regression), release.py/deploy.py (release + rollout).",
       "Backups include Skill supporting files and can be replayed with restore.py.",
-      "Old workspace skills S01-S17 are not deleted; rebind agents to v4.4 skills and archive old ones manually after verification."
+      "Old workspace skills S01-S17 are not deleted; rebind agents to v4.5 skills and archive old ones manually after verification.",
+      "v4.5: intent-first H1, leader slimming, /check project audit, verify_artifact.py + doc_lint.py, 7 labels and 4 saved views."
     ]
   },
   "skills": [
     {
       "name": "kar-constitution",
-      "description": "小队共同宪法：不变式、工作道、角色边界、变更集、原型锁定与交接。",
+      "description": "小队共同宪法：不变式、工作道、角色边界、变更集、原型锁定、第一性原理与交接。",
       "path": "skills/kar-constitution/SKILL.md"
     },
     {
       "name": "kar-lead-operating",
-      "description": "Lead 控制面：分诊、判道、WIP、派发、门禁、人类交互与 /init。",
+      "description": "Lead 控制面：分诊、判道、WIP、派发、门禁、命令路由、状态语义、人类交互与 /init。",
       "path": "skills/kar-lead-operating/SKILL.md"
     },
     {
@@ -43,7 +44,7 @@
     },
     {
       "name": "kar-requirements-prototype",
-      "description": "需求澄清、需求文档、原型触发、从代码提取 UI 风格、像素级原型与 H1。",
+      "description": "意图共识、需求澄清、需求文档、原型触发、从代码提取 UI 风格、像素级原型与 H1。",
       "path": "skills/kar-requirements-prototype/SKILL.md"
     },
     {
@@ -58,12 +59,12 @@
     },
     {
       "name": "kar-delivery",
-      "description": "分支与变更集、TDD、测试、PR、开发说明、原型落地与变更控制。",
+      "description": "分支与变更集、TDD、测试、PR、开发说明、原型落地、仓库/文档运维与变更控制。",
       "path": "skills/kar-delivery/SKILL.md"
     },
     {
       "name": "kar-independent-review",
-      "description": "独立代码/安全/测试可信度评审与 A4。",
+      "description": "独立代码/安全/测试可信度评审、A4 与文档质量门。",
       "path": "skills/kar-independent-review/SKILL.md"
     },
     {
@@ -73,12 +74,12 @@
     },
     {
       "name": "kar-docs-manifest",
-      "description": "目录、五份固定文档 + 条件原型、manifest、证据与追溯。",
+      "description": "目录、五份固定文档 + 条件原型、manifest、证据追溯与产物校验。",
       "path": "skills/kar-docs-manifest/SKILL.md"
     },
     {
       "name": "kar-retro-on-demand",
-      "description": "按需复盘、系统改进与行动闭环。",
+      "description": "按需复盘、/check 项目资源体检、系统改进与行动闭环。",
       "path": "skills/kar-retro-on-demand/SKILL.md"
     },
     {
@@ -88,7 +89,7 @@
     },
     {
       "name": "kar-squad-profile",
-      "description": "小队默认值、解析顺序、薄项目模板与 resolve_config。",
+      "description": "小队默认值、解析顺序、薄项目模板、项目资源体检与 resolve_config。",
       "path": "skills/kar-squad-profile/SKILL.md",
       "files": [
         {
@@ -107,7 +108,7 @@
     },
     {
       "name": "kar-doc-template",
-      "description": "唯一文档模板、样式、版本/哈希与 materialize。",
+      "description": "唯一文档模板、样式、版本/哈希、文档 lint 与 materialize。",
       "path": "skills/kar-doc-template/SKILL.md",
       "files": [
         {
@@ -128,7 +129,7 @@
   "agents": [
     {
       "name": "KAR-01-Lead",
-      "description": "唯一控制面：分诊、工作道、派发、门禁、人类交互、Program 编排与合并。",
+      "description": "唯一控制面：分派、门禁、异常升级、人类交互、Program 编排与合并授权。",
       "runtime_env": "KAR_CORE_RUNTIME_ID",
       "max": 6,
       "skills": [
@@ -143,7 +144,7 @@
     },
     {
       "name": "KAR-02-Analyst",
-      "description": "需求澄清、需求文档、像素级原型、UI 风格提取与 H1 包。",
+      "description": "意图共识、需求澄清、需求文档、像素级原型、UI 风格提取与 H1 包。",
       "runtime_env": "KAR_CORE_RUNTIME_ID",
       "max": 2,
       "skills": [
@@ -171,7 +172,7 @@
     },
     {
       "name": "KAR-04-TestDesigner",
-      "description": "测试设计、用例、RTM、可执行验收测试与 A3。",
+      "description": "测试设计、用例、RTM、可执行验收测试、评审分级与 A3。",
       "runtime_env": "KAR_CORE_RUNTIME_ID",
       "max": 2,
       "skills": [
@@ -185,7 +186,7 @@
     },
     {
       "name": "KAR-05-Developer",
-      "description": "唯一实现者：按设计/测试/原型交付代码、测试、开发说明与 A4 候选。",
+      "description": "唯一实现者：按设计/测试/原型交付代码、测试、开发说明与 A4 候选；仓库/文档运维。",
       "runtime_env": "KAR_CORE_RUNTIME_ID",
       "max": 2,
       "skills": [
@@ -199,7 +200,7 @@
     },
     {
       "name": "KAR-06-Reviewer",
-      "description": "独立代码、安全与测试可信度评审；不修代码。",
+      "description": "独立代码、安全与测试可信度评审；文档质量门；不修代码。",
       "runtime_env": "KAR_CORE_RUNTIME_ID",
       "max": 3,
       "skills": [
@@ -227,7 +228,7 @@
     },
     {
       "name": "KAR-08-Retro",
-      "description": "按需复盘，产出系统改进行动；不阻塞交付。",
+      "description": "按需复盘与 /check 项目资源体检，产出系统改进行动；不阻塞交付。",
       "runtime_env": "KAR_CORE_RUNTIME_ID",
       "max": 1,
       "skills": [
@@ -245,11 +246,11 @@
     "members": [
       {
         "name": "KAR-01-Lead",
-        "role": "唯一控制面：分诊、工作道、派发、门禁、人类交互、Program 编排与合并"
+        "role": "唯一控制面：分派、门禁、异常升级、人类交互、Program 编排与合并授权"
       },
       {
         "name": "KAR-02-Analyst",
-        "role": "需求澄清、需求文档、像素级原型、UI 风格提取与 H1"
+        "role": "意图共识、需求澄清、需求文档、像素级原型、UI 风格提取与 H1"
       },
       {
         "name": "KAR-03-Architect",
@@ -257,15 +258,15 @@
       },
       {
         "name": "KAR-04-TestDesigner",
-        "role": "测试设计、RTM、可执行验收测试与 A3"
+        "role": "测试设计、RTM、可执行验收测试、评审分级与 A3"
       },
       {
         "name": "KAR-05-Developer",
-        "role": "唯一实现者：代码、测试、开发说明与 A4 候选"
+        "role": "唯一实现者：代码、测试、开发说明、A4 候选与仓库/文档运维"
       },
       {
         "name": "KAR-06-Reviewer",
-        "role": "独立代码/安全/测试可信度评审与 A4"
+        "role": "独立代码/安全/测试可信度评审、A4 与文档质量门"
       },
       {
         "name": "KAR-07-QA",
@@ -273,7 +274,7 @@
       },
       {
         "name": "KAR-08-Retro",
-        "role": "按需复盘与系统改进行动"
+        "role": "按需复盘、/check 项目资源体检与系统改进行动"
       }
     ]
   },

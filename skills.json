@@ -1,12 +1,12 @@
 [
   {
     "name": "kar-constitution",
-    "description": "小队共同宪法：不变式、工作道、角色边界、变更集、原型锁定与交接。",
+    "description": "小队共同宪法：不变式、工作道、角色边界、变更集、原型锁定、第一性原理与交接。",
     "path": "skills/kar-constitution/SKILL.md"
   },
   {
     "name": "kar-lead-operating",
-    "description": "Lead 控制面：分诊、判道、WIP、派发、门禁、人类交互与 /init。",
+    "description": "Lead 控制面：分诊、判道、WIP、派发、门禁、命令路由、状态语义、人类交互与 /init。",
     "path": "skills/kar-lead-operating/SKILL.md"
   },
   {
@@ -16,7 +16,7 @@
   },
   {
     "name": "kar-requirements-prototype",
-    "description": "需求澄清、需求文档、原型触发、从代码提取 UI 风格、像素级原型与 H1。",
+    "description": "意图共识、需求澄清、需求文档、原型触发、从代码提取 UI 风格、像素级原型与 H1。",
     "path": "skills/kar-requirements-prototype/SKILL.md"
   },
   {
@@ -31,12 +31,12 @@
   },
   {
     "name": "kar-delivery",
-    "description": "分支与变更集、TDD、测试、PR、开发说明、原型落地与变更控制。",
+    "description": "分支与变更集、TDD、测试、PR、开发说明、原型落地、仓库/文档运维与变更控制。",
     "path": "skills/kar-delivery/SKILL.md"
   },
   {
     "name": "kar-independent-review",
-    "description": "独立代码/安全/测试可信度评审与 A4。",
+    "description": "独立代码/安全/测试可信度评审、A4 与文档质量门。",
     "path": "skills/kar-independent-review/SKILL.md"
   },
   {
@@ -46,12 +46,12 @@
   },
   {
     "name": "kar-docs-manifest",
-    "description": "目录、五份固定文档 + 条件原型、manifest、证据与追溯。",
+    "description": "目录、五份固定文档 + 条件原型、manifest、证据追溯与产物校验。",
     "path": "skills/kar-docs-manifest/SKILL.md"
   },
   {
     "name": "kar-retro-on-demand",
-    "description": "按需复盘、系统改进与行动闭环。",
+    "description": "按需复盘、/check 项目资源体检、系统改进与行动闭环。",
     "path": "skills/kar-retro-on-demand/SKILL.md"
   },
   {
@@ -61,7 +61,7 @@
   },
   {
     "name": "kar-squad-profile",
-    "description": "小队默认值、解析顺序、薄项目模板与 resolve_config。",
+    "description": "小队默认值、解析顺序、薄项目模板、项目资源体检与 resolve_config。",
     "path": "skills/kar-squad-profile/SKILL.md",
     "files": [
       {
@@ -80,7 +80,7 @@
   },
   {
     "name": "kar-doc-template",
-    "description": "唯一文档模板、样式、版本/哈希与 materialize。",
+    "description": "唯一文档模板、样式、版本/哈希、文档 lint 与 materialize。",
     "path": "skills/kar-doc-template/SKILL.md",
     "files": [
       {

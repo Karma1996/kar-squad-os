@@ -30,10 +30,10 @@ def check() -> int:
     bootstrap = load(ROOT / "bootstrap.json")
     if bootstrap.get("version") != version:
         errors.append(f"bootstrap.json version {bootstrap.get('version')} != VERSION {version}")
-    if bootstrap.get("config") != "config/KAR-Squad-Config-v4.4.md":
-        errors.append("bootstrap.json config path is not v4.4")
-    if not (ROOT / "config/KAR-Squad-Config-v4.4.md").exists():
-        errors.append("missing config/KAR-Squad-Config-v4.4.md")
+    if bootstrap.get("config") != "config/KAR-Squad-Config-v4.5.md":
+        errors.append("bootstrap.json config path is not v4.5")
+    if not (ROOT / "config/KAR-Squad-Config-v4.5.md").exists():
+        errors.append("missing config/KAR-Squad-Config-v4.5.md")
     profile = load(ROOT / "skills/kar-squad-profile/squad.json")
     if profile.get("version") != version:
         errors.append(f"kar-squad-profile version {profile.get('version')} != VERSION {version}")
@@ -60,11 +60,11 @@ def check() -> int:
         "docs/examples/visual-results.json",
     ):
         if not (ROOT / name).exists():
-            errors.append(f"missing v4.4 doc: {name}")
+            errors.append(f"missing release doc: {name}")
     for name in (
         "restore.py", "manifest.py", "metrics.py", "human_wip.py", "policy.py",
         "autonomy.py", "queue.py", "generate.py", "visual.py", "release.py",
-        "deploy.py", "kar_common.py",
+        "deploy.py", "kar_common.py", "verify_artifact.py", "doc_lint.py",
     ):
         if not (ROOT / "scripts" / name).exists():
             errors.append(f"missing script: {name}")

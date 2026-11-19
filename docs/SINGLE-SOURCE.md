@@ -8,9 +8,9 @@ v4.4 之前，`skills.json`、`agents.json`、`squad/KAR-Delivery-Squad.json`、
 {
   "kit": {
     "name": "KAR Delivery Squad",
-    "version": "4.4.0",
-    "bootstrap_profile": "KAR-Squad-Bootstrap-v4.4",
-    "config": "config/KAR-Squad-Config-v4.4.md",
+    "version": "4.5.0",
+    "bootstrap_profile": "KAR-Squad-Bootstrap-v4.5",
+    "config": "config/KAR-Squad-Config-v4.5.md",
     "requires": {"python": "3.9+", "multica_cli": ">=0.8.1"},
     "squad_file": "squad/KAR-Delivery-Squad.json",
     "squad_instructions": "squad/KAR-Delivery-Squad.md",

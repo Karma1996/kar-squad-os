@@ -162,6 +162,17 @@ digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/pro
 - 文档 SHA、原型 SHA 或任一仓 head 变化 → digest 变化，A4/A5/H3 旧结论失效；late push 必须重切，不能改旧结论。
 - 完整示例：`docs/examples/delivery-manifest.json`；字段与命令：`docs/MANIFEST.md`。
 
+# 五·五、产物校验（P1）
+
+- 产物方在 HANDOFF 前跑：
+  ```bash
+  python3 scripts/verify_artifact.py --manifest <docs>/delivery-manifest.json --require-sha --json
+  python3 scripts/doc_lint.py --dir <docs-issue-dir> --json
+  ```
+- `verify_artifact.py` 校验 path / 存在性 / 大小 / SHA-256；`--require-sha` 时缺 SHA 直接失败。
+- `doc_lint.py` 校验模板版本、摘要、证据/批准区、占位符、外链、锚点；ERROR 不得发门禁。
+- Reviewers 复核两份输出；Lead 只看 PASS/FAIL，不自己重算 SHA。
+
 # 六、证据
 
 - 截图放 `evidence/screenshots/`，按 `SC-xxx-{breakpoint}-{theme}.png`。
