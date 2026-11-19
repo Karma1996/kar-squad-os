@@ -17,6 +17,54 @@ LANE: Quick | Standard | Program
 理由: 单模块文案修复，已有测试覆盖
 ```
 
+
+## 一·五、命令路由
+
+issue 标题或评论的第一个词是命令时，先路由，不进入默认流程：
+
+| 命令 | 路由 | 产出 | 边界 |
+| --- | --- | --- | --- |
+| `/discuss` | KAR-02 直接对话；Lead 只置 `in_progress` | 一条共识卡：已一致 / 仍有分歧 / 待验证 + 下一步 | 不写需求基线、不落仓、不开门禁；一个 issue 只讨论一个主题 |
+| `/fixbug` | Quick 道；KAR-05 修复 + KAR-06 独立验证 | 复现 + 根因（≤10 行）+ 最小修复 + 证据 | 只修与已冻结行为不符的缺陷；R3、契约、权限、迁移走 Standard |
+| `/status` | Lead 只读汇报 | 5 行：在做什么 / 等谁 / 下一步 / 风险 / 预计 | 不改状态、不重新规划 |
+| `/check` | KAR-08 Retro 只读体检；Lead 只派发 | 项目挂载资源冲突报告 + 整改步骤 | 不改文件/配置；不改交付 issue 的门禁状态；整改需人类批准 |
+| `/init` | 见第九节 | overlay 草案 + 读回 | 不算门禁 |
+| `/approve` | 当前门 | 绑定版本/SHA 的批准记录 | 只批当前一步 |
+| `/tour` | 只读导览 | ≤5 条消息 | 不改状态 |
+
+- 未知命令：问一句“你要 `/discuss`、`/fixbug`、`/status` 还是 `/check`？”，不猜。
+- `/fixbug` 不写需求/设计文档；修复后仍要独立验证 + 一次 `/approve` 才能合并。
+- `/discuss` 的共识卡就是后续意图简版；讨论结束要建交付 issue 时，由 Lead 开新 issue，不把讨论线程当交付线程。
+- `/check` 的报告由 Retro 直接发，Lead 不复述；只在需要批准整改时发一张卡。专门的检查 issue：派发时 `in_progress`，报告后 `in_review`；交付 issue 只评论、不改门禁状态。
+
+## 一·六、分工与输出预算
+
+| 事项 | 主责 | Lead 做什么 |
+| --- | --- | --- |
+| 机械核验（SHA、大小、计数、外链、占位符） | 产物方在 HANDOFF 给证据；KAR-06 复核 | 只看证据是否齐全；缺失退回生产者，不自己补算 |
+| 文档质量门 | KAR-06（可读性 / 决策先行 / 长度 / 无内部术语，≤20 行） | 只看 PASS / BLOCK |
+| 需求与意图对话 | KAR-02 直接对人类 | 不进对话、不转述 |
+| 项目挂载资源体检（`/check`） | KAR-08 Retro 只读扫描 | 派发 + 批准整改 |
+| 仓库初始化 / 冻结文档入仓 / 目录调整 | KAR-05 | 批准范围 |
+| `/init` overlay | KAR-02 提供 goal/constraints，KAR-03 提供 repos/tech；Lead 合并，KAR-05 写入 | 批准 |
+| 失败处理 | 失败方给一行原因 | 原样重试 1 次 → 换形态 1 次 → `blocked` |
+| 重复交付 | 产物方指定唯一 canonical | 只认 canonical；旧版标 `superseded` |
+| 分派 / 门禁 / 异常 / 合并授权 | Lead | 保留 |
+
+- 状态评论 ≤10 行；门禁卡 ≤8 行；正文不出现完整 SHA、文件大小、矩阵计数；绑定用短 digest。
+- 不在人类可读评论里复述 HANDOFF 的核验过程；给链接 + 结论。
+- 失败评论 ≤2 行：原因 + 下一步；不写诊断长文。
+- 未定稿只做 10 行风险扫描；全量评审只在候选冻结后做。
+
+## 一·七、状态语义
+
+- 发门禁卡或等人决定 → `in_review`；人类回复 → `in_progress`。
+- `blocked` 只用于外部依赖、环境或权限故障，**不用于等人**。
+- `done` 由人类验收后写；Agent 不自行 `done`。
+- 父 issue 只有 Lead 改；子 issue 的 assignee 可以关自己的子 issue。
+- 状态变化当场写，不等阶段结束。
+- 标签只打两组：类型（`feature`/`bug`/`discussion`/`ops`）与工作道（`quick`/`standard`/`program`）；生命周期用状态，不用标签。
+
 # 二、工作道选择
 
 ## Quick 准入
@@ -66,7 +114,7 @@ write_lock: {agent-name}
 
 | 内部 | 人类看到的 | 绑定 | 3 项检查 |
 | --- | --- | --- | --- |
-| H1 | 需求确认 | 需求 v + 原型 v/SHA + 评审记录 | `scope` / `prototype` / `evidence` |
+| H1 | 需求确认（意图 → 需求基线） | 意图简版确认 + 需求 v + 原型 v/SHA + 评审记录 | `scope` / `prototype` / `evidence` |
 | H2 | 方案确认 | 设计 v + 原型覆盖矩阵 | `design` / `contract` / `testability` |
 | H3 | 验收与合并 | `candidate/<KEY>-<digest>` + 各仓 SHA | `candidate` / `verdicts` / `ci` |
 | 拆分方案 | 拆分方案确认 | SPLIT PLAN vN | 切片可独立验证 / 合并顺序 / owner |
@@ -98,9 +146,11 @@ write_lock: {agent-name}
 
 ## 草稿 checkpoint
 
-- H1/H2 发卡前，把草稿（文档链接 + 版本 + “这次请你确认什么”）发到 issue，至少提前 **10 分钟**给人类异步 review。
+- H1 先发 1 页意图简版（真实场景 / 成功画面 / 非目标 / 硬约束 / 假设账本 / 首版验证什么）；人类 `/agree` 或明确文字确认后才写需求基线。未确认就等，不先写全文。
+- 意图简版是 H1 草稿的第一步，不新增门禁卡；不确认时记 `waiting_human:intent`。
+- 意图确认后发需求草稿，H2 发卡前发方案草稿；两者都至少提前 **10 分钟**给人类异步 review。
 - 记录 `checkpoints.<gate>_draft`：`published_at`、`review_window_minutes`（≥10）、`reviewers`、`outcome`（`unchanged`/`steered`）、`steer_ids`。
-- 草稿不是门，不需要 `/approve`；正式卡仍只发一张。
+- 草稿不是门，不占用正式卡的 `/approve`；意图简版用 `/agree`（或明确文字）确认，需求/方案草稿仍由正式卡 `/approve`。
 
 ## 中途 steer
 
@@ -116,6 +166,7 @@ write_lock: {agent-name}
 - 预算：intake 1、contract 1、gates 3（Quick 1）、integration 1、merge 1；exception 按需但必须写原因。
 - “顺便问一下”、让人对 diff、让人跑测试都不算接触点——自己做，做完报告。
 - 记录 manifest `touchpoints`（`kind`/`at`/`actor`/`gate`/`reason`）；H3 校验 intake 与三道门（Quick 一道）齐全。
+- 意图简版属于 H1 草稿 review，不新增接触点；它阻塞需求基线写作，但不新增第 4 道门。
 - 详见 `docs/CHECKPOINT-STEER.md` 与 `docs/LEAD-TOUCHPOINTS.md`。
 
 ## 低风险 24h 假设（R0/R1，项目 opt-in）
@@ -124,6 +175,7 @@ write_lock: {agent-name}
 - H1 卡发出满 24h、只提醒一次后仍无回复：写 `autonomy` 块（`project_opt_in / reversible / window_hours / wait_started_at / notification / assumption / state / assumed_at`），把 `gates.h1` 记为 `assumed`。
 - 假设一句话写清“按什么条件推进”，归属 Decision Owner；H2 照常，H3 仍人类 `/approve`。
 - 人类推翻：`overridden` + `override.decision: rejected` → H3 失败，重做/重走 H1；`human_gate_restored` → 必须人类重新批准 H1。
+- 意图简版是 H1 的前置，不适用 `assumed`；R0/R1 且人类请求已写明成功画面的，可视为意图已确认。
 - 校验：`scripts/autonomy.py check|deadline` 与 `scripts/policy.py check --profile h3`。假设不增加人类动作数，也不新增接触点。
 
 # 七、人类 roster 与送达
@@ -153,7 +205,7 @@ Intake 判道 → Dev 修复+回归 → Reviewer 一次独立 verify（A4+A5 合
 默认值来自 `kar-squad-profile`；项目描述只是薄覆盖层。
 
 1. 读 `kar-squad-profile/squad.json`、项目描述、`.multica/project/resources.json`、README、package manifest、CI、Makefile、Dockerfile、目录结构、现有 docs、UI tokens。
-2. 能探测的不问；只问缺失/冲突项（目标 3–5 问），不重复问工作道/门禁/文档清单/模板/WIP/角色。
+2. 能探测的不问；只问缺失/冲突项（目标 3–5 问），不重复问工作道/门禁/文档清单/模板/WIP/角色。goal/constraints 只能来自人类原话或已验证事实；推断标 `A-xx`，不写入 overlay。
 3. 生成 `squad-overlay` JSON 草案 + 少量说明；用 `resolve_config.py --allow-empty-repos` 校验；不写入。
 4. 人类 `/approve` 后：写入项目描述（只写 overlay + 说明），再 `resolve_config.py` 读回 effective config 并贴摘要/diff。
 5. 无 CLI/权限/失败：贴可复制全文 + 设置 → 项目 → 描述 的手工步骤；不说“已写入”。

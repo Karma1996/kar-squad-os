@@ -43,6 +43,26 @@
 - 目录在需求分支上创建，随分支评审合并；不先放 main。
 - 复盘按需；不做时不创建文件，在 issue 记录理由。
 
+# 二·五、暂存：只有冻结版才进仓库
+
+| 级别 | 放哪 | 用途 | 进仓 |
+| --- | --- | --- | --- |
+| L0 草稿 | issue 评论，唯一 canonical 链接 | 讨论、改 | 否 |
+| L1 待评审 | issue 附件（1 页摘要 + 1 份 HTML） | 人类评审 | 否 |
+| L2 冻结 | `{DOCS_HOME}/<KEY>-<SLUG>/` + manifest | 基线、可引用 | 是，需 `/approve` |
+
+- 每个阶段只保留 1 个 canonical 文件；旧版只在“已废弃”一行列出，不逐版上传。
+- 未冻结文档不得提交到代码仓，包括 `/init` 阶段和“先存个档”的理由。
+- 只有 L2 版本可以作为 H2/H3 的输入；引用 L0/L1 视为无基线。
+
+# 二·六、人类可读文档标准
+
+- 固定结构：**3 分钟摘要 → 这次请你确认什么（≤3 条）→ 正文 → 证据附录（机读）**。
+- 正文不出现 H1/H2/A4/A5、完整 SHA、矩阵计数、文件大小；版本绑定可用短 digest，完整证据放附录或 manifest。
+- 每份文档只服务一个决定；写不出“它促成哪个决定”就删。
+- 页数上限：意图简版 1 页、需求基线 6 页、方案设计 8 页、技术栈 4 页、决策记录 1 页；原型 8–12 屏。
+- 人类是审核方：先给结论和需要决定的事，再给依据；不复述过程。
+
 # 三、五份固定正式文档 + 条件原型 + 按需复盘
 
 1. 需求分析文档.html（Analyst）
@@ -122,7 +142,7 @@ digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/pro
   "lane": "standard",
   "artifacts": [{"kind": "requirements", "ref": "...", "version": "1.2"}],
   "security_overlay": {"threat_model": {}, "permission_matrix": {}, "secret_scan": {}, "dependency_scan": {}, "rollback_drill": {}, "reviewer": {}},
-  "checkpoints": {"h1_draft": {"published_at": "...", "review_window_minutes": 10, "reviewers": ["..."], "outcome": "unchanged", "steer_ids": []}},
+  "checkpoints": {"h1_draft": {"intent_confirmed_at": "...", "published_at": "...", "review_window_minutes": 10, "reviewers": ["..."], "outcome": "unchanged", "steer_ids": []}},
   "steers": [],
   "touchpoints": [{"kind": "intake", "at": "...", "actor": "..."}],
   "merge_receipts": []
@@ -137,7 +157,7 @@ digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/pro
 - 每个 issue 在 `metrics` 记录 5 项：`human_touches / wait_human / rework_rounds / candidate_recuts / escaped_defects`；周摘要用 `scripts/metrics.py`。定义见 `docs/METRICS.md`。
 - `artifacts` 按风险分级记录正式产物（见 `docs/ARTIFACTS.md`）；R2 三份、R3 全量 + 安全 overlay，超出或不足都会被 H3 拒绝。
 - R3 写 `security_overlay`：威胁模型/权限矩阵/扫描/回滚演练/独立评审人；评审人必须同时是 `gates.h3.second_reviewer`。见 `docs/SECURITY-OVERLAY.md`。
-- H1/H2 发卡前先发草稿 ≥10 分钟，写 `checkpoints`；纠偏写 `steers` 决策台账。见 `docs/CHECKPOINT-STEER.md`。
+- H1 先发 1 页意图简版，人类确认后才写需求基线；H1/H2 发卡前再发草稿 ≥10 分钟，写 `checkpoints`；纠偏写 `steers` 决策台账。见 `docs/CHECKPOINT-STEER.md`。
 - `touchpoints` 只允许 intake/契约/门禁/集成/合并/异常六类，超出预算 H3 FAIL。见 `docs/LEAD-TOUCHPOINTS.md`。
 - 文档 SHA、原型 SHA 或任一仓 head 变化 → digest 变化，A4/A5/H3 旧结论失效；late push 必须重切，不能改旧结论。
 - 完整示例：`docs/examples/delivery-manifest.json`；字段与命令：`docs/MANIFEST.md`。
@@ -151,4 +171,4 @@ digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/pro
 
 # 七、禁止
 
-不把正式文档放仓库根；不建 `KAR-xxx/` 根目录；不把文档散落到代码仓绕过 Docs Home；不写真实数据/密钥；不用聊天摘要代替 HTML。
+不把正式文档放仓库根；不建 `KAR-xxx/` 根目录；不把文档散落到代码仓绕过 Docs Home；不把未冻结文档提交到代码仓；不逐版上传附件；不写真实数据/密钥；不用聊天摘要代替 HTML。

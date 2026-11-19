@@ -2,9 +2,16 @@
 
 目标：人类在门禁卡发出前就能异步看到草稿并纠偏，不用等正式评审；纠偏有台账，不靠聊天记忆。
 
-## 1. 草稿 checkpoint
+## 1. 意图简版（H1 第一步）
 
-H1（需求）与 H2（方案）发卡前：
+- 先发 1 页意图简版：真实场景 / 成功画面 / 非目标 / 硬约束 / 假设账本 / 首版验证什么。
+- 人类 `/agree` 或明确文字确认前，不写需求基线；不确认就等，不先写全文。
+- 意图简版不新增门禁卡；记录 `checkpoints.h1_draft.intent_confirmed_at`。
+- 它是草稿中唯一阻塞的步骤；其余草稿仍是异步 review，不是门。
+
+## 2. 需求与方案草稿
+
+意图确认后，H1 需求草稿与 H2 方案草稿发卡前：
 
 1. 把草稿发布到 issue（评论里给文档链接 + 版本 + 一句话“这次想请你确认什么”）。
 2. 至少提前 **10 分钟**发布，给人类异步 review；不要求人类到点守着。
@@ -14,6 +21,7 @@ H1（需求）与 H2（方案）发卡前：
 ```json
 "checkpoints": {
   "h1_draft": {
+    "intent_confirmed_at": "2026-11-03T07:10:00Z",
     "published_at": "2026-11-03T07:30:00Z",
     "review_window_minutes": 10,
     "reviewers": ["<decision-owner-user-id>"],
@@ -39,7 +47,7 @@ H1（需求）与 H2（方案）发卡前：
 - `steered` 必须有 `steer_ids`，且每个 id 在 `steers` 里存在、gate 一致；`unchanged` 不得挂 steer。
 - 草稿只提前发布，不提前批准；正式卡仍走 `/approve`。
 
-## 2. 中途 steer
+## 3. 中途 steer
 
 草稿期人类说“把 X 改成 Y”：
 
@@ -72,7 +80,7 @@ H1（需求）与 H2（方案）发卡前：
 - 未落地：`applied: false` + `deferred_reason` + `deferred_approved_by`（人类书面同意延期），否则 H3 失败。
 - steer 时间必须早于该门 `approved_at`。
 
-## 3. 决策台账
+## 4. 决策台账
 
 `steers` + `gates` + `checkpoints` 三者构成决策台账：
 
@@ -84,7 +92,7 @@ H1（需求）与 H2（方案）发卡前：
 
 三者必须能对上：谁、何时、改了/批准了哪个版本、附了什么条件。对不上就是审计缺口。
 
-## 4. 校验
+## 5. 校验
 
 ```bash
 python3 scripts/policy.py check --manifest <path>/delivery-manifest.json --profile h3
@@ -97,7 +105,7 @@ python3 scripts/policy.py check --manifest <path>/delivery-manifest.json --profi
 - steer 的 gate、时间、`version_after` 与文档版本一致；延期必须有理由和人类批准人。
 - 三道门（Quick 一道）都有 contact 记录，见 [`LEAD-TOUCHPOINTS.md`](LEAD-TOUCHPOINTS.md)。
 
-## 5. 常见错误
+## 6. 常见错误
 
 | 现象 | 原因 | 修复 |
 | --- | --- | --- |
@@ -107,8 +115,9 @@ python3 scripts/policy.py check --manifest <path>/delivery-manifest.json --profi
 | `version_after must equal docs...` | 改完没升版本或版本写错 | 升文档版本并同步 manifest |
 | `steer must be recorded before gates... approval` | 批后补账 | 批后改动走退回/新 change set |
 
-## 6. 与人类交互的关系
+## 7. 与人类交互的关系
 
 - 草稿 review 不占一张门禁卡；正式卡仍是唯一需要 `/approve` 的动作。
-- 人类动作数不变：Quick 1、Standard 3、Program 4–5；草稿是异步阅读，不是新门。
-- 人类没看草稿不是阻塞：仍按 24h 提醒、只提醒一次、不代批。
+- 意图简版用 `/agree`，不占正式卡；它是草稿中唯一阻塞的步骤。
+- 人类动作数不变：Quick 1、Standard 3、Program 4–5；意图回复与草稿 review 都不新增卡片，不是新门。
+- 意图简版例外：未确认就等，不写需求基线；其余草稿没看不是阻塞，仍按 24h 提醒、只提醒一次、不代批。

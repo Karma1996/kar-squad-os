@@ -52,6 +52,27 @@ class SpecsTest(unittest.TestCase):
         for m in self.squad["members"]:
             self.assertIn(m["name"], agent_names)
 
+    def test_p0_intent_and_leader_layer(self):
+        checks = {
+            "agents/KAR-01-Lead.md": ("分派、门禁、异常升级", "不重复生产者", "意图简版", "/discuss", "/fixbug", "/status", "/check"),
+            "skills/kar-lead-operating/SKILL.md": ("命令路由", "分工与输出预算", "状态语义", "意图简版", "标签只打两组", "/check"),
+            "agents/KAR-02-Analyst.md": ("意图简版", "3 轮 × 3 问", "假设账本"),
+            "skills/kar-requirements-prototype/SKILL.md": ("3 轮 × 3 问", "意图简版", "假设账本"),
+            "skills/kar-constitution/SKILL.md": ("第一性原理", "奥卡姆剃刀", "# 状态语义"),
+            "skills/kar-docs-manifest/SKILL.md": ("暂存", "人类可读文档标准"),
+            "agents/KAR-06-Reviewer.md": ("文档质量门",),
+            "agents/KAR-05-Developer.md": ("仓库/文档运维",),
+            "agents/KAR-04-TestDesigner.md": ("评审分级",),
+            "agents/KAR-08-Retro.md": ("/check", "项目资源体检"),
+            "skills/kar-squad-profile/SKILL.md": ("项目资源体检", "冲突矩阵", "只读"),
+            "skills/kar-retro-on-demand/SKILL.md": ("/check", "项目资源体检"),
+            "config/KAR-Squad-Config-v4.4.md": ("5.1 先谈产品效果", "4.12 Issue 状态语义", "4.13 标签", "10.4 项目资源体检", "文档质量门"),
+        }
+        for name, needles in checks.items():
+            text = (ROOT / name).read_text(encoding="utf-8")
+            for needle in needles:
+                self.assertIn(needle, text, f"{name} missing {needle}")
+
     def test_config_doc_mentions_v44(self):
         doc = (ROOT / "config/KAR-Squad-Config-v4.4.md").read_text(encoding="utf-8")
         for needle in (
@@ -116,13 +137,14 @@ class SpecsTest(unittest.TestCase):
 
     def test_quickstart_is_one_page_with_tour(self):
         text = (ROOT / "docs/HUMAN-QUICKSTART.md").read_text(encoding="utf-8")
-        self.assertIn("/tour", text)
-        self.assertIn("/approve", text)
+        for cmd in ("/discuss", "/fixbug", "/status", "/check", "/approve", "/tour"):
+            self.assertIn(cmd, text)
         self.assertLessEqual(len(text.splitlines()), 80, "quickstart must stay on one page")
 
-    def test_tour_is_a_human_command(self):
+    def test_human_commands_are_declared(self):
         profile = load("skills/kar-squad-profile/squad.json")
-        self.assertIn("/tour", profile["human"]["commands"])
+        for cmd in ("/discuss", "/fixbug", "/status", "/check", "/approve", "/init", "/tour"):
+            self.assertIn(cmd, profile["human"]["commands"])
 
 
 if __name__ == "__main__":
