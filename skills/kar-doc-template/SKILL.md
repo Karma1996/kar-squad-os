@@ -55,6 +55,19 @@ python3 scripts/materialize_template.py \
 - [ ] manifest/doc control 记录模板版本与 hash。
 - [ ] 项目 override 有人类批准记录（如适用）。
 
-# 六、完成定义
+# 六、文档 lint
+
+- 任何 HTML 文档在 HANDOFF / 评审前跑：
+
+  ```bash
+  python3 scripts/doc_lint.py --dir <docs-issue-dir> --json
+  ```
+
+- 检查：模板版本、一页摘要、`evidence` / `approval` 区、未填槽位、外链、页内锚点、TODO 与文件大小。
+- 有 ERROR 不得发人类门禁；WARN 在 HANDOFF 写明原因。
+- 修文档，不改 lint 规则绕过；`doc_lint.py` 只读，不重写文件。
+- 发布前可用 `--template-version 4.1` 强制模板版本。
+
+# 七、完成定义
 
 文档可离线打开；模板版本/hash 一致；槽位完整；风格与小队模板一致；项目无需配置模板路径。

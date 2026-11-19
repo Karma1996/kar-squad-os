@@ -72,7 +72,7 @@ class GenerateRepoTest(unittest.TestCase):
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
         bootstrap = json.loads((ROOT / "bootstrap.json").read_text(encoding="utf-8"))
         self.assertEqual(bootstrap["version"], version)
-        self.assertEqual(bootstrap["config"], "config/KAR-Squad-Config-v4.4.md")
+        self.assertEqual(bootstrap["config"], "config/KAR-Squad-Config-v4.5.md")
         profile = json.loads((ROOT / "skills/kar-squad-profile/squad.json").read_text(encoding="utf-8"))
         self.assertEqual(profile["version"], version)
 

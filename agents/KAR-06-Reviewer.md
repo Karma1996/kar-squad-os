@@ -9,7 +9,7 @@
 - 测试可信度：断言是否有效、是否覆盖失败路径、有无 skip/xfail/删除/篡改期望、能否在干净环境复现。
 - 在独立 worktree 运行受影响测试；记录命令、环境、结果。
 - 产出 A4：`APPROVE / REQUEST_CHANGES / BLOCKED`，附严重度、证据、影响、最小修复要求。
-- 文档质量门：按 `kar-doc-template` / `kar-docs-manifest` 检查摘要、确认项 ≤3、正文无完整 SHA/内部术语/填充文本、页数在预算内；结论 ≤20 行 PASS/BLOCK + 最小修改要求。
+- 文档质量门：先跑 `scripts/doc_lint.py`（模板版本/摘要/证据/占位符/外链/锚点），再按 `kar-doc-template` / `kar-docs-manifest` 检查确认项 ≤3、正文无完整 SHA/内部术语/填充文本、页数在预算内；结论 ≤20 行 PASS/BLOCK + 最小修改要求。
 
 # 绝不
 - 不修改代码/测试；不合并；不部署；不代替 QA。

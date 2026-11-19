@@ -1,8 +1,8 @@
-# KAR Delivery Squad 配置手册 v4.4
+# KAR Delivery Squad 配置手册 v4.5
 
 **状态**：可执行基线  
 **适用**：Multica 工作区中的 8 席 Agent 小队 + 1 个 Squad  
-**迁移包**：`KAR-Squad-Bootstrap-v4.4.zip`  
+**迁移包**：`KAR-Squad-Bootstrap-v4.5.zip`  
 **配置原则**：流程与项目数据分离；人类只做决定；Agent 做执行与证据；同一支小队覆盖小修、标准需求和大项目。
 
 ---
@@ -35,6 +35,8 @@ KAR Delivery Squad 是一支“人类守门、Agent 交付”的小队。它用�
 **v4.3 P1 基线**：R3 安全 overlay（威胁模型/权限矩阵/密钥与依赖扫描/回滚演练/独立安全评审人）；风险分级产物矩阵；H1/H2 草稿 checkpoint（提前 ≥10 分钟异步 review）与 steer 决策台账；Lead 六个接触点预算；1 页 Quickstart + `/tour`。
 
 **v4.4 P2 基线**：低风险 24h 假设（仅 R0/R1、可逆、无外部契约、项目级 opt-in、H1 可推翻；H3 仍由人类批准）；队列抢占（S0/S1 抢占、Program 合并窗口优先、Quick FIFO）；`sources/squad.json` 单一源生成；视觉回归工具化；`release.py` / `deploy.py` 发布与一键部署自动化。
+
+**v4.5 基线（P0 + P1）**：意图共识前置（H1 意图简版 → 需求基线）；Leader 只做分派/门禁/异常升级/合并授权；`/discuss` `/fixbug` `/status` `/check` 指令；状态语义与 7 个标签；文档暂存 L0/L1/L2；`verify_artifact.py` / `doc_lint.py` 产物校验；4 个保存视图。
 
 ---
 
@@ -690,7 +692,7 @@ Reviewer 必须：
 - 检查安全：输入校验、认证授权、越权、注入、敏感信息、依赖风险、日志泄漏。
 - 检查测试可信度：断言是否有效、是否覆盖失败路径、有无 skip/xfail/删除/篡改期望、能否在干净环境复现。
 - 在独立 worktree 运行受影响测试；记录命令、环境、结果。
-- 文档质量门：对进入人类门前的文档检查摘要、确认项 ≤3、正文无完整 SHA/内部术语/填充文本、页数预算；结论 ≤20 行 PASS/BLOCK，不改稿。
+- 文档质量门：先跑 `scripts/doc_lint.py`（模板版本/摘要/证据/占位符/外链/锚点），再检查确认项 ≤3、正文无完整 SHA/内部术语/填充文本、页数预算；结论 ≤20 行 PASS/BLOCK，不改稿。
 - 结论：`APPROVE / REQUEST_CHANGES / BLOCKED`；BLOCKER/MAJOR 不得进入 H3。
 
 ### 6.4 QA 与 A5
@@ -840,6 +842,7 @@ Reviewer 必须：
 - 五份固定正式 HTML + 条件原型 + 按需复盘 + manifest；数量按风险分级封顶（见 §3.1 产物矩阵）。
 - R3 另加四份安全 overlay 文档（威胁模型/权限矩阵/安全扫描报告/回滚演练记录）。
 - 暂存三级：L0 issue 评论、L1 issue 附件、L2 冻结后才进 `{DOCS_HOME}/...`；未冻结文档不提交到代码仓，每个阶段只保留 1 个 canonical 文件。
+- 产物校验：`verify_artifact.py`（path/大小/SHA）与 `doc_lint.py`（模板/摘要/证据/外链/占位符）在 HANDOFF 前由产物方运行；ERROR 不得进门禁。
 - 单篇文档只改内容、表格、图表；壳变更必须升模板版本并迁移。
 - 文档模板来自 `kar-doc-template` Skill，不写项目模板路径；`{DOCS_HOME}/multica/templates/` 只是缓存。文档 `data-template-version` 必须等于 4.1。
 - 项目覆盖只允许 `overrides.template=project` + `overrides.template_path` + 人类批准；默认永远 squad 模板。
@@ -1108,7 +1111,7 @@ KAR-Squad-Bootstrap-v4.4/
 ├── README.md
 ├── VERSION
 ├── manifest.json
-├── config/KAR-Squad-Config-v4.4.md
+├── config/KAR-Squad-Config-v4.5.md
 ├── agents/ (8)
 ├── skills/ (14)
 │   ├── kar-squad-profile/ (SKILL.md, squad.json, templates/, scripts/)

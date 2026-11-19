@@ -4,8 +4,8 @@ KAR Delivery Squad 的**配置与运维仓库**：Skills、Agent 指令、Squad 
 
 它不存放具体业务项目的代码或交付物。业务项目通过 `bootstrap.py` 把这套配置部署到 Multica 工作区，再用 `/init` 写入项目薄覆盖层。
 
-- 配置手册：[`config/KAR-Squad-Config-v4.4.md`](config/KAR-Squad-Config-v4.4.md)
-- 当前版本：`4.4.0`（见 `VERSION`）
+- 配置手册：[`config/KAR-Squad-Config-v4.5.md`](config/KAR-Squad-Config-v4.5.md)
+- 当前版本：`4.5.0`（见 `VERSION`）
 - 部署脚本：`scripts/bootstrap.py`
 - 校验脚本：`scripts/verify.py`
 - 恢复脚本：`scripts/restore.py`
@@ -18,6 +18,7 @@ KAR Delivery Squad 的**配置与运维仓库**：Skills、Agent 指令、Squad 
 - 单一源生成：`scripts/generate.py`
 - 视觉回归：`scripts/visual.py`
 - 发布/部署：`scripts/release.py`、`scripts/deploy.py`
+- 产物校验：`scripts/verify_artifact.py`、`scripts/doc_lint.py`
 - 发布构建：`scripts/build_release.py`
 
 ## 这个仓库管什么
@@ -50,7 +51,7 @@ KAR Delivery Squad 的**配置与运维仓库**：Skills、Agent 指令、Squad 
 ```bash
 make generate  # 从 sources/squad.json 重写 skills/agents/squad/bootstrap/profile
 make test      # 单元测试（含 manifest/metrics/human_wip/restore/policy/autonomy/queue/generate/visual/release/deploy）
-make check     # 校验生成漂移、specs、模板 hash、版本一致性、示例 manifest 与 v4.3/v4.4 治理策略
+make check     # 校验生成漂移、specs、模板 hash、版本一致性、示例 manifest 与 v4.3–v4.5 治理策略
 make build     # 生成 release/KAR-Squad-Bootstrap-v<version>.zip
 ```
 
@@ -83,6 +84,7 @@ python3 scripts/deploy.py --apply --update --approved-by <human-id>
 - `4.2.0` 起，A4/A5 绑定 `candidate/<KEY>-<digest>`；`manifest.py check` 校验 docs/repos/PR/CI。
 - `4.3.0` 起，H3 还校验产物矩阵、R3 安全 overlay、H1/H2 草稿 checkpoint、steer 决策台账与 Lead 接触点预算（`policy.py check --profile h3`）。
 - `4.4.0` 起，H3 还校验低风险 24h 假设（`autonomy`）与 UI 变更的视觉回归（`ui_affected`/`visual_regression`）；目录/绑定/默认值由 `sources/squad.json` 生成。
+- `4.5.0` 起，意图共识前置、Leader 只做分派/门禁/异常升级/合并授权、`/discuss` `/fixbug` `/status` `/check` 上线；产物用 `verify_artifact.py` 与 `doc_lint.py` 校验；标签 7 个、保存视图 4 个。
 - `4.1.0` 起，小队默认值在 `kar-squad-profile`，项目描述只写 `squad-overlay`。
 - 旧 `S01–S17` 不在本仓库维护；迁移后由人类归档。
 - 不提交 token、密码、workspace ID、runtime ID、真实仓库 URL 或人名。
