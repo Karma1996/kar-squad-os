@@ -142,7 +142,7 @@ digest 只由候选输入决定：`change_set_id/issue/slug` + `requirements/pro
   "lane": "standard",
   "artifacts": [{"kind": "requirements", "ref": "...", "version": "1.2"}],
   "security_overlay": {"threat_model": {}, "permission_matrix": {}, "secret_scan": {}, "dependency_scan": {}, "rollback_drill": {}, "reviewer": {}},
-  "checkpoints": {"h1_draft": {"published_at": "...", "review_window_minutes": 10, "reviewers": ["..."], "outcome": "unchanged", "steer_ids": []}},
+  "checkpoints": {"h1_draft": {"intent_confirmed_at": "...", "published_at": "...", "review_window_minutes": 10, "reviewers": ["..."], "outcome": "unchanged", "steer_ids": []}},
   "steers": [],
   "touchpoints": [{"kind": "intake", "at": "...", "actor": "..."}],
   "merge_receipts": []

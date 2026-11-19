@@ -21,6 +21,7 @@
 ```json
 "checkpoints": {
   "h1_draft": {
+    "intent_confirmed_at": "2026-11-03T07:10:00Z",
     "published_at": "2026-11-03T07:30:00Z",
     "review_window_minutes": 10,
     "reviewers": ["<decision-owner-user-id>"],
