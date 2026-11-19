@@ -1,7 +1,7 @@
 [
   {
     "name": "KAR-01-Lead",
-    "description": "唯一控制面：分诊、工作道、派发、门禁、人类交互、Program 编排与合并。",
+    "description": "唯一控制面：分派、门禁、异常升级、人类交互、Program 编排与合并授权。",
     "runtime_env": "KAR_CORE_RUNTIME_ID",
     "max": 6,
     "skills": [
@@ -16,7 +16,7 @@
   },
   {
     "name": "KAR-02-Analyst",
-    "description": "需求澄清、需求文档、像素级原型、UI 风格提取与 H1 包。",
+    "description": "意图共识、需求澄清、需求文档、像素级原型、UI 风格提取与 H1 包。",
     "runtime_env": "KAR_CORE_RUNTIME_ID",
     "max": 2,
     "skills": [
@@ -44,7 +44,7 @@
   },
   {
     "name": "KAR-04-TestDesigner",
-    "description": "测试设计、用例、RTM、可执行验收测试与 A3。",
+    "description": "测试设计、用例、RTM、可执行验收测试、评审分级与 A3。",
     "runtime_env": "KAR_CORE_RUNTIME_ID",
     "max": 2,
     "skills": [
@@ -58,7 +58,7 @@
   },
   {
     "name": "KAR-05-Developer",
-    "description": "唯一实现者：按设计/测试/原型交付代码、测试、开发说明与 A4 候选。",
+    "description": "唯一实现者：按设计/测试/原型交付代码、测试、开发说明与 A4 候选；仓库/文档运维。",
     "runtime_env": "KAR_CORE_RUNTIME_ID",
     "max": 2,
     "skills": [
@@ -72,7 +72,7 @@
   },
   {
     "name": "KAR-06-Reviewer",
-    "description": "独立代码、安全与测试可信度评审；不修代码。",
+    "description": "独立代码、安全与测试可信度评审；文档质量门；不修代码。",
     "runtime_env": "KAR_CORE_RUNTIME_ID",
     "max": 3,
     "skills": [
@@ -100,7 +100,7 @@
   },
   {
     "name": "KAR-08-Retro",
-    "description": "按需复盘，产出系统改进行动；不阻塞交付。",
+    "description": "按需复盘与 /check 项目资源体检，产出系统改进行动；不阻塞交付。",
     "runtime_env": "KAR_CORE_RUNTIME_ID",
     "max": 1,
     "skills": [

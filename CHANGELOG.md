@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased — P0（KAR-16）
+## 4.5.0
+
+### P0（KAR-16）
 
 - 需求前置意图共识：H1 先发 1 页意图简版（3 轮 × 3 问、假设账本），人类 `/agree` 后才写需求基线；复用 H1 草稿 checkpoint，不新增门禁卡（`agents/KAR-02-Analyst.md`、`kar-requirements-prototype`、`docs/CHECKPOINT-STEER.md`）。
 - Leader 减负：只做分派、门禁、异常升级、合并授权；机械核验、文档质量门、需求访谈、仓库运维分别交给产物方 + Reviewer、Analyst、Developer；输出预算与失败策略写入 `kar-lead-operating`。
@@ -9,6 +11,14 @@
 - 状态语义：发卡即 `in_review`，等人不用 `blocked`，`done` 由人类验收后写。
 - 文档暂存 L0/L1/L2 与人类可读文档标准：正文无 SHA/计数，每阶段 1 份 canonical，冻结后才进仓。
 - 宪法新增第一性原理与奥卡姆剃刀；测试补充 P0 指令层断言。
+
+### P1（KAR-16）
+
+- 新增 `scripts/verify_artifact.py`：按 manifest 校验产物 path/存在性/大小/SHA-256；`--require-sha` 严格模式；产物方在 HANDOFF 前运行，Leader 只看 PASS/FAIL。
+- 新增 `scripts/doc_lint.py`：校验模板版本、一页摘要、evidence/approval 区、未填槽位、外链、页内锚点、TODO 与文件大小；ERROR 不得发人类门禁。
+- 新增 4 个保存视图：等我决定、阻塞、讨论中、本期完成；标签保留 2 组 7 个（`feature`/`bug`/`discussion`/`ops`/`quick`/`standard`/`program`）。
+- 版本升到 `4.5.0`；配置手册更名 `config/KAR-Squad-Config-v4.5.md`；`sources/squad.json`、`bootstrap.json`、`kar-squad-profile/squad.json` 同步；新增 `scripts/verify_artifact.py`、`scripts/doc_lint.py` 到发布包。
+
 
 ## 4.4.0
 

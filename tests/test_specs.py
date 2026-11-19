@@ -22,7 +22,7 @@ class SpecsTest(unittest.TestCase):
 
     def test_versions_match(self):
         self.assertEqual(self.bootstrap["version"], self.version)
-        self.assertEqual(self.bootstrap["config"], "config/KAR-Squad-Config-v4.4.md")
+        self.assertEqual(self.bootstrap["config"], "config/KAR-Squad-Config-v4.5.md")
         profile = load("skills/kar-squad-profile/squad.json")
         self.assertEqual(profile["version"], self.version)
 
@@ -52,37 +52,38 @@ class SpecsTest(unittest.TestCase):
         for m in self.squad["members"]:
             self.assertIn(m["name"], agent_names)
 
-    def test_p0_intent_and_leader_layer(self):
+    def test_p0_p1_instruction_layer(self):
         checks = {
             "agents/KAR-01-Lead.md": ("分派、门禁、异常升级", "不重复生产者", "意图简版", "/discuss", "/fixbug", "/status", "/check"),
             "skills/kar-lead-operating/SKILL.md": ("命令路由", "分工与输出预算", "状态语义", "意图简版", "标签只打两组", "/check"),
             "agents/KAR-02-Analyst.md": ("意图简版", "3 轮 × 3 问", "假设账本"),
             "skills/kar-requirements-prototype/SKILL.md": ("3 轮 × 3 问", "意图简版", "假设账本"),
             "skills/kar-constitution/SKILL.md": ("第一性原理", "奥卡姆剃刀", "# 状态语义"),
-            "skills/kar-docs-manifest/SKILL.md": ("暂存", "人类可读文档标准"),
-            "agents/KAR-06-Reviewer.md": ("文档质量门",),
+            "skills/kar-docs-manifest/SKILL.md": ("暂存", "人类可读文档标准", "verify_artifact.py", "doc_lint.py"),
+            "agents/KAR-06-Reviewer.md": ("文档质量门", "doc_lint.py"),
             "agents/KAR-05-Developer.md": ("仓库/文档运维",),
             "agents/KAR-04-TestDesigner.md": ("评审分级",),
             "agents/KAR-08-Retro.md": ("/check", "项目资源体检"),
             "skills/kar-squad-profile/SKILL.md": ("项目资源体检", "冲突矩阵", "只读"),
+            "skills/kar-doc-template/SKILL.md": ("文档 lint", "doc_lint.py"),
             "skills/kar-retro-on-demand/SKILL.md": ("/check", "项目资源体检"),
-            "config/KAR-Squad-Config-v4.4.md": ("5.1 先谈产品效果", "4.12 Issue 状态语义", "4.13 标签", "10.4 项目资源体检", "文档质量门"),
+            "config/KAR-Squad-Config-v4.5.md": ("5.1 先谈产品效果", "4.12 Issue 状态语义", "4.13 标签", "10.4 项目资源体检", "文档质量门", "v4.5", "verify_artifact.py", "doc_lint.py"),
         }
         for name, needles in checks.items():
             text = (ROOT / name).read_text(encoding="utf-8")
             for needle in needles:
                 self.assertIn(needle, text, f"{name} missing {needle}")
 
-    def test_config_doc_mentions_v44(self):
-        doc = (ROOT / "config/KAR-Squad-Config-v4.4.md").read_text(encoding="utf-8")
+    def test_config_doc_mentions_release_history(self):
+        doc = (ROOT / "config/KAR-Squad-Config-v4.5.md").read_text(encoding="utf-8")
         for needle in (
-            "v4.4", "candidate/<KEY>-<digest>", "manifest check", "human_touches", "restore.py",
+            "v4.4", "v4.5", "candidate/<KEY>-<digest>", "manifest check", "human_touches", "restore.py",
             "security_overlay", "touchpoints", "checkpoints", "/tour",
             "autonomy", "queue.py", "generate.py", "visual_regression", "deploy.py",
         ):
             self.assertIn(needle, doc)
 
-    def test_v44_docs_and_scripts_exist(self):
+    def test_release_docs_and_scripts_exist(self):
         for name in (
             "docs/GATES.md",
             "docs/MANIFEST.md",
@@ -115,6 +116,8 @@ class SpecsTest(unittest.TestCase):
             "scripts/visual.py",
             "scripts/release.py",
             "scripts/deploy.py",
+            "scripts/verify_artifact.py",
+            "scripts/doc_lint.py",
         ):
             self.assertTrue((ROOT / name).exists(), name)
 

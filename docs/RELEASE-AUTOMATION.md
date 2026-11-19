@@ -54,9 +54,9 @@ python3 scripts/release.py check --allow-dirty
 
 ```text
 RELEASE CHECK: OK
-  version: 4.4.0
-  tag: v4.4.0
-  artifact: release/KAR-Squad-Bootstrap-v4.4.0.zip
+  version: 4.5.0
+  tag: v4.5.0
+  artifact: release/KAR-Squad-Bootstrap-v4.5.0.zip
 ```
 
 失败时输出 `RELEASE CHECK: FAIL`，逐条列出 `ERROR:` / `WARN:`，退出码为 1。若 `--root` 不是 git 仓库，工作树检查无法判断，降级为 warning；真正的 `tag` / `publish --apply` 仍会因 git 命令失败而停止。
@@ -66,9 +66,9 @@ RELEASE CHECK: OK
 ```json
 {
   "ok": true,
-  "version": "4.4.0",
-  "tag": "v4.4.0",
-  "artifact": "release/KAR-Squad-Bootstrap-v4.4.0.zip",
+  "version": "4.5.0",
+  "tag": "v4.5.0",
+  "artifact": "release/KAR-Squad-Bootstrap-v4.5.0.zip",
   "errors": [],
   "warnings": []
 }
@@ -77,17 +77,17 @@ RELEASE CHECK: OK
 `plan` 只校验 tag 是否等于 `v{VERSION}`，然后打印固定顺序：
 
 ```bash
-python3 scripts/release.py plan --tag v4.4.0
+python3 scripts/release.py plan --tag v4.5.0
 ```
 
 ```text
-RELEASE PLAN: v4.4.0
+RELEASE PLAN: v4.5.0
   1. build          python3 scripts/build_release.py
-  2. tag            git tag -a v4.4.0 -m 'KAR Squad OS v4.4.0'
-  3. push           git push origin v4.4.0
-  4. github-release gh release create v4.4.0 ... --title 'KAR Squad OS v4.4.0' --notes-file ...
+  2. tag            git tag -a v4.5.0 -m 'KAR Squad OS v4.5.0'
+  3. push           git push origin v4.5.0
+  4. github-release gh release create v4.5.0 ... --title 'KAR Squad OS v4.5.0' --notes-file ...
   5. attach         multica issue comment add KAR-ISSUE --content-file ... --attachment ...
-  artifact: release/KAR-Squad-Bootstrap-v4.4.0.zip
+  artifact: release/KAR-Squad-Bootstrap-v4.5.0.zip
 ```
 
 tag 不匹配时退出 1，不产生任何副作用。`--json` 输出 `{ok, version, tag, artifact, steps}`。
@@ -99,17 +99,17 @@ tag 不匹配时退出 1，不产生任何副作用。`--json` 输出 `{ok, vers
 ```bash
 # 1. 本地检查与计划（无副作用）
 python3 scripts/release.py check
-python3 scripts/release.py plan --tag v4.4.0
+python3 scripts/release.py plan --tag v4.5.0
 
 # 2. 一键 dry-run：打印 build/tag/release/attach 全部命令，不构建、不打 tag
 python3 scripts/release.py publish \
-  --tag v4.4.0 \
+  --tag v4.5.0 \
   --issue KAR-13 \
   --approved-by <human>
 
 # 3. 人类确认后执行；--push 默认关闭，需要显式打开
 python3 scripts/release.py publish \
-  --tag v4.4.0 \
+  --tag v4.5.0 \
   --issue KAR-13 \
   --approved-by <human> \
   --apply --push
@@ -127,17 +127,17 @@ python3 scripts/release.py publish \
 
 ```bash
 python3 scripts/release.py tag \
-  --tag v4.4.0 --approved-by <human> --apply --push
+  --tag v4.5.0 --approved-by <human> --apply --push
 
 python3 scripts/release.py github-release \
-  --tag v4.4.0 \
-  --artifact release/KAR-Squad-Bootstrap-v4.4.0.zip \
+  --tag v4.5.0 \
+  --artifact release/KAR-Squad-Bootstrap-v4.5.0.zip \
   --apply
 
 python3 scripts/release.py attach \
   --issue KAR-13 \
-  --artifact release/KAR-Squad-Bootstrap-v4.4.0.zip \
-  --tag v4.4.0 \
+  --artifact release/KAR-Squad-Bootstrap-v4.5.0.zip \
+  --tag v4.5.0 \
   --approved-by <human> \
   --apply
 ```
@@ -168,8 +168,8 @@ python3 scripts/release.py attach \
   python3 scripts/release.py check
 
   # tag / publish 会失败，绝不覆盖
-  python3 scripts/release.py tag --tag v4.4.0 --approved-by <human> --apply
-  # RELEASE TAG: FAIL / tag v4.4.0 already exists; tags are immutable
+  python3 scripts/release.py tag --tag v4.5.0 --approved-by <human> --apply
+  # RELEASE TAG: FAIL / tag v4.5.0 already exists; tags are immutable
   ```
 
 - 发布内容错了：前向修复（新的 patch 版本）或用 `gh release edit` 修正说明；不要删除/移动已发布的 tag。
@@ -225,7 +225,7 @@ STEP                      EXIT    RESULT
 2 bootstrap dry-run       0       ok
 3 bootstrap apply         0       ok
 4 verify                  0       ok
-version: 4.4.0
+version: 4.5.0
 deployed: yes (update=yes)
 ```
 

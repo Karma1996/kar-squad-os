@@ -64,4 +64,4 @@
 
 发 `/tour`，或直接问“现在要做什么”。Lead 会给你下一步；不要猜，也不要跳过门禁。
 
-延伸阅读（不必先读）：[门禁清单](GATES.md)、[产物矩阵](ARTIFACTS.md)、[安全 overlay](SECURITY-OVERLAY.md)、[配置手册](../config/KAR-Squad-Config-v4.4.md)。
+延伸阅读（不必先读）：[门禁清单](GATES.md)、[产物矩阵](ARTIFACTS.md)、[安全 overlay](SECURITY-OVERLAY.md)、[配置手册](../config/KAR-Squad-Config-v4.5.md)。

@@ -38,6 +38,19 @@
 | 视觉回归工具化 | ✅ 项目事实 `visual.json` 配置工具/断点/阈值/关键界面；`visual.py init|capture|check`；关键界面默认 0 差异，缺组合/工具不可用判 FAIL/BLOCKED；`visual_regression` 在 H3 校验 |
 | 发布自动化 | ✅ `release.py check|plan|tag|github-release|attach|publish`；tag → GitHub Release → Multica issue 附件；`deploy.py` dry-run → apply → verify 一键，人类 `--approved-by` 前置 |
 
+## v4.5（P0 + P1，4.5.0 已交付）
+
+实现见 `config/KAR-Squad-Config-v4.5.md`、`skills/kar-lead-operating`、`skills/kar-requirements-prototype`、`skills/kar-squad-profile`；工具见 `scripts/verify_artifact.py`、`scripts/doc_lint.py`。
+
+| 项 | 验收 |
+| --- | --- |
+| 意图共识前置 | ✅ H1 先发 1 页意图简版（3 轮 × 3 问 + 假设账本），人类 `/agree` 后才写需求基线；复用 H1 草稿 checkpoint，不新增门禁卡 |
+| Leader 减负 | ✅ 只做分派、门禁、异常升级、合并授权；机械核验交给产物方 + Reviewer，需求对话交给 Analyst，仓库/文档入仓交给 Developer；输出预算与失败策略写入指令 |
+| 指令集 | ✅ `/discuss` `/fixbug` `/status` `/check`；保留 `/approve` `/init` `/tour`；7 个人类命令写入 `sources/squad.json` |
+| 文档暂存与校验 | ✅ L0/L1/L2 暂存；`verify_artifact.py` 校验 path/大小/SHA；`doc_lint.py` 校验模板/摘要/证据/外链/占位符 |
+| 标签与视图 | ✅ 类型 `feature/bug/discussion/ops` + 工作道 `quick/standard/program`；4 个保存视图（等我决定/阻塞/讨论中/本期完成） |
+| 发布 | ✅ 版本 4.5.0、配置手册 v4.5、tag `v4.5.0`、GitHub Release 与迁移包 |
+
 ## 暂不做
 
 - 多套并行版本/多分支长期维护（先保持单基线）。
