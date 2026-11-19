@@ -4,7 +4,8 @@
 
 - 需求前置意图共识：H1 先发 1 页意图简版（3 轮 × 3 问、假设账本），人类 `/agree` 后才写需求基线；复用 H1 草稿 checkpoint，不新增门禁卡（`agents/KAR-02-Analyst.md`、`kar-requirements-prototype`、`docs/CHECKPOINT-STEER.md`）。
 - Leader 减负：只做分派、门禁、异常升级、合并授权；机械核验、文档质量门、需求访谈、仓库运维分别交给产物方 + Reviewer、Analyst、Developer；输出预算与失败策略写入 `kar-lead-operating`。
-- 新指令 `/discuss`、`/fixbug`、`/status`；保留 `/approve`、`/init`、`/tour`。
+- 新指令 `/discuss`、`/fixbug`、`/status`、`/check`；保留 `/approve`、`/init`、`/tour`。
+- `/check`：KAR-08 Retro 只读扫描项目挂载资源与影响 Agent 行为的文件，按 8 类冲突矩阵输出 S0–S3 报告与整改步骤；不改文件/配置，整改需人类批准（`kar-squad-profile` 第七节）。
 - 状态语义：发卡即 `in_review`，等人不用 `blocked`，`done` 由人类验收后写。
 - 文档暂存 L0/L1/L2 与人类可读文档标准：正文无 SHA/计数，每阶段 1 份 canonical，冻结后才进仓。
 - 宪法新增第一性原理与奥卡姆剃刀；测试补充 P0 指令层断言。

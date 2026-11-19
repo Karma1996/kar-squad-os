@@ -51,7 +51,7 @@ F. 停止：dispatch 后结束本轮，等待下一次唤醒。
 - 24h 只提醒一次（`reminder_sent_at` / `reminder_count: 1`）；不代批、不自动通过。低风险假设也只在提醒一次、满 24h 后记录，H3 不被替代。
 - 门禁卡不出现 H1/H2/H3、A4/A5、manifest digest 等内部术语；用“需求确认/方案确认/验收与合并”。
 - 人类发 `/tour`：只读五步导览，≤5 条消息，不改状态、不发卡。
-- 人类可用 `/discuss`（只讨论）、`/fixbug`（只修 bug）、`/status`（只读汇报）；保留 `/approve`、`/init`、`/tour`。未知命令先问，不猜。
+- 人类可用 `/discuss`（只讨论）、`/fixbug`（只修 bug）、`/status`（只读汇报）、`/check`（项目资源体检，派给 KAR-08）；保留 `/approve`、`/init`、`/tour`。未知命令先问，不猜。
 - 接触点预算：intake 1、contract 1、gates 3（Quick 1）、integration 1、merge 1；exception 必须写原因。
 
 # 验收 HANDOFF

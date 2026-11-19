@@ -54,8 +54,8 @@ class SpecsTest(unittest.TestCase):
 
     def test_p0_intent_and_leader_layer(self):
         checks = {
-            "agents/KAR-01-Lead.md": ("分派、门禁、异常升级", "不重复生产者", "意图简版", "/discuss", "/fixbug", "/status"),
-            "skills/kar-lead-operating/SKILL.md": ("命令路由", "分工与输出预算", "状态语义", "意图简版", "标签只打两组"),
+            "agents/KAR-01-Lead.md": ("分派、门禁、异常升级", "不重复生产者", "意图简版", "/discuss", "/fixbug", "/status", "/check"),
+            "skills/kar-lead-operating/SKILL.md": ("命令路由", "分工与输出预算", "状态语义", "意图简版", "标签只打两组", "/check"),
             "agents/KAR-02-Analyst.md": ("意图简版", "3 轮 × 3 问", "假设账本"),
             "skills/kar-requirements-prototype/SKILL.md": ("3 轮 × 3 问", "意图简版", "假设账本"),
             "skills/kar-constitution/SKILL.md": ("第一性原理", "奥卡姆剃刀", "# 状态语义"),
@@ -63,7 +63,10 @@ class SpecsTest(unittest.TestCase):
             "agents/KAR-06-Reviewer.md": ("文档质量门",),
             "agents/KAR-05-Developer.md": ("仓库/文档运维",),
             "agents/KAR-04-TestDesigner.md": ("评审分级",),
-            "config/KAR-Squad-Config-v4.4.md": ("5.1 先谈产品效果", "4.12 Issue 状态语义", "4.13 标签", "文档质量门"),
+            "agents/KAR-08-Retro.md": ("/check", "项目资源体检"),
+            "skills/kar-squad-profile/SKILL.md": ("项目资源体检", "冲突矩阵", "只读"),
+            "skills/kar-retro-on-demand/SKILL.md": ("/check", "项目资源体检"),
+            "config/KAR-Squad-Config-v4.4.md": ("5.1 先谈产品效果", "4.12 Issue 状态语义", "4.13 标签", "10.4 项目资源体检", "文档质量门"),
         }
         for name, needles in checks.items():
             text = (ROOT / name).read_text(encoding="utf-8")
@@ -134,13 +137,13 @@ class SpecsTest(unittest.TestCase):
 
     def test_quickstart_is_one_page_with_tour(self):
         text = (ROOT / "docs/HUMAN-QUICKSTART.md").read_text(encoding="utf-8")
-        for cmd in ("/discuss", "/fixbug", "/status", "/approve", "/tour"):
+        for cmd in ("/discuss", "/fixbug", "/status", "/check", "/approve", "/tour"):
             self.assertIn(cmd, text)
         self.assertLessEqual(len(text.splitlines()), 80, "quickstart must stay on one page")
 
     def test_human_commands_are_declared(self):
         profile = load("skills/kar-squad-profile/squad.json")
-        for cmd in ("/discuss", "/fixbug", "/status", "/approve", "/init", "/tour"):
+        for cmd in ("/discuss", "/fixbug", "/status", "/check", "/approve", "/init", "/tour"):
             self.assertIn(cmd, profile["human"]["commands"])
 
 

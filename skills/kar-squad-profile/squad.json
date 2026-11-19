@@ -292,6 +292,7 @@
       "/discuss",
       "/fixbug",
       "/status",
+      "/check",
       "/approve",
       "/init",
       "/tour"
