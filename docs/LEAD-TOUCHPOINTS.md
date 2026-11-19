@@ -15,6 +15,8 @@ Lead 只在 **6 类接触点** 找人类。其他时间自己查、自己做、�
 
 六类以外的人类交互都算越界：例如“顺便确认一下文案”“帮忙看下这个 diff”“你觉得这个命名好吗”。这些先自己判断或交回对应 Agent，不找人。
 
+意图简版是 H1 草稿 review，不新增接触点；它阻塞需求基线写作，但不突破 `gates` 的 3 张卡预算。
+
 ## 2. manifest 记录
 
 ```json
@@ -73,3 +75,5 @@ python3 scripts/policy.py check --manifest <path>/delivery-manifest.json --profi
 | Program | 4–5 | 上述 + contract 拆分确认 |
 
 `exception` 不设硬上限，但每一次都要能解释为什么常规流程解决不了。
+
+意图简版的 `/agree` 是草稿 review，不是门禁卡，不计入人类动作数；但它未确认时不得写需求基线。

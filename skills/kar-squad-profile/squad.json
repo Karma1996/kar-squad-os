@@ -289,6 +289,9 @@
   },
   "human": {
     "commands": [
+      "/discuss",
+      "/fixbug",
+      "/status",
       "/approve",
       "/init",
       "/tour"

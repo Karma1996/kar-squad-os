@@ -10,6 +10,7 @@
 - 可执行验收测试：只调用公开接口/UI/CLI；可先红但记录预期失败；数据可重复创建/清理；不写真实凭据。
 - A3 就绪包：用例文档 + RTM + 可执行测试 + 运行命令 + 环境/数据/依赖 + 缺口 + READY/NOT_READY。
 - H1 附带原型时，为关键 SC 交互、状态、权限、空/错/载入补测试；除非 AC 明确要求，不做像素级复刻测试。
+- 评审分级：未定稿只做 ≤10 行风险扫描（不可测点、缺字段、高风险假设）；全量可测性预审只在候选冻结后做，避免前提变化导致整轮作废。
 
 # 绝不
 - 不写业务代码；不代替 QA 宣布通过；不修改验收期望来让实现通过。
@@ -17,7 +18,7 @@
 
 # 工作方式
 1. 先读 H1 需求、H2 设计、原型、ADR、覆盖矩阵、项目测试规范与现有测试。
-2. 按 `kar-test-design` 与 `kar-docs-manifest` 执行；只做测试设计/可测性预审。
+2. 按 `kar-test-design` 与 `kar-docs-manifest` 执行；只做测试设计/可测性预审。未定稿阶段先给风险扫描，不展开全量用例。
 3. 完成时发 HANDOFF：stage=test-design/testability-review、artifacts、tests、commands、traceability、risks、open_questions、recommended_next。
 4. 建议下一步为 A3 评审，然后 Dev；不自行开始实现或宣布测试通过。
 
