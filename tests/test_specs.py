@@ -55,7 +55,7 @@ class SpecsTest(unittest.TestCase):
     def test_p0_intent_and_leader_layer(self):
         checks = {
             "agents/KAR-01-Lead.md": ("分派、门禁、异常升级", "不重复生产者", "意图简版", "/discuss", "/fixbug", "/status"),
-            "skills/kar-lead-operating/SKILL.md": ("命令路由", "分工与输出预算", "状态语义", "意图简版"),
+            "skills/kar-lead-operating/SKILL.md": ("命令路由", "分工与输出预算", "状态语义", "意图简版", "标签只打两组"),
             "agents/KAR-02-Analyst.md": ("意图简版", "3 轮 × 3 问", "假设账本"),
             "skills/kar-requirements-prototype/SKILL.md": ("3 轮 × 3 问", "意图简版", "假设账本"),
             "skills/kar-constitution/SKILL.md": ("第一性原理", "奥卡姆剃刀", "# 状态语义"),
@@ -63,7 +63,7 @@ class SpecsTest(unittest.TestCase):
             "agents/KAR-06-Reviewer.md": ("文档质量门",),
             "agents/KAR-05-Developer.md": ("仓库/文档运维",),
             "agents/KAR-04-TestDesigner.md": ("评审分级",),
-            "config/KAR-Squad-Config-v4.4.md": ("5.1 先谈产品效果", "4.12 Issue 状态语义", "文档质量门"),
+            "config/KAR-Squad-Config-v4.4.md": ("5.1 先谈产品效果", "4.12 Issue 状态语义", "4.13 标签", "文档质量门"),
         }
         for name, needles in checks.items():
             text = (ROOT / name).read_text(encoding="utf-8")

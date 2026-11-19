@@ -60,6 +60,7 @@ issue 标题或评论的第一个词是命令时，先路由，不进入默认�
 - `done` 由人类验收后写；Agent 不自行 `done`。
 - 父 issue 只有 Lead 改；子 issue 的 assignee 可以关自己的子 issue。
 - 状态变化当场写，不等阶段结束。
+- 标签只打两组：类型（`feature`/`bug`/`discussion`/`ops`）与工作道（`quick`/`standard`/`program`）；生命周期用状态，不用标签。
 
 # 二、工作道选择
 
